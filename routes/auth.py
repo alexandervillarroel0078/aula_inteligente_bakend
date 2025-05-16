@@ -9,11 +9,11 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-    correo = data.get('correo')
+    nombre_usuario = data.get('nombre_usuario')
     password = data.get('password')
 
-    if not correo or not password:
-        return jsonify({"mensaje": "Correo y contraseña requeridos"}), 400
+    if not nombre_usuario or not password:
+        return jsonify({"mensaje": "Usuario y contraseña requeridos"}), 400
 
     conexion = conectar_db()
     if conexion is None:
@@ -22,21 +22,22 @@ def login():
     try:
         cursor = conexion.cursor()
         cursor.execute("""
-            SELECT u.id, u.nombre, u.correo, u.password, r.nombre
-            FROM usuarios u
-            JOIN roles r ON u.id_rol = r.id
-            WHERE u.correo = %s
-        """, (correo,))
+            SELECT u.id, u.nombre_usuario, u.password_hash, r.nombre
+            FROM usuario u
+            JOIN rol r ON u.rol_id = r.id
+            WHERE u.nombre_usuario = %s
+        """, (nombre_usuario,))
         usuario = cursor.fetchone()
 
-        if usuario and check_password_hash(usuario[3], password):
+        if usuario and check_password_hash(usuario[2], password):
             payload = {
-                'id': usuario[0],
-                'nombre': usuario[1],
-                'correo': usuario[2],
-                'rol': usuario[4],
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=6)
-            }
+    'id': usuario[0],
+    'nombre_usuario': usuario[1],  # antes estaba como 'nombre'
+    'correo': usuario[2],
+    'rol': usuario[4],
+    'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=6)
+}
+
 
             token = jwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')
 
@@ -44,9 +45,9 @@ def login():
                 'token': token,
                 'usuario': {
                     'id': usuario[0],
-                    'nombre': usuario[1],
+                    'nombre_usuario': usuario[1],
                     'correo': usuario[2],
-                    'rol': usuario[4]
+                    'rol': usuario[3]
                 }
             }), 200
         else:

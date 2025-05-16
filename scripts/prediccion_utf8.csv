@@ -1,0 +1,11 @@
+alumno_id,periodo_id,promedio_notas,porcentaje_asistencia,promedio_participaciones,resultado_predicho
+4,1,68.93,99.0,9.14,Medio
+6,2,73.28,88.21,9.64,Medio
+8,2,63.03,83.48,8.41,Bajo
+8,2,69.11,97.17,8.44,Medio
+2,1,66.28,74.58,7.85,Medio
+2,3,60.92,77.73,8.34,Alto
+2,3,85.17,86.94,6.96,Alto
+10,3,74.22,94.52,7.68,Alto
+5,2,72.86,75.39,9.64,Alto
+6,2,69.32,88.98,7.9,Medio

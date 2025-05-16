@@ -1,0 +1,11 @@
+nombre,descripcion,grado_id,estado
+Matemáticas,Curso de matemáticas,1,activo
+Lenguaje,Curso de lenguaje,2,activo
+Historia,Curso de historia,2,activo
+Geografía,Curso de geografía,2,activo
+Física,Curso de física,2,activo
+Química,Curso de química,2,activo
+Biología,Curso de biología,2,activo
+Educación Física,Curso de educación física,2,activo
+Arte,Curso de arte,1,activo
+Música,Curso de música,1,activo

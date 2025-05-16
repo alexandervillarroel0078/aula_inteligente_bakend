@@ -1,0 +1,11 @@
+alumno_id,profesor_id,fecha,descripcion
+6,10,2025-04-23,Observación 1 de conducta o rendimiento.
+9,6,2025-04-23,Observación 2 de conducta o rendimiento.
+8,8,2025-04-04,Observación 3 de conducta o rendimiento.
+2,10,2025-03-19,Observación 4 de conducta o rendimiento.
+9,4,2025-04-23,Observación 5 de conducta o rendimiento.
+5,10,2025-04-27,Observación 6 de conducta o rendimiento.
+3,9,2025-03-29,Observación 7 de conducta o rendimiento.
+3,9,2025-03-29,Observación 8 de conducta o rendimiento.
+5,4,2025-03-26,Observación 9 de conducta o rendimiento.
+4,10,2025-04-13,Observación 10 de conducta o rendimiento.

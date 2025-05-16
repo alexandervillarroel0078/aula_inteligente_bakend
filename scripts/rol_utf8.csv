@@ -1,0 +1,7 @@
+nombre,descripcion
+admin,Administrador del sistema
+profesor,Docente con acceso a materias y alumnos
+director,Responsable de la institución
+secretaria,Encargada de gestión y registros
+preceptor,Controla asistencia de alumnos
+padre,Consulta notas e información de sus hijos

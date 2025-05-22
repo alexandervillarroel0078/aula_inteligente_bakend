@@ -9,50 +9,65 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-    nombre_usuario = data.get('nombre_usuario')
+    #nombre_usuario = data.get('nombre_usuario')
+    correo = data.get('correo')
+
     password = data.get('password')
 
-    if not nombre_usuario or not password:
+    # Validación básica
+    #if not nombre_usuario or not password:
+    if not correo or not password:
         return jsonify({"mensaje": "Usuario y contraseña requeridos"}), 400
 
+    # Conexión con la BD
     conexion = conectar_db()
     if conexion is None:
         return jsonify({"mensaje": "Error de conexión con la base de datos"}), 500
 
     try:
         cursor = conexion.cursor()
+
+        # Consulta: busca datos del usuario incluyendo el correo real desde profesor o alumno
         cursor.execute("""
-            SELECT u.id, u.nombre_usuario, u.password_hash, r.nombre
+            SELECT u.id, u.nombre_usuario, u.password_hash, r.nombre, 
+       COALESCE(u.correo, p.email, a.email, '') AS correo_real
+
             FROM usuario u
             JOIN rol r ON u.rol_id = r.id
-            WHERE u.nombre_usuario = %s
-        """, (nombre_usuario,))
+            LEFT JOIN profesor p ON u.profesor_id = p.id
+            LEFT JOIN alumno a ON u.alumno_id = a.id
+            WHERE COALESCE(u.correo, p.email, a.email) = %s
+
+        """, (correo,))
         usuario = cursor.fetchone()
 
         if usuario and check_password_hash(usuario[2], password):
+            # Construir payload para el token JWT
             payload = {
-    'id': usuario[0],
-    'nombre_usuario': usuario[1],  # antes estaba como 'nombre'
-    'correo': usuario[2],
-    'rol': usuario[3],
-    'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=6)
-}
+                'id': usuario[0],
+                'nombre_usuario': usuario[1],
+                'rol': usuario[3],
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=6)
+            }
 
-
+            # Generar token
             token = jwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')
 
+            # Respuesta final sin password
             return jsonify({
                 'token': token,
                 'usuario': {
                     'id': usuario[0],
                     'nombre_usuario': usuario[1],
-                    'correo': usuario[2],
+                    'correo': usuario[4],  # ✅ correo real, si existe
                     'rol': usuario[3]
                 }
             }), 200
         else:
             return jsonify({"mensaje": "Credenciales incorrectas"}), 401
+
     except Exception as e:
         return jsonify({"mensaje": "Error en el servidor", "error": str(e)}), 500
+
     finally:
         conexion.close()

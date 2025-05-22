@@ -4,15 +4,17 @@ from models.profesor import Profesor
 
 def listar_profesores():
     profesores = Profesor.query.all()
-    return jsonify([{
-        "id": p.id,
-        "nombre_completo": p.nombre_completo,
-        "email": p.email,
-        "telefono": p.telefono,
-        "direccion": p.direccion,
-        "especialidad": p.especialidad,
-        "estado": p.estado
-    } for p in profesores])
+    return jsonify([
+        {
+            "id": p.id,
+            "nombre_completo": p.nombre_completo,
+            "email": p.email,
+            "telefono": p.telefono,
+            "direccion": p.direccion,
+            "especialidad": p.especialidad,
+            "estado": p.estado
+        } for p in profesores
+    ])
 
 def obtener_profesor(id):
     profesor = Profesor.query.get_or_404(id)

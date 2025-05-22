@@ -8,3 +8,8 @@ class Participacion(db.Model):
     periodo_id = db.Column(db.Integer, db.ForeignKey('periodo.id'))
     fecha = db.Column(db.Date)
     puntaje = db.Column(db.Float)
+
+    # Relaciones necesarias
+    alumno = db.relationship('Alumno', backref='participaciones')
+    materia = db.relationship('Materia', backref='participaciones')
+    periodo = db.relationship('Periodo', backref='participaciones')

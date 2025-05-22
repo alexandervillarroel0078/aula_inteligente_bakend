@@ -9,3 +9,7 @@ class Prediccion(db.Model):
     porcentaje_asistencia = db.Column(db.Float)
     promedio_participaciones = db.Column(db.Float)
     resultado_predicho = db.Column(db.String(20))
+
+    # Relaciones necesarias
+    alumno = db.relationship('Alumno', backref='predicciones')
+    periodo = db.relationship('Periodo', backref='predicciones')

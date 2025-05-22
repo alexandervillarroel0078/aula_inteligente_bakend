@@ -7,3 +7,6 @@ class Bitacora(db.Model):
     accion = db.Column(db.String(100))
     descripcion = db.Column(db.Text)
     fecha_hora = db.Column(db.DateTime)
+
+    # Relación para acceder al nombre del usuario
+    usuario = db.relationship('Usuario', backref='bitacoras')

@@ -4,18 +4,21 @@ from models.alumno import Alumno
 
 def listar_alumnos():
     alumnos = Alumno.query.all()
-    return jsonify([{
-        "id": a.id,
-        "nombre_completo": a.nombre_completo,
-        "fecha_nacimiento": str(a.fecha_nacimiento),
-        "genero": a.genero,
-        "email": a.email,
-        "telefono": a.telefono,
-        "direccion": a.direccion,
-        "grado_id": a.grado_id,
-        "fecha_registro": str(a.fecha_registro) if a.fecha_registro else None,
-        "estado": a.estado
-    } for a in alumnos])
+    return jsonify([
+        {
+            "id": a.id,
+            "nombre_completo": a.nombre_completo,
+            "fecha_nacimiento": str(a.fecha_nacimiento),
+            "genero": a.genero,
+            "email": a.email,
+            "telefono": a.telefono,
+            "direccion": a.direccion,
+            "grado_id": a.grado_id,
+            "grado_nombre": a.grado.nombre if a.grado else None,  # ← añadido
+            "fecha_registro": str(a.fecha_registro) if a.fecha_registro else None,
+            "estado": a.estado
+        } for a in alumnos
+    ])
 
 def obtener_alumno(id):
     alumno = Alumno.query.get_or_404(id)
@@ -28,6 +31,7 @@ def obtener_alumno(id):
         "telefono": alumno.telefono,
         "direccion": alumno.direccion,
         "grado_id": alumno.grado_id,
+        "grado_nombre": alumno.grado.nombre if alumno.grado else None,  # ← añadido
         "fecha_registro": str(alumno.fecha_registro) if alumno.fecha_registro else None,
         "estado": alumno.estado
     })

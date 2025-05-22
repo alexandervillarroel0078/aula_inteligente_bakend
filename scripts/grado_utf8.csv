@@ -1,5 +1,5 @@
-nombre,nivel,turno
-Primero A,Primaria,Mañana
-Segundo B,Secundaria,Tarde
-Tercero C,Primaria,Tarde
-Cuarto D,Secundaria,Mañana
+nombre,nivel,turno,gestion,ubicacion,seccion,paralelo
+PRIM-A,Primaria,Mañana,2025,Central,Primero,A
+SECU-B,Secundaria,Tarde,2025,Central,Segundo,B
+PRIM-C,Primaria,Tarde,2025,Central,Tercero,C
+SECU-D,Secundaria,Mañana,2025,Central,Cuarto,D

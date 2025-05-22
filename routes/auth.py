@@ -34,7 +34,7 @@ def login():
     'id': usuario[0],
     'nombre_usuario': usuario[1],  # antes estaba como 'nombre'
     'correo': usuario[2],
-    'rol': usuario[4],
+    'rol': usuario[3],
     'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=6)
 }
 

@@ -13,4 +13,5 @@ class Alumno(db.Model):
     fecha_registro = db.Column(db.DateTime)
     estado = db.Column(db.String(20))
 
+    #relación directa
     grado = db.relationship('Grado', backref='alumnos')

@@ -13,7 +13,11 @@ def listar_materias():
         "turno": m.turno,
         "aula": m.aula,
         "estado": m.estado,
-        "grado_id": m.grado_id
+        'grado': {
+    'id': m.grado.id if m.grado else None,
+    'nombre': m.grado.nombre if m.grado else '-'
+}
+
     } for m in materias])
 
 def ver_materia(id):

@@ -42,7 +42,9 @@ def create_app():
     from routes.usuario_routes import usuario_bp
     from routes.observacion_routes import observacion_bp
     from routes.tarea_entregada_routes import tarea_entregada_bp
- 
+    from routes.observacion_routes import observacion_bp
+    
+
     app.register_blueprint(auth_bp)
     app.register_blueprint(perfil_bp)
     app.register_blueprint(grado_bp)
@@ -61,7 +63,8 @@ def create_app():
     app.register_blueprint(rol_bp)
     app.register_blueprint(usuario_bp)
     app.register_blueprint(tarea_entregada_bp)
-  
+    app.register_blueprint(observacion_bp)
+    
 
     @app.route('/')
     def inicio():

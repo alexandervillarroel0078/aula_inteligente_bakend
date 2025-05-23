@@ -9,13 +9,14 @@ def listar_asistencias():
     data = []
     for a in asistencias:
         data.append({
-            "id": a.id,
-            "alumno_id": a.alumno_id,
-            "materia_id": a.materia_id,
-            "periodo_id": a.periodo_id,
-            "fecha": a.fecha,
-            "presente": a.presente
-        })
+    "id": a.id,
+    "fecha": a.fecha.isoformat(),
+    "presente": a.presente,
+    "alumno_nombre": a.alumno.nombre_completo if a.alumno else None,
+    "materia_nombre": a.materia.nombre if a.materia else None,
+    "periodo_nombre": a.periodo.nombre if a.periodo else None
+}
+)
     return jsonify(data)
 
 # GET - Ver una asistencia

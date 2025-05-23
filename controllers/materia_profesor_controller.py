@@ -6,12 +6,18 @@ from traits.bitacora_trait import registrar_bitacora
 # Obtener todas las materias asignadas a profesores
 def listar_materias_profesor():
     registros = MateriaProfesor.query.all()
-    return jsonify([{
-        "id": mp.id,
-        "materia_id": mp.materia_id,
-        "profesor_id": mp.profesor_id,
-        "fecha_asignacion": mp.fecha_asignacion.isoformat() if mp.fecha_asignacion else None
-    } for mp in registros])
+    return jsonify([
+        {
+            "id": mp.id,
+            "materia_id": mp.materia_id,
+            "materia_nombre": mp.materia.nombre if mp.materia else None,
+            "profesor_id": mp.profesor_id,
+            "profesor_nombre": mp.profesor.nombre_completo if mp.profesor else None,
+            "fecha_asignacion": mp.fecha_asignacion.isoformat() if mp.fecha_asignacion else None
+        }
+        for mp in registros
+    ])
+
 
 # Ver una asignación específica
 def ver_materia_profesor(id):

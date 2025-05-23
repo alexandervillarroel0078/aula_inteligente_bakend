@@ -19,7 +19,11 @@ def listar_alumnos():
             'direccion': a.direccion,
             'fecha_registro': a.fecha_registro,
             'estado': a.estado,
-            'grado_id': a.grado_id
+            'grado_id': a.grado_id,
+            'grado': {
+                'id': a.grado.id if a.grado else None,
+                'nombre': a.grado.nombre if a.grado else '-'
+            }
         }
         for a in alumnos
     ]
@@ -39,8 +43,13 @@ def ver_alumno(id):
         'direccion': alumno.direccion,
         'fecha_registro': alumno.fecha_registro,
         'estado': alumno.estado,
-        'grado_id': alumno.grado_id
+        'grado_id': alumno.grado_id,
+        'grado': {
+            'id': alumno.grado.id if alumno.grado else None,
+            'nombre': alumno.grado.nombre if alumno.grado else '-'
+        }
     })
+
 
 # Crear alumno
 def crear_alumno():

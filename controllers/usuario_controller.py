@@ -12,10 +12,14 @@ def listar_usuarios():
             "nombre_usuario": u.nombre_usuario,
             "correo": u.correo,
             "rol_id": u.rol_id,
+            "rol_nombre": u.rol.nombre if u.rol else None,
             "profesor_id": u.profesor_id,
-            "alumno_id": u.alumno_id
+            "profesor_nombre": u.profesor.nombre_completo if u.profesor else None,
+            "alumno_id": u.alumno_id,
+            "alumno_nombre": u.alumno.nombre_completo if u.alumno else None
         } for u in usuarios
     ])
+
 
 # GET - Ver un usuario
 def ver_usuario(id):

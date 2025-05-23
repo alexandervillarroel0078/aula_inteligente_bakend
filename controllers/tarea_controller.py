@@ -10,11 +10,15 @@ def listar_tareas():
             "id": t.id,
             "titulo": t.titulo,
             "descripcion": t.descripcion,
-            "fecha_entrega": t.fecha_entrega,
+            "fecha_entrega": t.fecha_entrega.isoformat() if t.fecha_entrega else None,
             "materia_id": t.materia_id,
-            "profesor_id": t.profesor_id
-        } for t in tareas
+            "materia_nombre": t.materia.nombre if t.materia else None,
+            "profesor_id": t.profesor_id,
+            "profesor_nombre": t.profesor.nombre_completo if t.profesor else None
+        }
+        for t in tareas
     ])
+
 
 def ver_tarea(id):
     t = Tarea.query.get_or_404(id)

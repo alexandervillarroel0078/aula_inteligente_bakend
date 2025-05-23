@@ -5,17 +5,27 @@ from traits.bitacora_trait import registrar_bitacora
 
 def listar_notas():
     notas = Nota.query.all()
-    return jsonify([{
-        "id": n.id,
-        "alumno_id": n.alumno_id,
-        "alumno_nombre": n.alumno.nombre_completo if n.alumno else None,
-        "materia_id": n.materia_id,
-        "materia_nombre": n.materia.nombre if n.materia else None,
-        "periodo_id": n.periodo_id,
-        "periodo_nombre": n.periodo.nombre if n.periodo else None,
-        "nota_final": n.nota_final,
-        "observaciones": n.observaciones
-    } for n in notas])
+    return jsonify([
+        {
+            "id": n.id,
+            "nota_final": n.nota_final,
+            "observaciones": n.observaciones,
+            "alumno": {
+                "id": n.alumno.id,
+                "nombre_completo": n.alumno.nombre_completo
+            } if n.alumno else None,
+            "materia": {
+                "id": n.materia.id,
+                "nombre": n.materia.nombre
+            } if n.materia else None,
+            "periodo": {
+                "id": n.periodo.id,
+                "nombre": n.periodo.nombre
+            } if n.periodo else None
+        }
+        for n in notas
+    ])
+
 
 def ver_nota(id):
     n = Nota.query.get_or_404(id)

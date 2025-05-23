@@ -9,13 +9,17 @@ def listar_predicciones():
         {
             "id": p.id,
             "alumno_id": p.alumno_id,
+            "alumno_nombre": p.alumno.nombre_completo if p.alumno else None,
             "periodo_id": p.periodo_id,
+            "periodo_nombre": p.periodo.nombre if p.periodo else None,
             "promedio_notas": p.promedio_notas,
             "porcentaje_asistencia": p.porcentaje_asistencia,
             "promedio_participaciones": p.promedio_participaciones,
             "resultado_predicho": p.resultado_predicho
-        } for p in predicciones
+        }
+        for p in predicciones
     ])
+
 
 def ver_prediccion(id):
     p = Prediccion.query.get_or_404(id)

@@ -26,7 +26,6 @@ def listar_notas():
         for n in notas
     ])
 
-
 def ver_nota(id):
     n = Nota.query.get_or_404(id)
     return jsonify({
@@ -72,3 +71,19 @@ def eliminar_nota(id):
     db.session.commit()
     registrar_bitacora("nota", f"eliminó nota ID {id}")
     return jsonify({"mensaje": "Nota eliminada correctamente"})
+
+def obtener_notas_por_alumno_controller(alumno_id):
+    notas = Nota.query.filter_by(alumno_id=alumno_id).all()
+    resultado = []
+    for n in notas:
+        resultado.append({
+            "id": n.id,
+            "alumno_id": n.alumno_id,
+            "materia_id": n.materia_id,
+            "materia_nombre": n.materia.nombre if n.materia else None,
+            "periodo_id": n.periodo_id,
+            "periodo_nombre": n.periodo.nombre if n.periodo else None,
+            "nota_final": n.nota_final,
+            "observaciones": n.observaciones
+        })
+    return jsonify(resultado)

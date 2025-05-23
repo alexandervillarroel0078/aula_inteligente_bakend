@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from controllers import nota_controller
+from controllers.nota_controller import obtener_notas_por_alumno_controller
 
 nota_bp = Blueprint('nota_bp', __name__)
 
@@ -22,3 +23,8 @@ def editar_nota(id):
 @nota_bp.route('/api/notas/<int:id>', methods=['DELETE'])
 def eliminar_nota(id):
     return nota_controller.eliminar_nota(id)
+
+
+@nota_bp.route('/api/notas/alumno/<int:alumno_id>', methods=['GET'])
+def obtener_notas_por_alumno(alumno_id):
+    return obtener_notas_por_alumno_controller(alumno_id)

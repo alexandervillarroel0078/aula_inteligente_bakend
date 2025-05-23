@@ -8,16 +8,16 @@ def listar_predicciones():
     return prediccion_controller.listar_predicciones()
 
 @prediccion_bp.route('/api/predicciones/<int:id>', methods=['GET'])
-def obtener_prediccion(id):
-    return prediccion_controller.obtener_prediccion(id)
+def ver_prediccion(id):
+    return prediccion_controller.ver_prediccion(id)
 
 @prediccion_bp.route('/api/predicciones', methods=['POST'])
 def crear_prediccion():
     return prediccion_controller.crear_prediccion(request)
 
 @prediccion_bp.route('/api/predicciones/<int:id>', methods=['PUT'])
-def actualizar_prediccion(id):
-    return prediccion_controller.actualizar_prediccion(id, request)
+def editar_prediccion(id):
+    return prediccion_controller.editar_prediccion(id, request)
 
 @prediccion_bp.route('/api/predicciones/<int:id>', methods=['DELETE'])
 def eliminar_prediccion(id):

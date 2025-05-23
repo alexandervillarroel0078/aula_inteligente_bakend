@@ -16,7 +16,8 @@ from .nota import Nota
 from .asistencia import Asistencia
 from .participacion import Participacion
 from .tarea import Tarea
-from .entrega_tarea import EntregaTarea
+from .tarea_entregada import TareaEntregada
+
 from .observacion import Observacion
 from .bitacora import Bitacora
 from .prediccion import Prediccion

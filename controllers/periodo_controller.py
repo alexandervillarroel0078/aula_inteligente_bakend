@@ -1,6 +1,7 @@
 from flask import jsonify
 from models import db
 from models.periodo import Periodo
+from traits.bitacora_trait import registrar_bitacora
 
 def listar_periodos():
     periodos = Periodo.query.all()
@@ -8,48 +9,51 @@ def listar_periodos():
         {
             "id": p.id,
             "nombre": p.nombre,
-            "fecha_inicio": p.fecha_inicio.isoformat() if p.fecha_inicio else None,
-            "fecha_fin": p.fecha_fin.isoformat() if p.fecha_fin else None,
+            "fecha_inicio": p.fecha_inicio,
+            "fecha_fin": p.fecha_fin,
             "estado": p.estado
         } for p in periodos
     ])
 
-def obtener_periodo(id):
-    periodo = Periodo.query.get_or_404(id)
+def ver_periodo(id):
+    p = Periodo.query.get_or_404(id)
     return jsonify({
-        "id": periodo.id,
-        "nombre": periodo.nombre,
-        "fecha_inicio": periodo.fecha_inicio.isoformat() if periodo.fecha_inicio else None,
-        "fecha_fin": periodo.fecha_fin.isoformat() if periodo.fecha_fin else None,
-        "estado": periodo.estado
+        "id": p.id,
+        "nombre": p.nombre,
+        "fecha_inicio": p.fecha_inicio,
+        "fecha_fin": p.fecha_fin,
+        "estado": p.estado
     })
 
 def crear_periodo(request):
     data = request.get_json()
     nuevo = Periodo(
-        nombre=data.get('nombre'),
-        fecha_inicio=data.get('fecha_inicio'),
-        fecha_fin=data.get('fecha_fin'),
-        estado=data.get('estado')
+        nombre = data['nombre'],
+        fecha_inicio = data['fecha_inicio'],
+        fecha_fin = data['fecha_fin'],
+        estado = data['estado']
     )
     db.session.add(nuevo)
     db.session.commit()
-    return jsonify({"mensaje": "Periodo creado con éxito"}), 201
+    registrar_bitacora("periodo", f"creó periodo ID {nuevo.id}")
+    return jsonify({"mensaje": "Periodo creado correctamente", "id": nuevo.id})
 
-def actualizar_periodo(id, request):
-    periodo = Periodo.query.get_or_404(id)
+def editar_periodo(id, request):
+    p = Periodo.query.get_or_404(id)
     data = request.get_json()
 
-    periodo.nombre = data.get('nombre', periodo.nombre)
-    periodo.fecha_inicio = data.get('fecha_inicio', periodo.fecha_inicio)
-    periodo.fecha_fin = data.get('fecha_fin', periodo.fecha_fin)
-    periodo.estado = data.get('estado', periodo.estado)
+    p.nombre = data['nombre']
+    p.fecha_inicio = data['fecha_inicio']
+    p.fecha_fin = data['fecha_fin']
+    p.estado = data['estado']
 
     db.session.commit()
-    return jsonify({"mensaje": "Periodo actualizado con éxito"})
+    registrar_bitacora("periodo", f"editó periodo ID {p.id}")
+    return jsonify({"mensaje": "Periodo actualizado correctamente"})
 
 def eliminar_periodo(id):
-    periodo = Periodo.query.get_or_404(id)
-    db.session.delete(periodo)
+    p = Periodo.query.get_or_404(id)
+    db.session.delete(p)
     db.session.commit()
-    return jsonify({"mensaje": "Periodo eliminado con éxito"})
+    registrar_bitacora("periodo", f"eliminó periodo ID {id}")
+    return jsonify({"mensaje": "Periodo eliminado correctamente"})

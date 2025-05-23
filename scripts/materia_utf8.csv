@@ -1,11 +1,6 @@
-nombre,descripcion,grado_id,estado
-Matemáticas,Curso de matemáticas,1,activo
-Lenguaje,Curso de lenguaje,2,activo
-Historia,Curso de historia,2,activo
-Geografía,Curso de geografía,2,activo
-Física,Curso de física,2,activo
-Química,Curso de química,2,activo
-Biología,Curso de biología,2,activo
-Educación Física,Curso de educación física,2,activo
-Arte,Curso de arte,1,activo
-Música,Curso de música,1,activo
+codigo,nombre,descripcion,grado_id,turno,aula,estado
+MAT-1A-MA,Matemáticas,Aritmética y álgebra básica,1,Mañana,Aula 1,activo
+LEN-1A-MA,Lenguaje,Comprensión lectora y redacción,1,Mañana,Aula 2,activo
+CNA-1A-MA,Ciencias Naturales,Introducción a la biología,1,Mañana,Laboratorio,activo
+HIS-1A-MA,Historia,Historia de Bolivia y del mundo,1,Mañana,Aula 3,activo
+EDF-1A-MA,Educación Física,Actividades deportivas y recreativas,1,Mañana,Cancha,activo

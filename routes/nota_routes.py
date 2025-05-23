@@ -8,16 +8,16 @@ def listar_notas():
     return nota_controller.listar_notas()
 
 @nota_bp.route('/api/notas/<int:id>', methods=['GET'])
-def obtener_nota(id):
-    return nota_controller.obtener_nota(id)
+def ver_nota(id):
+    return nota_controller.ver_nota(id)
 
 @nota_bp.route('/api/notas', methods=['POST'])
 def crear_nota():
     return nota_controller.crear_nota(request)
 
 @nota_bp.route('/api/notas/<int:id>', methods=['PUT'])
-def actualizar_nota(id):
-    return nota_controller.actualizar_nota(id, request)
+def editar_nota(id):
+    return nota_controller.editar_nota(id, request)
 
 @nota_bp.route('/api/notas/<int:id>', methods=['DELETE'])
 def eliminar_nota(id):

@@ -8,16 +8,16 @@ def listar_participaciones():
     return participacion_controller.listar_participaciones()
 
 @participacion_bp.route('/api/participaciones/<int:id>', methods=['GET'])
-def obtener_participacion(id):
-    return participacion_controller.obtener_participacion(id)
+def ver_participacion(id):
+    return participacion_controller.ver_participacion(id)
 
 @participacion_bp.route('/api/participaciones', methods=['POST'])
 def crear_participacion():
     return participacion_controller.crear_participacion(request)
 
 @participacion_bp.route('/api/participaciones/<int:id>', methods=['PUT'])
-def actualizar_participacion(id):
-    return participacion_controller.actualizar_participacion(id, request)
+def editar_participacion(id):
+    return participacion_controller.editar_participacion(id, request)
 
 @participacion_bp.route('/api/participaciones/<int:id>', methods=['DELETE'])
 def eliminar_participacion(id):

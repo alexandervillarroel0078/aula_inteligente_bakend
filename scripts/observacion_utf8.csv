@@ -1,11 +1,126 @@
-alumno_id,profesor_id,fecha,descripcion
-6,10,2025-04-23,Observación 1 de conducta o rendimiento.
-9,6,2025-04-23,Observación 2 de conducta o rendimiento.
-8,8,2025-04-04,Observación 3 de conducta o rendimiento.
-2,10,2025-03-19,Observación 4 de conducta o rendimiento.
-9,4,2025-04-23,Observación 5 de conducta o rendimiento.
-5,10,2025-04-27,Observación 6 de conducta o rendimiento.
-3,9,2025-03-29,Observación 7 de conducta o rendimiento.
-3,9,2025-03-29,Observación 8 de conducta o rendimiento.
-5,4,2025-03-26,Observación 9 de conducta o rendimiento.
-4,10,2025-04-13,Observación 10 de conducta o rendimiento.
+alumno_id,profesor_id,periodo_id,fecha,descripcion
+1,1,1,2024-06-26,Debe mejorar puntualidad.
+1,2,2,2024-04-12,Excelente desempeño en evaluaciones.
+1,2,1,2024-07-19,Actitud positiva y colaborativa.
+1,4,2,2024-03-06,Requiere refuerzo en matemáticas.
+1,2,3,2024-07-25,Demuestra interés en aprender.
+2,4,3,2024-11-03,Excelente desempeño en evaluaciones.
+2,5,2,2024-04-03,Participación destacada en clase.
+2,1,2,2024-07-18,Falta de entrega de tareas.
+2,1,2,2024-11-21,Falta de entrega de tareas.
+2,1,2,2024-11-25,Excelente desempeño en evaluaciones.
+3,4,3,2024-07-24,Trabajo en equipo sobresaliente.
+3,2,3,2024-05-25,Trabajo en equipo sobresaliente.
+3,1,3,2024-04-25,Falta de entrega de tareas.
+3,1,2,2024-11-25,Excelente desempeño en evaluaciones.
+3,4,2,2024-06-28,Necesita mejorar su atención.
+4,1,1,2024-03-21,Actitud positiva y colaborativa.
+4,3,3,2024-10-09,Comportamiento disruptivo ocasional.
+4,2,3,2024-07-01,Excelente desempeño en evaluaciones.
+4,4,3,2024-02-29,Trabajo en equipo sobresaliente.
+4,1,2,2024-11-10,Participación destacada en clase.
+5,2,3,2024-09-23,Actitud positiva y colaborativa.
+5,5,1,2024-07-20,Necesita mejorar su atención.
+5,5,3,2024-07-13,Debe mejorar puntualidad.
+5,2,2,2024-08-26,Trabajo en equipo sobresaliente.
+5,2,3,2024-09-07,Participación destacada en clase.
+6,2,1,2024-11-13,Excelente desempeño en evaluaciones.
+6,3,1,2024-04-12,Comportamiento disruptivo ocasional.
+6,1,2,2024-11-09,Necesita mejorar su atención.
+6,1,1,2024-11-01,Comportamiento disruptivo ocasional.
+6,1,3,2024-09-06,Trabajo en equipo sobresaliente.
+7,1,3,2024-05-28,Requiere refuerzo en matemáticas.
+7,1,3,2024-06-06,Debe mejorar puntualidad.
+7,1,1,2024-06-07,Necesita mejorar su atención.
+7,2,2,2024-06-11,Demuestra interés en aprender.
+7,3,1,2024-02-07,Participación destacada en clase.
+8,5,1,2024-05-25,Debe mejorar puntualidad.
+8,4,2,2024-08-02,Participación destacada en clase.
+8,2,1,2024-07-18,Actitud positiva y colaborativa.
+8,4,2,2024-07-06,Demuestra interés en aprender.
+8,1,3,2024-03-07,Debe mejorar puntualidad.
+9,1,1,2024-11-17,Trabajo en equipo sobresaliente.
+9,4,2,2024-05-08,Actitud positiva y colaborativa.
+9,1,1,2024-06-20,Debe mejorar puntualidad.
+9,3,2,2024-07-14,Necesita mejorar su atención.
+9,1,1,2024-07-27,Falta de entrega de tareas.
+10,5,1,2024-04-21,Excelente desempeño en evaluaciones.
+10,5,3,2024-03-09,Comportamiento disruptivo ocasional.
+10,3,2,2024-06-02,Comportamiento disruptivo ocasional.
+10,3,3,2024-06-23,Falta de entrega de tareas.
+10,5,3,2024-08-15,Falta de entrega de tareas.
+11,1,1,2024-09-29,Necesita mejorar su atención.
+11,5,2,2024-03-04,Requiere refuerzo en matemáticas.
+11,1,3,2024-10-28,Falta de entrega de tareas.
+11,3,1,2024-04-08,Comportamiento disruptivo ocasional.
+11,4,1,2024-03-28,Excelente desempeño en evaluaciones.
+12,5,3,2024-07-27,Falta de entrega de tareas.
+12,3,1,2024-11-15,Falta de entrega de tareas.
+12,5,1,2024-06-30,Falta de entrega de tareas.
+12,3,3,2024-09-10,Requiere refuerzo en matemáticas.
+12,3,1,2024-09-19,Demuestra interés en aprender.
+13,3,3,2024-05-29,Requiere refuerzo en matemáticas.
+13,4,3,2024-09-18,Necesita mejorar su atención.
+13,2,1,2024-03-12,Actitud positiva y colaborativa.
+13,5,3,2024-08-16,Necesita mejorar su atención.
+13,3,2,2024-09-08,Excelente desempeño en evaluaciones.
+14,1,1,2024-03-14,Participación destacada en clase.
+14,2,3,2024-06-10,Participación destacada en clase.
+14,3,3,2024-06-13,Necesita mejorar su atención.
+14,5,1,2024-11-10,Demuestra interés en aprender.
+14,5,2,2024-04-17,Comportamiento disruptivo ocasional.
+15,4,2,2024-09-11,Actitud positiva y colaborativa.
+15,4,1,2024-04-14,Debe mejorar puntualidad.
+15,2,1,2024-09-02,Trabajo en equipo sobresaliente.
+15,2,2,2024-10-24,Necesita mejorar su atención.
+15,1,1,2024-05-09,Falta de entrega de tareas.
+16,5,2,2024-10-10,Falta de entrega de tareas.
+16,2,2,2024-10-07,Excelente desempeño en evaluaciones.
+16,5,2,2024-04-20,Necesita mejorar su atención.
+16,2,2,2024-07-26,Actitud positiva y colaborativa.
+16,2,2,2024-06-17,Actitud positiva y colaborativa.
+17,3,1,2024-07-16,Falta de entrega de tareas.
+17,3,3,2024-09-08,Debe mejorar puntualidad.
+17,5,3,2024-05-06,Demuestra interés en aprender.
+17,4,1,2024-09-02,Falta de entrega de tareas.
+17,1,1,2024-02-08,Comportamiento disruptivo ocasional.
+18,3,1,2024-10-17,Trabajo en equipo sobresaliente.
+18,4,1,2024-02-15,Comportamiento disruptivo ocasional.
+18,4,3,2024-10-13,Falta de entrega de tareas.
+18,3,2,2024-06-21,Debe mejorar puntualidad.
+18,5,1,2024-05-24,Trabajo en equipo sobresaliente.
+19,5,2,2024-03-03,Necesita mejorar su atención.
+19,5,2,2024-08-25,Comportamiento disruptivo ocasional.
+19,4,1,2024-11-08,Comportamiento disruptivo ocasional.
+19,5,3,2024-09-13,Demuestra interés en aprender.
+19,2,2,2024-11-14,Requiere refuerzo en matemáticas.
+20,3,1,2024-08-22,Actitud positiva y colaborativa.
+20,3,2,2024-11-12,Participación destacada en clase.
+20,4,2,2024-11-14,Actitud positiva y colaborativa.
+20,1,2,2024-03-27,Excelente desempeño en evaluaciones.
+20,1,1,2024-09-08,Comportamiento disruptivo ocasional.
+21,1,2,2024-10-22,Demuestra interés en aprender.
+21,1,3,2024-09-17,Participación destacada en clase.
+21,3,2,2024-07-19,Excelente desempeño en evaluaciones.
+21,5,1,2024-04-01,Trabajo en equipo sobresaliente.
+21,1,1,2024-07-28,Comportamiento disruptivo ocasional.
+22,5,3,2024-04-27,Actitud positiva y colaborativa.
+22,1,1,2024-07-14,Participación destacada en clase.
+22,1,2,2024-11-05,Debe mejorar puntualidad.
+22,1,2,2024-07-01,Requiere refuerzo en matemáticas.
+22,4,3,2024-04-24,Requiere refuerzo en matemáticas.
+23,4,2,2024-07-25,Trabajo en equipo sobresaliente.
+23,2,2,2024-09-19,Falta de entrega de tareas.
+23,1,2,2024-05-18,Comportamiento disruptivo ocasional.
+23,5,3,2024-07-13,Comportamiento disruptivo ocasional.
+23,5,2,2024-03-24,Necesita mejorar su atención.
+24,3,1,2024-09-28,Excelente desempeño en evaluaciones.
+24,4,2,2024-10-23,Excelente desempeño en evaluaciones.
+24,2,2,2024-05-18,Demuestra interés en aprender.
+24,4,3,2024-07-15,Comportamiento disruptivo ocasional.
+24,4,1,2024-02-21,Necesita mejorar su atención.
+25,4,1,2024-09-23,Requiere refuerzo en matemáticas.
+25,3,2,2024-08-16,Actitud positiva y colaborativa.
+25,5,2,2024-06-05,Actitud positiva y colaborativa.
+25,3,1,2024-11-06,Trabajo en equipo sobresaliente.
+25,5,1,2024-03-01,Trabajo en equipo sobresaliente.

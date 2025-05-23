@@ -1,5 +1,6 @@
-nombre,nivel,turno,gestion,ubicacion,seccion,paralelo
-PRIM-A,Primaria,Mañana,2025,Central,Primero,A
-SECU-B,Secundaria,Tarde,2025,Central,Segundo,B
-PRIM-C,Primaria,Tarde,2025,Central,Tercero,C
-SECU-D,Secundaria,Mañana,2025,Central,Cuarto,D
+nombre,nivel,seccion,paralelo,turno,gestion,ubicacion
+1ro A,Primaria,Primero,A,Mañana,2024,Sede Central
+2do B,Primaria,Segundo,B,Tarde,2024,Sede Central
+3ro C,Secundaria,Tercero,C,Mañana,2024,Sucursal Sur
+4to A,Secundaria,Cuarto,A,Tarde,2024,Sucursal Sur
+5to B,Secundaria,Quinto,B,Mañana,2024,Sede Central

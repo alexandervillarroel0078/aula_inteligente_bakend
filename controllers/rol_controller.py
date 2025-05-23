@@ -1,6 +1,7 @@
 from flask import jsonify
 from models import db
 from models.rol import Rol
+from traits.bitacora_trait import registrar_bitacora
 
 def listar_roles():
     roles = Rol.query.all()
@@ -12,7 +13,7 @@ def listar_roles():
         } for r in roles
     ])
 
-def obtener_rol(id):
+def ver_rol(id):
     r = Rol.query.get_or_404(id)
     return jsonify({
         "id": r.id,
@@ -23,25 +24,26 @@ def obtener_rol(id):
 def crear_rol(request):
     data = request.get_json()
     nuevo = Rol(
-        nombre=data.get('nombre'),
-        descripcion=data.get('descripcion')
+        nombre = data['nombre'],
+        descripcion = data.get('descripcion')
     )
     db.session.add(nuevo)
     db.session.commit()
-    return jsonify({"mensaje": "Rol creado con éxito"}), 201
+    registrar_bitacora("rol", f"creó rol ID {nuevo.id}")
+    return jsonify({"mensaje": "Rol creado correctamente", "id": nuevo.id})
 
-def actualizar_rol(id, request):
+def editar_rol(id, request):
     r = Rol.query.get_or_404(id)
     data = request.get_json()
-
-    r.nombre = data.get('nombre', r.nombre)
-    r.descripcion = data.get('descripcion', r.descripcion)
-
+    r.nombre = data['nombre']
+    r.descripcion = data.get('descripcion')
     db.session.commit()
-    return jsonify({"mensaje": "Rol actualizado con éxito"})
+    registrar_bitacora("rol", f"editó rol ID {r.id}")
+    return jsonify({"mensaje": "Rol actualizado correctamente"})
 
 def eliminar_rol(id):
     r = Rol.query.get_or_404(id)
     db.session.delete(r)
     db.session.commit()
-    return jsonify({"mensaje": "Rol eliminado con éxito"})
+    registrar_bitacora("rol", f"eliminó rol ID {id}")
+    return jsonify({"mensaje": "Rol eliminado correctamente"})

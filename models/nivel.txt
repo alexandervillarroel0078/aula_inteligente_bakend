@@ -1,0 +1,33 @@
+🔵 Nivel 1 – Sin llaves foráneas (pueden crearse primero)
+ 
+- configuracion
+- rol
+- periodo
+- profesor         (⇨ ninguno, pero es padre de otros)
+- grado            (⇨ libre, sin FK directa)
+ 
+
+🟢 Nivel 2 – Con 1 llave foránea
+
+- materia          (⇨ grado_id)
+- alumno           (⇨ grado_id)
+
+🟡 Nivel 3 – Con 2 llaves foráneas
+
+- tarea            (⇨ libre) 
+- tarea_entrega    (⇨ libre) 
+
+- usuario          (⇨ rol_id, profesor_id / alumno_id)
+- nota             (⇨ alumno_id, materia_id, periodo_id)
+
+- asistencia       (⇨ alumno_id, periodo_id)
+- participacion    (⇨ alumno_id, periodo_id)
+- observacion      (⇨ alumno_id, periodo_id)
+🟠 Nivel 4 – Con 3 o más llaves foráneas
+ 
+- entrega_tarea    (⇨ tarea_id, alumno_id, periodo_id)
+- materia_profesor (⇨ materia_id, profesor_id)
+- bitacora         (⇨ usuario_id, acción referencial)
+🔴 Nivel 5 – Predicción basada en todo lo anterior
+ 
+- prediccion       (⇨ alumno_id, nota_id, asistencia_id, participacion_id, periodo_id)

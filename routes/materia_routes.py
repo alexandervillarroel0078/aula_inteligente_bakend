@@ -8,16 +8,16 @@ def listar_materias():
     return materia_controller.listar_materias()
 
 @materia_bp.route('/api/materias/<int:id>', methods=['GET'])
-def obtener_materia(id):
-    return materia_controller.obtener_materia(id)
+def ver_materia(id):
+    return materia_controller.ver_materia(id)
 
 @materia_bp.route('/api/materias', methods=['POST'])
 def crear_materia():
     return materia_controller.crear_materia(request)
 
 @materia_bp.route('/api/materias/<int:id>', methods=['PUT'])
-def actualizar_materia(id):
-    return materia_controller.actualizar_materia(id, request)
+def editar_materia(id):
+    return materia_controller.editar_materia(id, request)
 
 @materia_bp.route('/api/materias/<int:id>', methods=['DELETE'])
 def eliminar_materia(id):

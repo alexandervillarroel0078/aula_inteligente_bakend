@@ -1,6 +1,7 @@
 from flask import jsonify
 from models import db
 from models.prediccion import Prediccion
+from traits.bitacora_trait import registrar_bitacora
 
 def listar_predicciones():
     predicciones = Prediccion.query.all()
@@ -8,9 +9,7 @@ def listar_predicciones():
         {
             "id": p.id,
             "alumno_id": p.alumno_id,
-            "alumno_nombre": p.alumno.nombre_completo if p.alumno else None,
             "periodo_id": p.periodo_id,
-            "periodo_nombre": p.periodo.nombre if p.periodo else None,
             "promedio_notas": p.promedio_notas,
             "porcentaje_asistencia": p.porcentaje_asistencia,
             "promedio_participaciones": p.promedio_participaciones,
@@ -18,14 +17,12 @@ def listar_predicciones():
         } for p in predicciones
     ])
 
-def obtener_prediccion(id):
+def ver_prediccion(id):
     p = Prediccion.query.get_or_404(id)
     return jsonify({
         "id": p.id,
         "alumno_id": p.alumno_id,
-        "alumno_nombre": p.alumno.nombre_completo if p.alumno else None,
         "periodo_id": p.periodo_id,
-        "periodo_nombre": p.periodo.nombre if p.periodo else None,
         "promedio_notas": p.promedio_notas,
         "porcentaje_asistencia": p.porcentaje_asistencia,
         "promedio_participaciones": p.promedio_participaciones,
@@ -35,33 +32,36 @@ def obtener_prediccion(id):
 def crear_prediccion(request):
     data = request.get_json()
     nueva = Prediccion(
-        alumno_id=data.get('alumno_id'),
-        periodo_id=data.get('periodo_id'),
-        promedio_notas=data.get('promedio_notas'),
-        porcentaje_asistencia=data.get('porcentaje_asistencia'),
-        promedio_participaciones=data.get('promedio_participaciones'),
-        resultado_predicho=data.get('resultado_predicho')
+        alumno_id = data['alumno_id'],
+        periodo_id = data['periodo_id'],
+        promedio_notas = data['promedio_notas'],
+        porcentaje_asistencia = data['porcentaje_asistencia'],
+        promedio_participaciones = data['promedio_participaciones'],
+        resultado_predicho = data['resultado_predicho']
     )
     db.session.add(nueva)
     db.session.commit()
-    return jsonify({"mensaje": "Predicción registrada con éxito"}), 201
+    registrar_bitacora("prediccion", f"creó predicción ID {nueva.id}")
+    return jsonify({"mensaje": "Predicción registrada correctamente", "id": nueva.id})
 
-def actualizar_prediccion(id, request):
+def editar_prediccion(id, request):
     p = Prediccion.query.get_or_404(id)
     data = request.get_json()
 
-    p.alumno_id = data.get('alumno_id', p.alumno_id)
-    p.periodo_id = data.get('periodo_id', p.periodo_id)
-    p.promedio_notas = data.get('promedio_notas', p.promedio_notas)
-    p.porcentaje_asistencia = data.get('porcentaje_asistencia', p.porcentaje_asistencia)
-    p.promedio_participaciones = data.get('promedio_participaciones', p.promedio_participaciones)
-    p.resultado_predicho = data.get('resultado_predicho', p.resultado_predicho)
+    p.alumno_id = data['alumno_id']
+    p.periodo_id = data['periodo_id']
+    p.promedio_notas = data['promedio_notas']
+    p.porcentaje_asistencia = data['porcentaje_asistencia']
+    p.promedio_participaciones = data['promedio_participaciones']
+    p.resultado_predicho = data['resultado_predicho']
 
     db.session.commit()
-    return jsonify({"mensaje": "Predicción actualizada con éxito"})
+    registrar_bitacora("prediccion", f"editó predicción ID {p.id}")
+    return jsonify({"mensaje": "Predicción actualizada correctamente"})
 
 def eliminar_prediccion(id):
     p = Prediccion.query.get_or_404(id)
     db.session.delete(p)
     db.session.commit()
-    return jsonify({"mensaje": "Predicción eliminada con éxito"})
+    registrar_bitacora("prediccion", f"eliminó predicción ID {id}")
+    return jsonify({"mensaje": "Predicción eliminada correctamente"})

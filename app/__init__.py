@@ -35,12 +35,14 @@ def create_app():
     from routes.asistencia_routes import asistencia_bp
     from routes.participacion_routes import participacion_bp
     from routes.tarea_routes import tarea_bp
-    from routes.entrega_tarea_routes import entrega_tarea_bp
+ 
     from routes.prediccion_routes import prediccion_bp
     from routes.bitacora_routes import bitacora_bp
     from routes.rol_routes import rol_bp
     from routes.usuario_routes import usuario_bp
-
+    from routes.observacion_routes import observacion_bp
+    from routes.tarea_entregada_routes import tarea_entregada_bp
+ 
     app.register_blueprint(auth_bp)
     app.register_blueprint(perfil_bp)
     app.register_blueprint(grado_bp)
@@ -53,12 +55,14 @@ def create_app():
     app.register_blueprint(asistencia_bp)
     app.register_blueprint(participacion_bp)
     app.register_blueprint(tarea_bp)
-    app.register_blueprint(entrega_tarea_bp)
+    
     app.register_blueprint(prediccion_bp)
     app.register_blueprint(bitacora_bp)
     app.register_blueprint(rol_bp)
     app.register_blueprint(usuario_bp)
-    
+    app.register_blueprint(tarea_entregada_bp)
+  
+
     @app.route('/')
     def inicio():
         return '🎓 Aula Inteligente backend funcionando'

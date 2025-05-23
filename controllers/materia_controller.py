@@ -1,57 +1,68 @@
-from flask import jsonify
+from flask import jsonify, request
 from models import db
 from models.materia import Materia
+from traits.bitacora_trait import registrar_bitacora
 
 def listar_materias():
     materias = Materia.query.all()
-    return jsonify([
-        {
-            "id": m.id,
-            "nombre": m.nombre,
-            "descripcion": m.descripcion,
-            "grado_id": m.grado_id,
-            "grado_nombre": m.grado.nombre if m.grado else None,  # ← agregado
-            "estado": m.estado
-        } for m in materias
-    ])
+    return jsonify([{
+        "id": m.id,
+        "codigo": m.codigo,
+        "nombre": m.nombre,
+        "descripcion": m.descripcion,
+        "turno": m.turno,
+        "aula": m.aula,
+        "estado": m.estado,
+        "grado_id": m.grado_id
+    } for m in materias])
 
-def obtener_materia(id):
-    materia = Materia.query.get_or_404(id)
+def ver_materia(id):
+    m = Materia.query.get_or_404(id)
     return jsonify({
-        "id": materia.id,
-        "nombre": materia.nombre,
-        "descripcion": materia.descripcion,
-        "grado_id": materia.grado_id,
-        "grado_nombre": materia.grado.nombre if materia.grado else None,  # ← agregado
-        "estado": materia.estado
+        "id": m.id,
+        "codigo": m.codigo,
+        "nombre": m.nombre,
+        "descripcion": m.descripcion,
+        "turno": m.turno,
+        "aula": m.aula,
+        "estado": m.estado,
+        "grado_id": m.grado_id
     })
 
 def crear_materia(request):
     data = request.get_json()
     nueva = Materia(
-        nombre=data.get('nombre'),
+        codigo=data['codigo'],
+        nombre=data['nombre'],
         descripcion=data.get('descripcion'),
-        grado_id=data.get('grado_id'),
-        estado=data.get('estado')
+        turno=data['turno'],
+        aula=data['aula'],
+        estado=data['estado'],
+        grado_id=data['grado_id']
     )
     db.session.add(nueva)
     db.session.commit()
-    return jsonify({"mensaje": "Materia creada con éxito"}), 201
+    registrar_bitacora("materia", f"creó materia ID {nueva.id}")
+    return jsonify({"mensaje": "Materia registrada correctamente", "id": nueva.id})
 
-def actualizar_materia(id, request):
-    materia = Materia.query.get_or_404(id)
+def editar_materia(id, request):
+    m = Materia.query.get_or_404(id)
     data = request.get_json()
-
-    materia.nombre = data.get('nombre', materia.nombre)
-    materia.descripcion = data.get('descripcion', materia.descripcion)
-    materia.grado_id = data.get('grado_id', materia.grado_id)
-    materia.estado = data.get('estado', materia.estado)
+    m.codigo = data['codigo']
+    m.nombre = data['nombre']
+    m.descripcion = data.get('descripcion')
+    m.turno = data['turno']
+    m.aula = data['aula']
+    m.estado = data['estado']
+    m.grado_id = data['grado_id']
 
     db.session.commit()
-    return jsonify({"mensaje": "Materia actualizada con éxito"})
+    registrar_bitacora("materia", f"editó materia ID {id}")
+    return jsonify({"mensaje": "Materia actualizada correctamente"})
 
 def eliminar_materia(id):
-    materia = Materia.query.get_or_404(id)
-    db.session.delete(materia)
+    m = Materia.query.get_or_404(id)
+    db.session.delete(m)
     db.session.commit()
-    return jsonify({"mensaje": "Materia eliminada con éxito"})
+    registrar_bitacora("materia", f"eliminó materia ID {id}")
+    return jsonify({"mensaje": "Materia eliminada correctamente"})

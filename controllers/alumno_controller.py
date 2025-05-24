@@ -1,12 +1,11 @@
-# app/controllers/alumno_controller.py
+
 from flask import request, jsonify
-
-from traits.bitacora_trait import registrar_bitacora
 from datetime import datetime
-
+from traits.bitacora_trait import registrar_bitacora
+from models import db
 from models import Alumno, Nota, Asistencia, Participacion, Prediccion, Materia, MateriaProfesor
 
-# Listar todos los alumnos
+# CRUD básico
 def listar_alumnos():
     alumnos = Alumno.query.all()
     resultado = [
@@ -31,7 +30,6 @@ def listar_alumnos():
     ]
     return jsonify(resultado)
 
-# Ver un solo alumno
 def ver_alumno(id):
     alumno = Alumno.query.get_or_404(id)
     return jsonify({
@@ -52,8 +50,6 @@ def ver_alumno(id):
         }
     })
 
-
-# Crear alumno
 def crear_alumno():
     data = request.json
     nuevo = Alumno(
@@ -73,11 +69,9 @@ def crear_alumno():
     registrar_bitacora('alumno', 'CREAR')
     return jsonify({'message': 'Alumno creado exitosamente'})
 
-# Editar alumno
 def editar_alumno(id):
     alumno = Alumno.query.get_or_404(id)
     data = request.json
-
     alumno.codigo = data['codigo']
     alumno.nombre_completo = data['nombre_completo']
     alumno.fecha_nacimiento = data['fecha_nacimiento']
@@ -87,12 +81,10 @@ def editar_alumno(id):
     alumno.direccion = data['direccion']
     alumno.estado = data['estado']
     alumno.grado_id = data['grado_id']
-
     db.session.commit()
     registrar_bitacora('alumno', 'EDITAR')
     return jsonify({'message': 'Alumno actualizado'})
 
-# Eliminar alumno
 def eliminar_alumno(id):
     alumno = Alumno.query.get_or_404(id)
     db.session.delete(alumno)
@@ -100,12 +92,8 @@ def eliminar_alumno(id):
     registrar_bitacora('alumno', 'ELIMINAR')
     return jsonify({'message': 'Alumno eliminado'})
 
-
- 
- 
-# 1. Perfil
-
-def obtener_perfil_estudiante(alumno_id):
+# Funcionalidades para el estudiante
+def obtener_perfil_alumno(alumno_id):
     alumno = Alumno.query.get_or_404(alumno_id)
     return jsonify({
         "id": alumno.id,
@@ -122,13 +110,10 @@ def obtener_perfil_estudiante(alumno_id):
         "grado_nombre": alumno.grado.nombre if alumno.grado else None
     })
 
-# 2. Notas
-
-def obtener_notas_estudiante(alumno_id):
+def obtener_notas_alumno(alumno_id):
     alumno = Alumno.query.get_or_404(alumno_id)
-    notas = []
-    for n in alumno.notas:
-        notas.append({
+    return jsonify([
+        {
             "id": n.id,
             "materia_id": n.materia_id,
             "materia_nombre": n.materia.nombre if n.materia else None,
@@ -136,16 +121,14 @@ def obtener_notas_estudiante(alumno_id):
             "periodo_nombre": n.periodo.nombre if n.periodo else None,
             "nota_final": n.nota_final,
             "observaciones": n.observaciones
-        })
-    return jsonify(notas)
+        }
+        for n in alumno.notas
+    ])
 
-# 3. Asistencias
-
-def obtener_asistencias_estudiante(alumno_id):
+def obtener_asistencias_alumno(alumno_id):
     alumno = Alumno.query.get_or_404(alumno_id)
-    asistencias = []
-    for a in alumno.asistencias:
-        asistencias.append({
+    return jsonify([
+        {
             "id": a.id,
             "materia_id": a.materia_id,
             "materia_nombre": a.materia.nombre if a.materia else None,
@@ -153,16 +136,14 @@ def obtener_asistencias_estudiante(alumno_id):
             "periodo_nombre": a.periodo.nombre if a.periodo else None,
             "fecha": a.fecha,
             "presente": a.presente
-        })
-    return jsonify(asistencias)
+        }
+        for a in alumno.asistencias
+    ])
 
-# 4. Participaciones
-
-def obtener_participaciones_estudiante(alumno_id):
+def obtener_participaciones_alumno(alumno_id):
     alumno = Alumno.query.get_or_404(alumno_id)
-    participaciones = []
-    for p in alumno.participaciones:
-        participaciones.append({
+    return jsonify([
+        {
             "id": p.id,
             "materia_id": p.materia_id,
             "materia_nombre": p.materia.nombre if p.materia else None,
@@ -170,52 +151,80 @@ def obtener_participaciones_estudiante(alumno_id):
             "periodo_nombre": p.periodo.nombre if p.periodo else None,
             "fecha": p.fecha,
             "puntaje": p.puntaje
-        })
-    return jsonify(participaciones)
+        }
+        for p in alumno.participaciones
+    ])
 
-# 5. Predicciones
-
-def obtener_predicciones_estudiante(alumno_id):
+def obtener_predicciones_alumno(alumno_id):
     alumno = Alumno.query.get_or_404(alumno_id)
-    predicciones = []
-    for p in alumno.predicciones:
-        predicciones.append({
+    return jsonify([
+        {
             "id": p.id,
             "periodo_id": p.periodo_id,
             "periodo_nombre": p.periodo.nombre if p.periodo else None,
+            "anio": p.periodo.fecha_inicio.year if p.periodo and p.periodo.fecha_inicio else None,
             "promedio_notas": p.promedio_notas,
             "porcentaje_asistencia": p.porcentaje_asistencia,
             "promedio_participaciones": p.promedio_participaciones,
             "resultado_predicho": p.resultado_predicho
-        })
-    return jsonify(predicciones)
+        }
+        for p in alumno.predicciones
+    ])
 
-# 6. Historial (resumen de todo por materia)
-
-def obtener_historial_estudiante(alumno_id):
+def obtener_historial_alumno(alumno_id):
     alumno = Alumno.query.get_or_404(alumno_id)
-    historial = []
-    for n in alumno.notas:
-        historial.append({
+    return jsonify([
+        {
             "materia_id": n.materia_id,
             "materia_nombre": n.materia.nombre if n.materia else None,
             "periodo_id": n.periodo_id,
             "periodo_nombre": n.periodo.nombre if n.periodo else None,
             "nota_final": n.nota_final
-        })
-    return jsonify(historial)
+        }
+        for n in alumno.notas
+    ])
 
-# 7. Materias (las que cursa el alumno por su grado)
-
-def obtener_materias_estudiante(alumno_id):
+def obtener_materias_alumno(alumno_id):
     alumno = Alumno.query.get_or_404(alumno_id)
-    materias = []
-    for m in alumno.grado.materias:
-        materias.append({
+    return jsonify([
+        {
             "id": m.id,
             "nombre": m.nombre,
             "turno": m.turno,
             "aula": m.aula,
             "estado": m.estado
+        }
+        for m in alumno.grado.materias
+    ])
+
+
+
+
+# NO BORRAR
+# ✅ Obtener notas por alumno y materia
+def obtener_notas_por_materia(alumno_id, materia_id):
+    notas = Nota.query.filter_by(alumno_id=alumno_id, materia_id=materia_id).all()
+    resultado = []
+    for n in notas:
+        resultado.append({
+            'id': n.id,
+            'nota_final': n.nota_final,
+            'observaciones': n.observaciones,
+            'periodo_id': n.periodo_id,
+            'periodo_nombre': n.periodo.nombre if n.periodo else None
         })
-    return jsonify(materias)
+    return jsonify(resultado)
+
+# ✅ Obtener asistencias por alumno y materia
+def obtener_asistencias_por_materia(alumno_id, materia_id):
+    asistencias = Asistencia.query.filter_by(alumno_id=alumno_id, materia_id=materia_id).all()
+    resultado = []
+    for a in asistencias:
+        resultado.append({
+            'id': a.id,
+            'fecha': a.fecha,
+            'presente': a.presente,
+            'periodo_id': a.periodo_id,
+            'periodo_nombre': a.periodo.nombre if a.periodo else None
+        })
+    return jsonify(resultado)

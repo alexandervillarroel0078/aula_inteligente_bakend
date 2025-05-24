@@ -1,30 +1,4 @@
 codigo,nombre_completo,fecha_nacimiento,genero,fecha_registro,estado,email,telefono,direccion,grado_id
-ALU-001,Estudiante 1,2010-01-10,F,2024-01-10 08:00:00,activo,est1@colegio.com,70000001,"Calle 1",1
-ALU-002,Estudiante 2,2010-01-11,M,2024-01-10 08:00:00,activo,est2@colegio.com,70000002,"Calle 2",1
-ALU-003,Estudiante 3,2010-01-12,F,2024-01-10 08:00:00,activo,est3@colegio.com,70000003,"Calle 3",1
-ALU-004,Estudiante 4,2010-01-13,M,2024-01-10 08:00:00,activo,est4@colegio.com,70000004,"Calle 4",1
-ALU-005,Estudiante 5,2010-01-14,F,2024-01-10 08:00:00,activo,est5@colegio.com,70000005,"Calle 5",1
-
-ALU-006,Estudiante 6,2010-01-15,M,2024-01-10 08:00:00,activo,est6@colegio.com,70000006,"Calle 6",2
-ALU-007,Estudiante 7,2010-01-16,F,2024-01-10 08:00:00,activo,est7@colegio.com,70000007,"Calle 7",2
-ALU-008,Estudiante 8,2010-01-17,M,2024-01-10 08:00:00,activo,est8@colegio.com,70000008,"Calle 8",2
-ALU-009,Estudiante 9,2010-01-18,F,2024-01-10 08:00:00,activo,est9@colegio.com,70000009,"Calle 9",2
-ALU-010,Estudiante 10,2010-01-19,M,2024-01-10 08:00:00,activo,est10@colegio.com,70000010,"Calle 10",2
-
-ALU-011,Estudiante 11,2010-01-20,F,2024-01-10 08:00:00,activo,est11@colegio.com,70000011,"Calle 11",3
-ALU-012,Estudiante 12,2010-01-21,M,2024-01-10 08:00:00,activo,est12@colegio.com,70000012,"Calle 12",3
-ALU-013,Estudiante 13,2010-01-22,F,2024-01-10 08:00:00,activo,est13@colegio.com,70000013,"Calle 13",3
-ALU-014,Estudiante 14,2010-01-23,M,2024-01-10 08:00:00,activo,est14@colegio.com,70000014,"Calle 14",3
-ALU-015,Estudiante 15,2010-01-24,F,2024-01-10 08:00:00,activo,est15@colegio.com,70000015,"Calle 15",3
-
-ALU-016,Estudiante 16,2010-01-25,M,2024-01-10 08:00:00,activo,est16@colegio.com,70000016,"Calle 16",4
-ALU-017,Estudiante 17,2010-01-26,F,2024-01-10 08:00:00,activo,est17@colegio.com,70000017,"Calle 17",4
-ALU-018,Estudiante 18,2010-01-27,M,2024-01-10 08:00:00,activo,est18@colegio.com,70000018,"Calle 18",4
-ALU-019,Estudiante 19,2010-01-28,F,2024-01-10 08:00:00,activo,est19@colegio.com,70000019,"Calle 19",4
-ALU-020,Estudiante 20,2010-01-29,M,2024-01-10 08:00:00,activo,est20@colegio.com,70000020,"Calle 20",4
-
-ALU-021,Estudiante 21,2010-01-30,F,2024-01-10 08:00:00,activo,est21@colegio.com,70000021,"Calle 21",5
-ALU-022,Estudiante 22,2010-01-31,M,2024-01-10 08:00:00,activo,est22@colegio.com,70000022,"Calle 22",5
-ALU-023,Estudiante 23,2010-02-01,F,2024-01-10 08:00:00,activo,est23@colegio.com,70000023,"Calle 23",5
-ALU-024,Estudiante 24,2010-02-02,M,2024-01-10 08:00:00,activo,est24@colegio.com,70000024,"Calle 24",5
-ALU-025,Estudiante 25,2010-02-03,F,2024-01-10 08:00:00,activo,est25@colegio.com,70000025,"Calle 25",5
+ALU-001,Juan Pérez,2010-03-15,M,2024-01-10 08:00:00,activo,juan.perez@colegio.com,76543210,"Av. Bolívar #123",1
+ALU-002,María López,2010-05-22,F,2024-01-10 08:00:00,activo,maria.lopez@colegio.com,76432109,"Calle Sucre #456",1
+ALU-003,Carlos Fernández,2010-08-08,M,2024-01-10 08:00:00,activo,carlos.fernandez@colegio.com,76321098,"Zona Central, Casa 12",1

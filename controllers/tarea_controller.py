@@ -14,11 +14,12 @@ def listar_tareas():
             "materia_id": t.materia_id,
             "materia_nombre": t.materia.nombre if t.materia else None,
             "profesor_id": t.profesor_id,
-            "profesor_nombre": t.profesor.nombre_completo if t.profesor else None
+            "profesor_nombre": t.profesor.nombre_completo if t.profesor else None,
+            "periodo_id": t.periodo_id,
+            "periodo_nombre": t.periodo.nombre if t.periodo else None
         }
         for t in tareas
     ])
-
 
 def ver_tarea(id):
     t = Tarea.query.get_or_404(id)
@@ -28,7 +29,8 @@ def ver_tarea(id):
         "descripcion": t.descripcion,
         "fecha_entrega": t.fecha_entrega,
         "materia_id": t.materia_id,
-        "profesor_id": t.profesor_id
+        "profesor_id": t.profesor_id,
+        "periodo_id": t.periodo_id
     })
 
 def crear_tarea(request):
@@ -38,7 +40,8 @@ def crear_tarea(request):
         descripcion = data['descripcion'],
         fecha_entrega = data['fecha_entrega'],
         materia_id = data['materia_id'],
-        profesor_id = data['profesor_id']
+        profesor_id = data['profesor_id'],
+        periodo_id = data['periodo_id']
     )
     db.session.add(nueva)
     db.session.commit()
@@ -54,6 +57,7 @@ def editar_tarea(id, request):
     t.fecha_entrega = data['fecha_entrega']
     t.materia_id = data['materia_id']
     t.profesor_id = data['profesor_id']
+    t.periodo_id = data['periodo_id']
 
     db.session.commit()
     registrar_bitacora("tarea", f"editó tarea ID {t.id}")

@@ -1,68 +1,65 @@
 from flask import Blueprint, request
 from controllers import alumno_controller
-from controllers.alumno_controller import (
-    obtener_perfil_estudiante,
-    obtener_notas_estudiante,
-    obtener_asistencias_estudiante,
-    obtener_participaciones_estudiante,
-    obtener_predicciones_estudiante,
-    obtener_historial_estudiante,
-    obtener_materias_estudiante
-)
 
-alumno_bp = Blueprint('alumno_bp', __name__)
+# Usamos url_prefix para evitar repetir /api/alumnos
+alumno_bp = Blueprint('alumno_bp', __name__, url_prefix='/api/alumnos')
 
-@alumno_bp.route('/api/alumnos', methods=['GET'])
+# CRUD
+@alumno_bp.route('/', methods=['GET'])
 def listar_alumnos():
     return alumno_controller.listar_alumnos()
 
-@alumno_bp.route('/api/alumnos/<int:id>', methods=['GET'])
+@alumno_bp.route('/<int:id>', methods=['GET'])
 def ver_alumno(id):
     return alumno_controller.ver_alumno(id)
 
-@alumno_bp.route('/api/alumnos', methods=['POST'])
+@alumno_bp.route('/', methods=['POST'])
 def crear_alumno():
-    return alumno_controller.crear_alumno(request)
+    return alumno_controller.crear_alumno()
 
-@alumno_bp.route('/api/alumnos/<int:id>', methods=['PUT'])
+@alumno_bp.route('/<int:id>', methods=['PUT'])
 def editar_alumno(id):
-    return alumno_controller.editar_alumno(id, request)
+    return alumno_controller.editar_alumno(id)
 
-@alumno_bp.route('/api/alumnos/<int:id>', methods=['DELETE'])
+@alumno_bp.route('/<int:id>', methods=['DELETE'])
 def eliminar_alumno(id):
     return alumno_controller.eliminar_alumno(id)
 
-# Ruta: Perfil
-@alumno_bp.route('/api/alumnos/<int:alumno_id>/perfil', methods=['GET'])
-def perfil_estudiante(alumno_id):
-    return obtener_perfil_estudiante(alumno_id)
+# Funcionalidades del alumno
+@alumno_bp.route('/<int:alumno_id>/perfil', methods=['GET'])
+def obtener_perfil_alumno(alumno_id):
+    return alumno_controller.obtener_perfil_alumno(alumno_id)
 
-# Ruta: Notas
-@alumno_bp.route('/api/alumnos/<int:alumno_id>/notas', methods=['GET'])
-def notas_estudiante(alumno_id):
-    return obtener_notas_estudiante(alumno_id)
+@alumno_bp.route('/<int:alumno_id>/notas', methods=['GET'])
+def obtener_notas_alumno(alumno_id):
+    return alumno_controller.obtener_notas_alumno(alumno_id)
 
-# Ruta: Asistencias
-@alumno_bp.route('/api/alumnos/<int:alumno_id>/asistencias', methods=['GET'])
-def asistencias_estudiante(alumno_id):
-    return obtener_asistencias_estudiante(alumno_id)
+@alumno_bp.route('/<int:alumno_id>/asistencias', methods=['GET'])
+def obtener_asistencias_alumno(alumno_id):
+    return alumno_controller.obtener_asistencias_alumno(alumno_id)
 
-# Ruta: Participaciones
-@alumno_bp.route('/api/alumnos/<int:alumno_id>/participaciones', methods=['GET'])
-def participaciones_estudiante(alumno_id):
-    return obtener_participaciones_estudiante(alumno_id)
+@alumno_bp.route('/<int:alumno_id>/participaciones', methods=['GET'])
+def obtener_participaciones_alumno(alumno_id):
+    return alumno_controller.obtener_participaciones_alumno(alumno_id)
 
-# Ruta: Predicciones
-@alumno_bp.route('/api/alumnos/<int:alumno_id>/predicciones', methods=['GET'])
-def predicciones_estudiante(alumno_id):
-    return obtener_predicciones_estudiante(alumno_id)
+@alumno_bp.route('/<int:alumno_id>/predicciones', methods=['GET'])
+def obtener_predicciones_alumno(alumno_id):
+    return alumno_controller.obtener_predicciones_alumno(alumno_id)
 
-# Ruta: Historial
-@alumno_bp.route('/api/alumnos/<int:alumno_id>/historial', methods=['GET'])
-def historial_estudiante(alumno_id):
-    return obtener_historial_estudiante(alumno_id)
+@alumno_bp.route('/<int:alumno_id>/historial', methods=['GET'])
+def obtener_historial_alumno(alumno_id):
+    return alumno_controller.obtener_historial_alumno(alumno_id)
 
-# Ruta: Materias
-@alumno_bp.route('/api/alumnos/<int:alumno_id>/materias', methods=['GET'])
-def materias_estudiante(alumno_id):
-    return obtener_materias_estudiante(alumno_id)
+@alumno_bp.route('/<int:alumno_id>/materias', methods=['GET'])
+def obtener_materias_alumno(alumno_id):
+    return alumno_controller.obtener_materias_alumno(alumno_id)
+
+#http://127.0.0.1:5000/api/alumnos/1/materias/3/notas
+@alumno_bp.route('/<int:alumno_id>/materias/<int:materia_id>/notas', methods=['GET'])
+def obtener_notas_por_materia(alumno_id, materia_id):
+    return alumno_controller.obtener_notas_por_materia(alumno_id, materia_id)
+
+#http://127.0.0.1:5000/api/alumnos/1/materias/3/asistencias
+@alumno_bp.route('/<int:alumno_id>/materias/<int:materia_id>/asistencias', methods=['GET'])
+def obtener_asistencias_por_materia(alumno_id, materia_id):
+    return alumno_controller.obtener_asistencias_por_materia(alumno_id, materia_id)

@@ -1,6 +1,11 @@
-titulo,descripcion,fecha_entrega,materia_id,profesor_id
-Suma y Resta,"Resolver operaciones de suma y resta con dos cifras",2024-06-01,1,1
-Lectura de cuento,"Leer el cuento 'El Principito' y responder preguntas",2024-06-03,2,2
-Partes de la planta,"Investigar las partes de una planta y hacer un dibujo",2024-06-04,3,3
-Línea del tiempo,"Crear una línea del tiempo de la independencia de Bolivia",2024-06-05,4,4
-Ejercicios físicos,"Hacer 20 minutos de ejercicios en casa y grabarlo",2024-06-06,5,5
+id,titulo,descripcion,fecha_entrega,materia_id,profesor_id,periodo_id
+1,Tarea 1 de Matemáticas,Descripción de la tarea 1 de Matemáticas,2024-03-10,1,1,1
+2,Tarea 2 de Ciencias Naturales,Descripción de la tarea 2 de Ciencias Naturales,2024-05-07,3,3,2
+3,Tarea 3 de Lenguaje,Descripción de la tarea 3 de Lenguaje,2024-08-14,2,2,3
+4,Tarea 4 de Historia,Descripción de la tarea 4 de Historia,2024-02-20,4,4,1
+5,Tarea 5 de Ciencias Naturales,Descripción de la tarea 5 de Ciencias Naturales,2024-07-12,3,3,2
+6,Tarea 6 de Educación Física,Descripción de la tarea 6 de Educación Física,2024-08-28,5,5,3
+7,Tarea 7 de Matemáticas,Descripción de la tarea 7 de Matemáticas,2024-04-05,1,1,1
+8,Tarea 8 de Lenguaje,Descripción de la tarea 8 de Lenguaje,2024-05-22,2,2,2
+9,Tarea 9 de Historia,Descripción de la tarea 9 de Historia,2024-11-10,4,4,3
+10,Tarea 10 de Educación Física,Descripción de la tarea 10 de Educación Física,2024-06-02,5,5,2

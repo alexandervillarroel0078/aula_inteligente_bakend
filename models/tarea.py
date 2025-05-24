@@ -9,6 +9,9 @@ class Tarea(db.Model):
 
     materia_id = db.Column(db.Integer, db.ForeignKey('materia.id'))
     profesor_id = db.Column(db.Integer, db.ForeignKey('profesor.id'))
+    periodo_id = db.Column(db.Integer, db.ForeignKey('periodo.id'))  # ← NUEVO
+
     # Relaciones necesarias
     materia = db.relationship('Materia', backref='tareas')
     profesor = db.relationship('Profesor', backref='tareas')
+    periodo = db.relationship('Periodo', backref='tareas')  # ← NUEVO

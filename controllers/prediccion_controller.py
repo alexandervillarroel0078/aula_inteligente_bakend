@@ -12,6 +12,8 @@ def listar_predicciones():
             "alumno_nombre": p.alumno.nombre_completo if p.alumno else None,
             "periodo_id": p.periodo_id,
             "periodo_nombre": p.periodo.nombre if p.periodo else None,
+            "materia_id": p.materia_id,
+            "materia_nombre": p.materia.nombre if p.materia else None,
             "promedio_notas": p.promedio_notas,
             "porcentaje_asistencia": p.porcentaje_asistencia,
             "promedio_participaciones": p.promedio_participaciones,
@@ -20,13 +22,13 @@ def listar_predicciones():
         for p in predicciones
     ])
 
-
 def ver_prediccion(id):
     p = Prediccion.query.get_or_404(id)
     return jsonify({
         "id": p.id,
         "alumno_id": p.alumno_id,
         "periodo_id": p.periodo_id,
+        "materia_id": p.materia_id,
         "promedio_notas": p.promedio_notas,
         "porcentaje_asistencia": p.porcentaje_asistencia,
         "promedio_participaciones": p.promedio_participaciones,
@@ -38,6 +40,7 @@ def crear_prediccion(request):
     nueva = Prediccion(
         alumno_id = data['alumno_id'],
         periodo_id = data['periodo_id'],
+        materia_id = data['materia_id'],
         promedio_notas = data['promedio_notas'],
         porcentaje_asistencia = data['porcentaje_asistencia'],
         promedio_participaciones = data['promedio_participaciones'],
@@ -54,6 +57,7 @@ def editar_prediccion(id, request):
 
     p.alumno_id = data['alumno_id']
     p.periodo_id = data['periodo_id']
+    p.materia_id = data['materia_id']
     p.promedio_notas = data['promedio_notas']
     p.porcentaje_asistencia = data['porcentaje_asistencia']
     p.promedio_participaciones = data['promedio_participaciones']

@@ -11,7 +11,8 @@ class Nota(db.Model):
     materia_id = db.Column(db.Integer, db.ForeignKey('materia.id'))
     periodo_id = db.Column(db.Integer, db.ForeignKey('periodo.id'))
     
-    nota_final = db.Column(db.Float)
+   # nota_final = db.Column(db.Float)
+    nota_final = db.Column(db.Float, nullable=False)
     observaciones = db.Column(db.Text)
 
     # 🔧 Relaciones necesarias para usar n.alumno, n.materia, n.periodo

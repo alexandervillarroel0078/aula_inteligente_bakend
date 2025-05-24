@@ -11,7 +11,9 @@ def listar_periodos():
             "nombre": p.nombre,
             "fecha_inicio": p.fecha_inicio,
             "fecha_fin": p.fecha_fin,
-            "estado": p.estado
+            "estado": p.estado,
+            "semestre": p.semestre,
+            "anio": p.anio
         } for p in periodos
     ])
 
@@ -22,7 +24,9 @@ def ver_periodo(id):
         "nombre": p.nombre,
         "fecha_inicio": p.fecha_inicio,
         "fecha_fin": p.fecha_fin,
-        "estado": p.estado
+        "estado": p.estado,
+        "semestre": p.semestre,
+        "anio": p.anio
     })
 
 def crear_periodo(request):
@@ -31,7 +35,9 @@ def crear_periodo(request):
         nombre = data['nombre'],
         fecha_inicio = data['fecha_inicio'],
         fecha_fin = data['fecha_fin'],
-        estado = data['estado']
+        estado = data['estado'],
+        semestre = data['semestre'],
+        anio = data['anio']
     )
     db.session.add(nuevo)
     db.session.commit()
@@ -46,6 +52,8 @@ def editar_periodo(id, request):
     p.fecha_inicio = data['fecha_inicio']
     p.fecha_fin = data['fecha_fin']
     p.estado = data['estado']
+    p.semestre = data['semestre']
+    p.anio = data['anio']
 
     db.session.commit()
     registrar_bitacora("periodo", f"editó periodo ID {p.id}")

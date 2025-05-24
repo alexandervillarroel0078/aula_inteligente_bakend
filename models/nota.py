@@ -12,6 +12,7 @@ class Nota(db.Model):
     periodo_id = db.Column(db.Integer, db.ForeignKey('periodo.id'))
     
    # nota_final = db.Column(db.Float)
+   #esta variable se la ocipara para cada parcial de cada bimestre
     nota_final = db.Column(db.Float, nullable=False)
     observaciones = db.Column(db.Text)
 
@@ -19,3 +20,5 @@ class Nota(db.Model):
     alumno = db.relationship('Alumno', backref='notas')
     materia = db.relationship('Materia', backref='notas')
     periodo = db.relationship('Periodo', backref='notas')
+ 
+

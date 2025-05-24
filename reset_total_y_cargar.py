@@ -17,7 +17,7 @@ from models.tarea_entregada import TareaEntregada
 
 from models.observacion import Observacion
 from models.prediccion import Prediccion
-
+from models.parcial import Parcial
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234@localhost:5432/aulainteligente'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -75,6 +75,6 @@ with app.app_context():
     cargar_csv(Participacion, 'scripts/participacion_utf8.csv')
     cargar_csv(Tarea, 'scripts/tarea_utf8.csv')
     cargar_csv(TareaEntregada, 'scripts/tarea_entregada_utf8.csv')
-
+    cargar_csv(Parcial,'scripts/parcial_utf8.csv')
     cargar_csv(Observacion, 'scripts/observacion_utf8.csv')
     cargar_csv(Prediccion, 'scripts/prediccion_utf8.csv')

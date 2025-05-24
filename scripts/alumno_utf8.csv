@@ -1,4 +1,4 @@
 codigo,nombre_completo,fecha_nacimiento,genero,fecha_registro,estado,email,telefono,direccion,grado_id
-ALU-001,Juan Pérez,2010-03-15,M,2024-01-10 08:00:00,activo,juan.perez@colegio.com,76543210,"Av. Bolívar #123",1
+ALU-001,mabno perez,2010-03-15,M,2024-01-10 08:00:00,activo,juan.perez@colegio.com,76543210,"Av. Bolívar #123",1
 ALU-002,María López,2010-05-22,F,2024-01-10 08:00:00,activo,maria.lopez@colegio.com,76432109,"Calle Sucre #456",1
 ALU-003,Carlos Fernández,2010-08-08,M,2024-01-10 08:00:00,activo,carlos.fernandez@colegio.com,76321098,"Zona Central, Casa 12",1

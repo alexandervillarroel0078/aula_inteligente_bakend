@@ -145,35 +145,39 @@ def obtener_asistencias_por_materia(materia_id):
     alumnos = db.session.query(Alumno).\
         join(Asistencia, Alumno.id == Asistencia.alumno_id).\
         filter(Asistencia.materia_id == materia_id).\
-        distinct().all()
+        distinct().all()  # Asegúrate de que no se eliminen registros necesarios
 
     resultado = []
 
     for alumno in alumnos:
         asistencias = Asistencia.query.filter_by(materia_id=materia_id, alumno_id=alumno.id).all()
 
-        periodos = {1: 0, 2: 0, 3: 0, 4: 0}  # asistencias presentes
-        clases_por_periodo = {1: 0, 2: 0, 3: 0, 4: 0}  # total de clases por periodo
+        # Inicializar las variables para contar asistencias y clases
+        periodos = {1: 0, 2: 0, 3: 0, 4: 0}  # Contador de asistencias presentes por periodo
+        clases_por_periodo = {1: 0, 2: 0, 3: 0, 4: 0}  # Total de clases por periodo
         total_asistencias = 0
         total_clases = 0
 
+        # Recorrer las asistencias de cada alumno
         for asistencia in asistencias:
             pid = asistencia.periodo_id
             if pid in periodos:
-                clases_por_periodo[pid] += 1
-                total_clases += 1
+                clases_por_periodo[pid] += 1  # Incrementar el total de clases para el periodo
+                total_clases += 1  # Incrementar el total de clases generales
                 if asistencia.presente:
-                    periodos[pid] += 1
-                    total_asistencias += 1
+                    periodos[pid] += 1  # Incrementar las asistencias presentes para el periodo
+                    total_asistencias += 1  # Incrementar las asistencias generales
 
-        # Calcular porcentajes por bimestre
+        # Calcular porcentajes de asistencia por bimestre (por periodo)
         porcentaje_periodo1 = round((periodos[1] / clases_por_periodo[1]) * 100, 2) if clases_por_periodo[1] > 0 else 0.0
         porcentaje_periodo2 = round((periodos[2] / clases_por_periodo[2]) * 100, 2) if clases_por_periodo[2] > 0 else 0.0
         porcentaje_periodo3 = round((periodos[3] / clases_por_periodo[3]) * 100, 2) if clases_por_periodo[3] > 0 else 0.0
         porcentaje_periodo4 = round((periodos[4] / clases_por_periodo[4]) * 100, 2) if clases_por_periodo[4] > 0 else 0.0
 
+        # Calcular el porcentaje total de asistencia
         porcentaje_total = round((total_asistencias / total_clases) * 100, 2) if total_clases > 0 else 0.0
 
+        # Agregar los datos del alumno al resultado
         resultado.append({
             "alumno": alumno.nombre_completo,
             "alumno_id": alumno.id,
@@ -185,7 +189,7 @@ def obtener_asistencias_por_materia(materia_id):
             "total_asistencias": total_asistencias,
             "porcentaje_asistencia": porcentaje_total,
 
-            # NUEVO: porcentajes por periodo
+            # Nuevos porcentajes por periodo
             "porcentaje_periodo1": porcentaje_periodo1,
             "porcentaje_periodo2": porcentaje_periodo2,
             "porcentaje_periodo3": porcentaje_periodo3,
@@ -193,6 +197,7 @@ def obtener_asistencias_por_materia(materia_id):
         })
 
     return jsonify(resultado)
+
 
 def registrar_asistencias_por_materia(materia_id):
     data = request.get_json()
@@ -211,8 +216,9 @@ def registrar_asistencias_por_materia(materia_id):
 
     # Evitar duplicados: eliminamos registros previos del mismo día y materia
     Asistencia.query.filter_by(materia_id=materia_id, fecha=fecha, periodo_id=periodo_id).delete()
-    db.session.commit()
+    db.session.commit()  # Realizamos el commit aquí después de eliminar los registros previos
 
+    # Registrar las asistencias para todos los alumnos
     for asistencia in asistencias:
         nuevo = Asistencia(
             alumno_id=asistencia['alumno_id'],
@@ -223,46 +229,78 @@ def registrar_asistencias_por_materia(materia_id):
         )
         db.session.add(nuevo)
 
-    db.session.commit()
+    db.session.commit()  # Commit después de agregar todos los registros
+
+    # Actualizar el número de asistencias y clases por periodo
+    for asistencia in asistencias:
+        alumno_id = asistencia['alumno_id']
+        alumno = Alumno.query.get(alumno_id)
+
+        # Contamos el total de clases por periodo
+        total_clases = Asistencia.query.filter_by(alumno_id=alumno_id, materia_id=materia_id, periodo_id=periodo_id).count()
+        total_asistencias = Asistencia.query.filter_by(alumno_id=alumno_id, materia_id=materia_id, periodo_id=periodo_id, presente=True).count()
+
+        porcentaje_asistencia = (total_asistencias / total_clases) * 100 if total_clases > 0 else 0
+
+        # Actualizar los valores en el alumno
+        alumno.porcentaje_asistencia = porcentaje_asistencia
+        alumno.total_asistencias = total_asistencias
+        alumno.total_clases = total_clases
+
+        # Actualizar el porcentaje de asistencia por periodo
+        if periodo_id == 1:
+            alumno.porcentaje_periodo1 = porcentaje_asistencia
+        elif periodo_id == 2:
+            alumno.porcentaje_periodo2 = porcentaje_asistencia
+        elif periodo_id == 3:
+            alumno.porcentaje_periodo3 = porcentaje_asistencia
+        elif periodo_id == 4:
+            alumno.porcentaje_periodo4 = porcentaje_asistencia
+
+    db.session.commit()  # Realizamos el commit después de actualizar todos los porcentajes
 
     return jsonify({"message": "Asistencias registradas correctamente"}), 201
 
+
 #las participaciones de un materia de cada alumno
 def obtener_participaciones_por_materia(materia_id):
-    # Obtener la materia solicitada
-    materia = Materia.query.get_or_404(materia_id)
-    
     # Consultar todas las participaciones para esta materia, agrupadas por alumno y por periodo
     participaciones = db.session.query(
         Alumno.id.label('alumno_id'),
         Alumno.nombre_completo.label('alumno'),
-        db.func.sum(Participacion.puntaje).label('total_participaciones'),
-        db.func.count(Participacion.id).label('total_clases'),  # Total de clases
-        db.func.sum(Participacion.puntaje).filter(Participacion.periodo_id == 1).label('periodo1'),
-        db.func.sum(Participacion.puntaje).filter(Participacion.periodo_id == 2).label('periodo2'),
-        db.func.sum(Participacion.puntaje).filter(Participacion.periodo_id == 3).label('periodo3'),
-        db.func.sum(Participacion.puntaje).filter(Participacion.periodo_id == 4).label('periodo4')
+        
+        # Contar participaciones por periodo
+        db.func.count(Participacion.id).filter(Participacion.periodo_id == 1).label('periodo1'),
+        db.func.count(Participacion.id).filter(Participacion.periodo_id == 2).label('periodo2'),
+        db.func.count(Participacion.id).filter(Participacion.periodo_id == 3).label('periodo3'),
+        db.func.count(Participacion.id).filter(Participacion.periodo_id == 4).label('periodo4'),
+        
+        # Sumar puntajes por periodo
+        db.func.sum(Participacion.puntaje).filter(Participacion.periodo_id == 1).label('nota_periodo1'),
+        db.func.sum(Participacion.puntaje).filter(Participacion.periodo_id == 2).label('nota_periodo2'),
+        db.func.sum(Participacion.puntaje).filter(Participacion.periodo_id == 3).label('nota_periodo3'),
+        db.func.sum(Participacion.puntaje).filter(Participacion.periodo_id == 4).label('nota_periodo4'),
+        
+        # Total de participaciones por alumno
+        db.func.count(Participacion.id).label('total_participaciones')
     ).join(Participacion, Participacion.alumno_id == Alumno.id) \
-     .join(Periodo, Periodo.id == Participacion.periodo_id) \
      .filter(Participacion.materia_id == materia_id) \
      .group_by(Alumno.id) \
      .all()
 
     resultado = []
-    
-    # Iterar sobre las participaciones para calcular los porcentajes
+
+    # Iterar sobre las participaciones y calcular las notas promedio
     for participacion in participaciones:
-        total_clases = participacion.total_clases
-        total_participaciones = participacion.total_participaciones
-        # Calcular porcentaje de participaciones por periodo
-       # Calcular porcentaje de participaciones por periodo, manejando los valores None
-        porcentaje_periodo1 = (participacion.periodo1 if participacion.periodo1 is not None else 0) / total_clases * 100 if total_clases else 0
-        porcentaje_periodo2 = (participacion.periodo2 if participacion.periodo2 is not None else 0) / total_clases * 100 if total_clases else 0
-        porcentaje_periodo3 = (participacion.periodo3 if participacion.periodo3 is not None else 0) / total_clases * 100 if total_clases else 0
-        porcentaje_periodo4 = (participacion.periodo4 if participacion.periodo4 is not None else 0) / total_clases * 100 if total_clases else 0
-  
-        # Calcular el porcentaje total de participaciones
-        porcentaje_participaciones = (total_participaciones / total_clases) * 100 if total_clases else 0
+        
+        # Asegurarse de que el total de las notas de cada periodo no sobrepase 100
+        nota_periodo1 = min(participacion.nota_periodo1/ 4, 100) if participacion.nota_periodo1 else 0
+        nota_periodo2 = min(participacion.nota_periodo2/ 4, 100) if participacion.nota_periodo2 else 0
+        nota_periodo3 = min(participacion.nota_periodo3/ 4, 100) if participacion.nota_periodo3 else 0
+        nota_periodo4 = min(participacion.nota_periodo4/ 4, 100) if participacion.nota_periodo4 else 0
+
+        # Calcular el promedio de las notas de los 4 periodos
+        promedio_total = (nota_periodo1 + nota_periodo2 + nota_periodo3 + nota_periodo4) / 4
         
         resultado.append({
             "alumno": participacion.alumno,
@@ -271,16 +309,16 @@ def obtener_participaciones_por_materia(materia_id):
             "periodo2": participacion.periodo2 or 0,
             "periodo3": participacion.periodo3 or 0,
             "periodo4": participacion.periodo4 or 0,
-            "porcentaje_participaciones": round(porcentaje_participaciones, 2),
-            "porcentaje_periodo1": round(porcentaje_periodo1, 2),
-            "porcentaje_periodo2": round(porcentaje_periodo2, 2),
-            "porcentaje_periodo3": round(porcentaje_periodo3, 2),
-            "porcentaje_periodo4": round(porcentaje_periodo4, 2),
-            "total_participaciones": total_participaciones or 0,
-            "total_clases": total_clases or 0
+            "nota_periodo1": nota_periodo1,
+            "nota_periodo2": nota_periodo2,
+            "nota_periodo3": nota_periodo3,
+            "nota_periodo4": nota_periodo4,
+            "nota_total_participaciones": round(promedio_total, 2),
+            "total_participaciones": participacion.total_participaciones or 0
         })
-    
+
     return jsonify(resultado)
+
 
 def registrar_participaciones(materia_id):
     # Obtener los datos enviados desde el frontend

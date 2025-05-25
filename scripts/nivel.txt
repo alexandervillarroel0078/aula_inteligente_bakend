@@ -1,10 +1,13 @@
 🔵 Nivel 1 – Sin llaves foráneas (pueden crearse primero)
  
 - configuracion
-- rol
-- periodo
-- profesor         (⇨ ninguno, pero es padre de otros)
+
 - grado            (⇨ libre, sin FK directa)
+- periodo
+- rol
+
+- profesor         (⇨ ninguno, pero es padre de otros)
+ 
  
 
 🟢 Nivel 2 – Con 1 llave foránea

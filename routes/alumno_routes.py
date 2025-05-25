@@ -30,6 +30,7 @@ def eliminar_alumno(id):
 def obtener_perfil_alumno(alumno_id):
     return alumno_controller.obtener_perfil_alumno(alumno_id)
 
+#notas 
 @alumno_bp.route('/<int:alumno_id>/notas', methods=['GET'])
 def obtener_notas_alumno(alumno_id):
     return alumno_controller.obtener_notas_alumno(alumno_id)
@@ -63,3 +64,13 @@ def obtener_notas_por_materia(alumno_id, materia_id):
 @alumno_bp.route('/<int:alumno_id>/materias/<int:materia_id>/asistencias', methods=['GET'])
 def obtener_asistencias_por_materia(alumno_id, materia_id):
     return alumno_controller.obtener_asistencias_por_materia(alumno_id, materia_id)
+
+#http://localhost:5000/api/alumnos/1/materias/2/periodos/1/asistencia
+@alumno_bp.route('/<int:alumno_id>/materias/<int:materia_id>/periodos/<int:periodo_id>/asistencia', methods=['GET'])
+def asistencia_materia_alumno(alumno_id, materia_id, periodo_id):
+    return alumno_controller.obtener_asistencia_total(alumno_id, materia_id, periodo_id)
+
+#http://127.0.0.1:5000/api/alumnos/1/materias/2/periodos/1/asistencia/detalle
+@alumno_bp.route('/<int:alumno_id>/materias/<int:materia_id>/periodos/<int:periodo_id>/asistencia/detalle', methods=['GET'])
+def obtener_detalle_asistencia(alumno_id, materia_id, periodo_id):
+    return alumno_controller.obtener_detalle_asistencia(alumno_id, materia_id, periodo_id)

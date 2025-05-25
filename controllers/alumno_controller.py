@@ -4,6 +4,10 @@ from datetime import datetime
 from traits.bitacora_trait import registrar_bitacora
 from models import db
 from models import Alumno, Nota, Asistencia, Participacion, Prediccion, Materia, MateriaProfesor
+from models.materia import Materia
+from models.nota import Nota
+from models.periodo import Periodo
+from flask import jsonify, abort
 
 # CRUD básico
 def listar_alumnos():
@@ -213,6 +217,23 @@ def obtener_notas_por_materia(alumno_id, materia_id):
             'periodo_id': n.periodo_id,
             'periodo_nombre': n.periodo.nombre if n.periodo else None
         })
+    
+    # Verificar si falta algún periodo (bimestre) en los resultados
+    periodos_existentes = [n.periodo_id for n in notas]
+    todos_los_periodos = [1, 2, 3, 4]  # Los IDs de los bimestres
+
+    # Verificar si algún periodo falta
+    for periodo in todos_los_periodos:
+        if periodo not in periodos_existentes:
+            # Agregar el bimestre que falta
+            resultado.append({
+                'id': None,
+                'nota_final': None,
+                'observaciones': None,
+                'periodo_id': periodo,
+                'periodo_nombre': f'{periodo}er Bimestre' if periodo == 1 else f'{periodo}do Bimestre' if periodo == 2 else f'{periodo}er Bimestre' if periodo == 3 else f'{periodo}to Bimestre'
+            })
+
     return jsonify(resultado)
 
 # ✅ Obtener asistencias por alumno y materia
@@ -228,3 +249,75 @@ def obtener_asistencias_por_materia(alumno_id, materia_id):
             'periodo_nombre': a.periodo.nombre if a.periodo else None
         })
     return jsonify(resultado)
+
+# ✅ontener cantidad de asistencias total por alumno 
+def obtener_asistencia_total(alumno_id, materia_id, periodo_id):
+    # Verificar si el alumno, la materia y el periodo existen
+    alumno = Alumno.query.get_or_404(alumno_id)
+    materia = Materia.query.get_or_404(materia_id)
+    
+    # Definir los periodos (bimestres)
+    periodos = {
+        1: "1er Bimestre",
+        2: "2do Bimestre",
+        3: "3er Bimestre",
+        4: "4to Bimestre"
+    }
+    
+    # Inicializar el resultado para todos los periodos
+    resultado = []
+    
+    for periodo_id in periodos.keys():
+        # Obtener las asistencias del alumno para esa materia y periodo específico
+        asistencias = Asistencia.query.filter_by(
+            alumno_id=alumno_id, materia_id=materia_id, periodo_id=periodo_id
+        ).all()
+        
+        # Calcular el total de asistencias (número de clases a las que asistió)
+        total_asistencias = sum(1 for a in asistencias if a.presente)
+        
+        # Calcular el total de clases programadas (número de registros en 'asistencias')
+        total_clases = len(asistencias)
+        
+        # Calcular el porcentaje de asistencia
+        porcentaje_asistencia = (total_asistencias / total_clases * 100) if total_clases > 0 else 0
+        
+        # Agregar el bimestre al resultado
+        resultado.append({
+            "alumno_id": alumno.id,
+            "materia_nombre": materia.nombre,
+            "periodo_nombre": periodos[periodo_id],
+            "total_asistencias": total_asistencias,
+            "total_clases": total_clases,
+            "porcentaje_asistencia": porcentaje_asistencia
+        })
+    
+    return jsonify(resultado), 200
+
+def obtener_detalle_asistencia(alumno_id, materia_id, periodo_id):
+    try:
+        # Consulta filtrando por alumno, materia y periodo
+        asistencias = db.session.query(Asistencia).join(Materia).join(Periodo).filter(
+            Asistencia.alumno_id == alumno_id,
+            Asistencia.materia_id == materia_id,
+            Asistencia.periodo_id == periodo_id
+        ).all()
+
+        # Si no hay registros, retorna un mensaje
+        if not asistencias:
+            return jsonify({"mensaje": "No se encontraron asistencias para este periodo."}), 404
+
+        # Si hay resultados, devuelve las asistencias
+        resultados = []
+        for asistencia in asistencias:
+            resultados.append({
+                "id": asistencia.id,
+                "materia": asistencia.materia.nombre,
+                "fecha": asistencia.fecha.strftime("%a, %d %b %Y"),  # Formato de fecha
+                "estado": "Presente" if asistencia.presente else "Ausente"
+            })
+
+        return jsonify(resultados), 200
+
+    except Exception as e:
+        return jsonify({"mensaje": "Ocurrió un error", "error": str(e)}), 500

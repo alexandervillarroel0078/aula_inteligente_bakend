@@ -1,6 +1,14 @@
 nombre,nivel,seccion,paralelo,turno,gestion,ubicacion
 1ro A,Primaria,Primero,A,Mañana,2024,Sede Central
-2do B,Primaria,Segundo,B,Tarde,2024,Sede Central
-3ro C,Secundaria,Tercero,C,Mañana,2024,Sucursal Sur
-4to A,Secundaria,Cuarto,A,Tarde,2024,Sucursal Sur
-5to B,Secundaria,Quinto,B,Mañana,2024,Sede Central
+2do A,Primaria,Segundo,A,Tarde,2024,Sede Central
+3ro A,Primaria,Tercero,A,Mañana,2024,Sucursal Sur
+4to A,Primaria,Cuarto,A,Tarde,2024,Sucursal Sur
+5to A,Primaria,Quinto,A,Mañana,2024,Sede Central
+6to A,Primaria,Sexto,A,Tarde,2024,Sucursal Sur
+
+1ro B,Primaria,Primero,B,Mañana,2023,Sede Central
+2do B,Primaria,Segundo,B,Tarde,2023,Sede Central
+3ro B,Primaria,Tercero,B,Mañana,2023,Sucursal Sur
+4to B,Primaria,Cuarto,B,Tarde,2023,Sucursal Sur
+5to B,Primaria,Quinto,B,Mañana,2023,Sede Central
+6to B,Primaria,Sexto,B,Tarde,2023,Sucursal Sur

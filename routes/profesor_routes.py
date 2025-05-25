@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from controllers import profesor_controller
+from controllers.profesor_controller import registrar_participaciones
 
 profesor_bp = Blueprint('profesor_bp', __name__)
 
@@ -38,6 +39,9 @@ def registrar_asistencias(materia_id):
 def obtener_participaciones_por_materia(materia_id):
     return profesor_controller.obtener_participaciones_por_materia(materia_id)
 
+profesor_bp.route('/api/materias/<int:materia_id>/participaciones', methods=['POST'])(registrar_participaciones)
+
+#########################################################################
 @profesor_bp.route('/api/materias/<int:materia_id>/estudiantes', methods=['GET'])
 def obtener_estudiantes_por_materia(materia_id):
     return profesor_controller.obtener_estudiantes_por_materia(materia_id)

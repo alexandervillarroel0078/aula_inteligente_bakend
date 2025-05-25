@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import request, jsonify
 from models import db
 from models.profesor import Profesor
@@ -10,7 +11,7 @@ from models.alumno import Alumno
 from models.materia import Materia
 from collections import defaultdict
 from sqlalchemy import func
-from datetime import datetime
+ 
 from traits.bitacora_trait import registrar_bitacora
 from models.parcial import Parcial
 from models.periodo import Periodo
@@ -139,9 +140,6 @@ def registrar_notas_por_materia(materia_id):
         return jsonify({"error": str(e)}), 400  # Devolver el error
 
 
-
-
-
 #las asistencia de un materia de cada alumno
 def obtener_asistencias_por_materia(materia_id):
     alumnos = db.session.query(Alumno).\
@@ -231,15 +229,110 @@ def registrar_asistencias_por_materia(materia_id):
 
 #las participaciones de un materia de cada alumno
 def obtener_participaciones_por_materia(materia_id):
-    participaciones = Participacion.query.filter_by(materia_id=materia_id).all()
-    return jsonify([
-        {
-            "id": p.id,
-            "alumno": p.alumno.nombre_completo,
-            "fecha": p.fecha.isoformat(),
-            "puntaje": p.puntaje
-        } for p in participaciones
-    ])
+    # Obtener la materia solicitada
+    materia = Materia.query.get_or_404(materia_id)
+    
+    # Consultar todas las participaciones para esta materia, agrupadas por alumno y por periodo
+    participaciones = db.session.query(
+        Alumno.id.label('alumno_id'),
+        Alumno.nombre_completo.label('alumno'),
+        db.func.sum(Participacion.puntaje).label('total_participaciones'),
+        db.func.count(Participacion.id).label('total_clases'),  # Total de clases
+        db.func.sum(Participacion.puntaje).filter(Participacion.periodo_id == 1).label('periodo1'),
+        db.func.sum(Participacion.puntaje).filter(Participacion.periodo_id == 2).label('periodo2'),
+        db.func.sum(Participacion.puntaje).filter(Participacion.periodo_id == 3).label('periodo3'),
+        db.func.sum(Participacion.puntaje).filter(Participacion.periodo_id == 4).label('periodo4')
+    ).join(Participacion, Participacion.alumno_id == Alumno.id) \
+     .join(Periodo, Periodo.id == Participacion.periodo_id) \
+     .filter(Participacion.materia_id == materia_id) \
+     .group_by(Alumno.id) \
+     .all()
+
+    resultado = []
+    
+    # Iterar sobre las participaciones para calcular los porcentajes
+    for participacion in participaciones:
+        total_clases = participacion.total_clases
+        total_participaciones = participacion.total_participaciones
+        # Calcular porcentaje de participaciones por periodo
+       # Calcular porcentaje de participaciones por periodo, manejando los valores None
+        porcentaje_periodo1 = (participacion.periodo1 if participacion.periodo1 is not None else 0) / total_clases * 100 if total_clases else 0
+        porcentaje_periodo2 = (participacion.periodo2 if participacion.periodo2 is not None else 0) / total_clases * 100 if total_clases else 0
+        porcentaje_periodo3 = (participacion.periodo3 if participacion.periodo3 is not None else 0) / total_clases * 100 if total_clases else 0
+        porcentaje_periodo4 = (participacion.periodo4 if participacion.periodo4 is not None else 0) / total_clases * 100 if total_clases else 0
+  
+        # Calcular el porcentaje total de participaciones
+        porcentaje_participaciones = (total_participaciones / total_clases) * 100 if total_clases else 0
+        
+        resultado.append({
+            "alumno": participacion.alumno,
+            "alumno_id": participacion.alumno_id,
+            "periodo1": participacion.periodo1 or 0,
+            "periodo2": participacion.periodo2 or 0,
+            "periodo3": participacion.periodo3 or 0,
+            "periodo4": participacion.periodo4 or 0,
+            "porcentaje_participaciones": round(porcentaje_participaciones, 2),
+            "porcentaje_periodo1": round(porcentaje_periodo1, 2),
+            "porcentaje_periodo2": round(porcentaje_periodo2, 2),
+            "porcentaje_periodo3": round(porcentaje_periodo3, 2),
+            "porcentaje_periodo4": round(porcentaje_periodo4, 2),
+            "total_participaciones": total_participaciones or 0,
+            "total_clases": total_clases or 0
+        })
+    
+    return jsonify(resultado)
+
+def registrar_participaciones(materia_id):
+    # Obtener los datos enviados desde el frontend
+    data = request.get_json()
+
+    fecha_str = data.get('fecha')
+    periodo_id = data.get('periodo_id')
+    participaciones = data.get('participaciones', [])
+
+    # Validar los datos requeridos
+    if not fecha_str or not periodo_id or not participaciones:
+        return jsonify({"error": "Datos incompletos"}), 400
+
+    try:
+        # Convertir la fecha en formato adecuado (YYYY-MM-DD)
+        fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
+    except ValueError:
+        return jsonify({"error": "Formato de fecha inválido"}), 400
+
+    try:
+        # Eliminar participaciones previas del mismo día y materia
+        Participacion.query.filter_by(materia_id=materia_id, fecha=fecha, periodo_id=periodo_id).delete()
+        db.session.commit()
+
+        # Registrar las participaciones de los estudiantes
+        for participacion in participaciones:
+            # Verificar si los datos de la participación son correctos
+            if not participacion.get('alumno_id') or not participacion.get('puntaje'):
+                return jsonify({"error": "Faltan datos de la participación"}), 400
+
+            # Crear la nueva participación
+            nuevo = Participacion(
+                alumno_id=participacion['alumno_id'],
+                materia_id=materia_id,
+                periodo_id=periodo_id,
+                fecha=fecha,
+                puntaje=participacion['puntaje']
+            )
+
+            # Añadir el objeto de participación a la sesión
+            db.session.add(nuevo)
+
+        # Confirmar cambios en la base de datos
+        db.session.commit()
+
+        return jsonify({"message": "Participaciones registradas correctamente"}), 201
+
+    except Exception as e:
+        # Deshacer los cambios en caso de error
+        db.session.rollback()
+        return jsonify({"error": f"Error al registrar participaciones: {str(e)}"}), 500
+
 
 #todos los estudiantes de una materia
 def obtener_estudiantes_por_materia(materia_id):

@@ -11,9 +11,11 @@ class Nota(db.Model):
     materia_id = db.Column(db.Integer, db.ForeignKey('materia.id'))
     periodo_id = db.Column(db.Integer, db.ForeignKey('periodo.id'))
     
-   # nota_final = db.Column(db.Float)
-   #esta variable se la ocipara para cada parcial de cada bimestre
-    nota_final = db.Column(db.Float, nullable=False)
+    # Relación con el tipo de parcial
+    tipo_parcial = db.Column(db.String(50), nullable=False)  # Ej: "Primer Parcial", "Segundo Parcial", etc.
+    
+    # Nota correspondiente al parcial del periodo específico
+    nota = db.Column(db.Float, nullable=False)  # Nota por parcial
     observaciones = db.Column(db.Text)
 
     # 🔧 Relaciones necesarias para usar n.alumno, n.materia, n.periodo

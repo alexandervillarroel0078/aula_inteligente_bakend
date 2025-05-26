@@ -10,6 +10,7 @@ class Asistencia(db.Model):
     
     fecha = db.Column(db.Date)
     presente = db.Column(db.Boolean)
+    observaciones = db.Column(db.Text, nullable=True)
 
     # Relaciones necesarias para acceder a los nombres
     alumno = db.relationship('Alumno', backref='asistencias')

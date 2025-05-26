@@ -21,3 +21,5 @@ from .tarea_entregada import TareaEntregada
 from .observacion import Observacion
 from .bitacora import Bitacora
 from .prediccion import Prediccion
+from .alumno_grado import AlumnoGrado
+from .parcial import Parcial

@@ -3,7 +3,7 @@
 - configuracion
 
 - grado            (⇨ libre, sin FK directa)
-- periodo
+- periodo   22 23 24
 - rol
 
 - profesor         (⇨ ninguno, pero es padre de otros)

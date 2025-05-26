@@ -43,7 +43,7 @@ def create_app():
     from routes.observacion_routes import observacion_bp
     from routes.tarea_entregada_routes import tarea_entregada_bp
     from routes.observacion_routes import observacion_bp
-    
+
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(perfil_bp)

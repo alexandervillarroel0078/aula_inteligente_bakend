@@ -1,102 +1,11 @@
-codigo,nombre_completo,fecha_nacimiento,genero,fecha_registro,estado,email,telefono,direccion,grado_id
-ALU-001,Luis Mendoza Pérez,2010-01-15,Male,2024-02-01,inactivo,luis.mendoza@colegio.com,71234567,Calle 123,1
-ALU-002,Carla Romero García,2010-02-20,Female,2024-02-01,inactivo,carla.romero@colegio.com,76543210,Calle 456,1
-ALU-003,Esteban Vargas López,2010-03-25,Male,2024-02-01,inactivo,esteban.vargas@colegio.com,70123456,Calle 789,1
-ALU-004,María Fernández Díaz,2010-04-30,Female,2024-02-01,inactivo,maria.fernandez@colegio.com,70111223,Calle 321,1
-ALU-005,Jorge Arévalo Rodríguez,2010-05-05,Male,2024-02-01,inactivo,jorge.arevalo@colegio.com,70111334,Calle 654,1
-ALU-006,Ana Sánchez Pérez,2010-06-10,Female,2024-02-01,inactivo,ana.sanchez@colegio.com,71234567,Calle 111,1
-ALU-007,Pedro López García,2010-07-15,Male,2024-02-01,inactivo,pedro.lopez@colegio.com,76543210,Calle 222,1
-ALU-008,Laura Díaz Martínez,2010-08-20,Female,2024-02-01,inactivo,laura.diaz@colegio.com,70123456,Calle 333,1
-ALU-009,Juan Pérez Hernández,2010-09-25,Male,2024-02-01,inactivo,juan.perez@colegio.com,70111223,Calle 444,1
-ALU-010,Isabel García Jiménez,2010-10-30,Female,2024-02-01,inactivo,isabel.garcia@colegio.com,70111334,Calle 555,1
-ALU-011,David Rodríguez López,2010-11-10,Male,2024-02-01,inactivo,david.rodriguez@colegio.com,71234567,Calle 666,1
-ALU-012,Sofía Martínez González,2010-12-15,Female,2024-02-01,inactivo,sofia.martinez@colegio.com,76543210,Calle 777,1
-ALU-013,José Fernández Ruiz,2011-01-10,Male,2024-02-01,inactivo,jose.fernandez@colegio.com,70123456,Calle 888,1
-ALU-014,Lucía Pérez Sánchez,2011-02-05,Female,2024-02-01,inactivo,lucia.perez@colegio.com,70111223,Calle 999,1
-ALU-015,Miguel Torres Romero,2011-03-20,Male,2024-02-01,inactivo,miguel.torres@colegio.com,70111334,Calle 1000,1
-ALU-016,Rocío Rodríguez Sánchez,2011-04-25,Female,2024-02-01,inactivo,rocio.rodriguez@colegio.com,71234567,Calle 1111,1
-ALU-017,Fernando Díaz López,2011-05-10,Male,2024-02-01,inactivo,fernando.diaz@colegio.com,76543210,Calle 2222,1
-ALU-018,Valeria Jiménez Gómez,2011-06-15,Female,2024-02-01,inactivo,valeria.jimenez@colegio.com,70123456,Calle 3333,1
-ALU-019,Antonio Pérez Martínez,2011-07-20,Male,2024-02-01,inactivo,antonio.perez@colegio.com,70111223,Calle 4444,1
-ALU-020,Natalia García González,2011-08-25,Female,2024-02-01,inactivo,natalia.garcia@colegio.com,70111334,Calle 5555,1
-ALU-021,Oscar Rodríguez Pérez,2011-09-30,Male,2024-02-01,inactivo,oscar.rodriguez@colegio.com,71234567,Calle 6666,1
-ALU-022,Raquel Sánchez Fernández,2011-10-15,Female,2024-02-01,inactivo,raquel.sanchez@colegio.com,76543210,Calle 7777,1
-ALU-023,Antonio Fernández Sánchez,2011-11-10,Male,2024-02-01,inactivo,antonio.fernandez@colegio.com,70123456,Calle 8888,1
-ALU-024,Beatriz López Jiménez,2011-12-15,Female,2024-02-01,inactivo,beatriz.lopez@colegio.com,70111223,Calle 9999,1
-ALU-025,Roberto Gómez Martínez,2012-01-20,Male,2024-02-01,inactivo,roberto.gomez@colegio.com,70111334,Calle 10000,1
-ALU-026,Mercedes Díaz Sánchez,2012-02-25,Female,2024-02-01,inactivo,mercedes.diaz@colegio.com,71234567,Calle 11000,1
-ALU-027,Andrés Martínez López,2012-03-05,Male,2024-02-01,inactivo,andres.martinez@colegio.com,76543210,Calle 12000,1
-ALU-028,Marina Gómez Pérez,2012-04-10,Female,2024-02-01,inactivo,marina.gomez@colegio.com,70123456,Calle 13000,1
-ALU-029,Santiago Rodríguez Sánchez,2012-05-15,Male,2024-02-01,inactivo,santiago.rodriguez@colegio.com,70111223,Calle 14000,1
-ALU-030,Lidia Romero López,2012-06-20,Female,2024-02-01,inactivo,lidia.romero@colegio.com,70111334,Calle 15000,1
-ALU-031,Javier Sánchez Martínez,2012-07-25,Male,2024-02-01,inactivo,javier.sanchez@colegio.com,71234567,Calle 16000,1
-ALU-032,Elena García Torres,2012-08-05,Female,2024-02-01,inactivo,elena.garcia@colegio.com,76543210,Calle 17000,1
-ALU-033,Pedro Sánchez López,2012-09-10,Male,2024-02-01,inactivo,pedro.sanchez@colegio.com,70123456,Calle 18000,1
-ALU-034,Carmen Rodríguez García,2012-10-15,Female,2024-02-01,inactivo,carmen.rodriguez@colegio.com,70111223,Calle 19000,1
-ALU-035,Juan José Martínez Pérez,2012-11-20,Male,2024-02-01,inactivo,juan.jose.martinez@colegio.com,70111334,Calle 20000,1
-ALU-036,Mónica López Sánchez,2012-12-05,Female,2024-02-01,inactivo,monica.lopez@colegio.com,71234567,Calle 21000,1
-ALU-037,José Luis Fernández Pérez,2013-01-10,Male,2024-02-01,inactivo,jose.luis.fernandez@colegio.com,76543210,Calle 22000,1
-ALU-038,Alba Sánchez González,2013-02-15,Female,2024-02-01,inactivo,alba.sanchez@colegio.com,70123456,Calle 23000,1
-ALU-039,Raúl Pérez Martínez,2013-03-05,Male,2024-02-01,inactivo,raul.perez@colegio.com,70111223,Calle 24000,1
-ALU-040,Patricia Díaz Rodríguez,2013-04-10,Female,2024-02-01,inactivo,patricia.diaz@colegio.com,70111334,Calle 25000,1
-ALU-041,José Antonio García Sánchez,2013-05-15,Male,2024-02-01,inactivo,jose.antonio.garcia@colegio.com,71234567,Calle 26000,1
-ALU-042,Raquel López Romero,2013-06-20,Female,2024-02-01,inactivo,raquel.lopez@colegio.com,76543210,Calle 27000,1
-ALU-043,José Manuel González Pérez,2013-07-25,Male,2024-02-01,inactivo,jose.manuel.gonzalez@colegio.com,70123456,Calle 28000,1
-ALU-044,Lorena Martínez Díaz,2013-08-05,Female,2024-02-01,inactivo,lorena.martinez@colegio.com,70111223,Calle 29000,1
-ALU-045,Antonio Sánchez Gómez,2013-09-10,Male,2024-02-01,inactivo,antonio.sanchez@colegio.com,70111334,Calle 30000,1
-ALU-046,Beatriz Pérez Fernández,2013-10-15,Female,2024-02-01,inactivo,beatriz.perez@colegio.com,71234567,Calle 31000,1
-ALU-047,Francisco Rodríguez García,2013-11-20,Male,2024-02-01,inactivo,francisco.rodriguez@colegio.com,76543210,Calle 32000,1
-ALU-048,Alicia Sánchez Rodríguez,2013-12-05,Female,2024-02-01,inactivo,alicia.sanchez@colegio.com,70123456,Calle 33000,1
-ALU-049,Jorge Martínez González,2014-01-10,Male,2024-02-01,inactivo,jorge.martinez@colegio.com,70111223,Calle 34000,1
-ALU-050,Teresa López García,2014-02-15,Female,2024-02-01,inactivo,teresa.lopez@colegio.com,70111334,Calle 35000,1
-
-ALU-001,Luis Mendoza Pérez,2010-01-15,Male,2024-02-01,inactivo,luis.mendoza@colegio.com,71234567,Calle 123,2
-ALU-002,Carla Romero García,2010-02-20,Female,2024-02-01,inactivo,carla.romero@colegio.com,76543210,Calle 456,2
-ALU-003,Esteban Vargas López,2010-03-25,Male,2024-02-01,inactivo,esteban.vargas@colegio.com,70123456,Calle 789,2
-ALU-004,María Fernández Díaz,2010-04-30,Female,2024-02-01,inactivo,maria.fernandez@colegio.com,70111223,Calle 321,2
-ALU-005,Jorge Arévalo Rodríguez,2010-05-05,Male,2024-02-01,inactivo,jorge.arevalo@colegio.com,70111334,Calle 654,2
-ALU-006,Ana Sánchez Pérez,2010-06-10,Female,2024-02-01,inactivo,ana.sanchez@colegio.com,71234567,Calle 111,2
-ALU-007,Pedro López García,2010-07-15,Male,2024-02-01,inactivo,pedro.lopez@colegio.com,76543210,Calle 222,2
-ALU-008,Laura Díaz Martínez,2010-08-20,Female,2024-02-01,inactivo,laura.diaz@colegio.com,70123456,Calle 333,2
-ALU-009,Juan Pérez Hernández,2010-09-25,Male,2024-02-01,inactivo,juan.perez@colegio.com,70111223,Calle 444,2
-ALU-010,Isabel García Jiménez,2010-10-30,Female,2024-02-01,inactivo,isabel.garcia@colegio.com,70111334,Calle 555,2
-ALU-011,David Rodríguez López,2010-11-10,Male,2024-02-01,inactivo,david.rodriguez@colegio.com,71234567,Calle 666,2
-ALU-012,Sofía Martínez González,2010-12-15,Female,2024-02-01,inactivo,sofia.martinez@colegio.com,76543210,Calle 777,2
-ALU-013,José Fernández Ruiz,2011-01-10,Male,2024-02-01,inactivo,jose.fernandez@colegio.com,70123456,Calle 888,2
-ALU-014,Lucía Pérez Sánchez,2011-02-05,Female,2024-02-01,inactivo,lucia.perez@colegio.com,70111223,Calle 999,2
-ALU-015,Miguel Torres Romero,2011-03-20,Male,2024-02-01,inactivo,miguel.torres@colegio.com,70111334,Calle 1000,2
-ALU-016,Rocío Rodríguez Sánchez,2011-04-25,Female,2024-02-01,inactivo,rocio.rodriguez@colegio.com,71234567,Calle 1111,2
-ALU-017,Fernando Díaz López,2011-05-10,Male,2024-02-01,inactivo,fernando.diaz@colegio.com,76543210,Calle 2222,2
-ALU-018,Valeria Jiménez Gómez,2011-06-15,Female,2024-02-01,inactivo,valeria.jimenez@colegio.com,70123456,Calle 3333,2
-ALU-019,Antonio Pérez Martínez,2011-07-20,Male,2024-02-01,inactivo,antonio.perez@colegio.com,70111223,Calle 4444,2
-ALU-020,Natalia García González,2011-08-25,Female,2024-02-01,inactivo,natalia.garcia@colegio.com,70111334,Calle 5555,2
-ALU-021,Oscar Rodríguez Pérez,2011-09-30,Male,2024-02-01,inactivo,oscar.rodriguez@colegio.com,71234567,Calle 6666,2
-ALU-022,Raquel Sánchez Fernández,2011-10-15,Female,2024-02-01,inactivo,raquel.sanchez@colegio.com,76543210,Calle 7777,2
-ALU-023,Antonio Fernández Sánchez,2011-11-10,Male,2024-02-01,inactivo,antonio.fernandez@colegio.com,70123456,Calle 8888,2
-ALU-024,Beatriz López Jiménez,2011-12-15,Female,2024-02-01,inactivo,beatriz.lopez@colegio.com,70111223,Calle 9999,2
-ALU-025,Roberto Gómez Martínez,2012-01-20,Male,2024-02-01,inactivo,roberto.gomez@colegio.com,70111334,Calle 10000,2
-ALU-026,Mercedes Díaz Sánchez,2012-02-25,Female,2024-02-01,inactivo,mercedes.diaz@colegio.com,71234567,Calle 11000,2
-ALU-027,Andrés Martínez López,2012-03-05,Male,2024-02-01,inactivo,andres.martinez@colegio.com,76543210,Calle 12000,2
-ALU-028,Marina Gómez Pérez,2012-04-10,Female,2024-02-01,inactivo,marina.gomez@colegio.com,70123456,Calle 13000,2
-ALU-029,Santiago Rodríguez Sánchez,2012-05-15,Male,2024-02-01,inactivo,santiago.rodriguez@colegio.com,70111223,Calle 14000,2
-ALU-030,Lidia Romero López,2012-06-20,Female,2024-02-01,inactivo,lidia.romero@colegio.com,70111334,Calle 15000,2
-ALU-031,Javier Sánchez Martínez,2012-07-25,Male,2024-02-01,inactivo,javier.sanchez@colegio.com,71234567,Calle 16000,2
-ALU-032,Elena García Torres,2012-08-05,Female,2024-02-01,inactivo,elena.garcia@colegio.com,76543210,Calle 17000,2
-ALU-033,Pedro Sánchez López,2012-09-10,Male,2024-02-01,inactivo,pedro.sanchez@colegio.com,70123456,Calle 18000,2
-ALU-034,Carmen Rodríguez García,2012-10-15,Female,2024-02-01,inactivo,carmen.rodriguez@colegio.com,70111223,Calle 19000,2
-ALU-035,Juan José Martínez Pérez,2012-11-20,Male,2024-02-01,inactivo,juan.jose.martinez@colegio.com,70111334,Calle 20000,2
-ALU-036,Mónica López Sánchez,2012-12-05,Female,2024-02-01,inactivo,monica.lopez@colegio.com,71234567,Calle 21000,2
-ALU-037,José Luis Fernández Pérez,2013-01-10,Male,2024-02-01,inactivo,jose.luis.fernandez@colegio.com,76543210,Calle 22000,2
-ALU-038,Alba Sánchez González,2013-02-15,Female,2024-02-01,inactivo,alba.sanchez@colegio.com,70123456,Calle 23000,2
-ALU-039,Raúl Pérez Martínez,2013-03-05,Male,2024-02-01,inactivo,raul.perez@colegio.com,70111223,Calle 24000,2
-ALU-040,Patricia Díaz Rodríguez,2013-04-10,Female,2024-02-01,inactivo,patricia.diaz@colegio.com,70111334,Calle 25000,2
-ALU-041,José Antonio García Sánchez,2013-05-15,Male,2024-02-01,inactivo,jose.antonio.garcia@colegio.com,71234567,Calle 26000,2
-ALU-042,Raquel López Romero,2013-06-20,Female,2024-02-01,inactivo,raquel.lopez@colegio.com,76543210,Calle 27000,2
-ALU-043,José Manuel González Pérez,2013-07-25,Male,2024-02-01,inactivo,jose.manuel.gonzalez@colegio.com,70123456,Calle 28000,2
-ALU-044,Lorena Martínez Díaz,2013-08-05,Female,2024-02-01,inactivo,lorena.martinez@colegio.com,70111223,Calle 29000,2
-ALU-045,Antonio Sánchez Gómez,2013-09-10,Male,2024-02-01,inactivo,antonio.sanchez@colegio.com,70111334,Calle 30000,2
-ALU-046,Beatriz Pérez Fernández,2013-10-15,Female,2024-02-01,inactivo,beatriz.perez@colegio.com,71234567,Calle 31000,2
-ALU-047,Francisco Rodríguez García,2013-11-20,Male,2024-02-01,inactivo,francisco.rodriguez@colegio.com,76543210,Calle 32000,2
-ALU-048,Alicia Sánchez Rodríguez,2013-12-05,Female,2024-02-01,inactivo,alicia.sanchez@colegio.com,70123456,Calle 33000,2
-ALU-049,Jorge Martínez González,2014-01-10,Male,2024-02-01,inactivo,jorge.martinez@colegio.com,70111223,Calle 34000,2
-ALU-050,Teresa López García,2014-02-15,Female,2024-02-01,inactivo,teresa.lopez@colegio.com,70111334,Calle 35000,2
+codigo,nombre_completo,fecha_nacimiento,genero,fecha_registro,estado,email,telefono,direccion
+ALU-001,Luis Mendoza Pérez,2010-01-15,M,2024-02-01,activo,luis.mendoza@colegio.com,71234567,Calle 123
+ALU-002,Carla Romero García,2010-02-20,F,2024-02-01,activo,carla.romero@colegio.com,76543210,Calle 456
+ALU-003,Esteban Vargas López,2010-03-25,M,2024-02-01,activo,esteban.vargas@colegio.com,70123456,Calle 789
+ALU-004,María Fernández Díaz,2010-04-30,F,2024-02-01,activo,maria.fernandez@colegio.com,70111223,Calle 321
+ALU-005,Jorge Arévalo Rodríguez,2010-05-05,M,2024-02-01,activo,jorge.arevalo@colegio.com,70111334,Calle 654
+ALU-006,Ana Sánchez Pérez,2010-06-10,F,2024-02-01,activo,ana.sanchez@colegio.com,71234567,Calle 111
+ALU-007,Pablo Ruiz González,2010-07-15,M,2024-02-01,activo,pablo.ruiz@colegio.com,71234568,Calle 122
+ALU-008,Lucía Pérez Morales,2010-08-20,F,2024-02-01,activo,lucia.perez@colegio.com,76543211,Calle 457
+ALU-009,Manuel García Díaz,2010-09-25,M,2024-02-01,activo,manuel.garcia@colegio.com,70123457,Calle 790
+ALU-010,Paula Martínez Sánchez,2010-10-30,F,2024-02-01,activo,paula.martinez@colegio.com,70111224,Calle 322

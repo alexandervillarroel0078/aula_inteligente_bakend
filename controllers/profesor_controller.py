@@ -9,6 +9,8 @@ from models.asistencia import Asistencia
 from models.participacion import Participacion
 from models.alumno import Alumno
 from models.materia import Materia
+from models.grado import Grado
+from models.alumno_grado import AlumnoGrado
 from collections import defaultdict
 from sqlalchemy import func
  
@@ -64,48 +66,47 @@ def materias_asignadas_profesor(profesor_id):
 
 #las notas de un materia de cada alumno
 def obtener_notas_por_materia(materia_id):
-    # Obtener todas las notas de parciales por alumno y periodo
-    parciales = db.session.query(
-        Parcial.alumno_id,
-        Alumno.nombre_completo.label("alumno"),
-        Periodo.id.label("periodo_id"),
-        func.round(func.avg(cast(Parcial.parcial, Numeric)), 2).label("nota")
+    materia = Materia.query.get_or_404(materia_id)
 
-    ).join(Alumno, Parcial.alumno_id == Alumno.id
-    ).join(Periodo, Parcial.periodo_id == Periodo.id
-    ).filter(Parcial.materia_id == materia_id
-    ).group_by(Parcial.alumno_id, Alumno.nombre_completo, Periodo.id
-    ).all()
+    # Obtener todas las notas de esa materia
+    notas = Nota.query.filter_by(materia_id=materia.id).all()
 
-    # Reorganizar los datos por alumno
-    resultados = {}
-    for p in parciales:
-        alumno_id = p.alumno_id
-        if alumno_id not in resultados:
-            resultados[alumno_id] = {
-                "alumno": p.alumno,
+    # Diccionario para agrupar por alumno
+    agrupado_por_alumno = {}
+
+    for nota in notas:
+        alumno_id = nota.alumno.id
+        if alumno_id not in agrupado_por_alumno:
+            agrupado_por_alumno[alumno_id] = {
+                "alumno_id": alumno_id,
+                "alumno": nota.alumno.nombre_completo,
                 "nota1": None,
                 "nota2": None,
                 "nota3": None,
-                "nota4": None
+                "nota4": None,
+                "promedio": None  # lo calcularemos después si deseas
             }
 
-        if p.periodo_id == 1:
-            resultados[alumno_id]["nota1"] = p.nota
-        elif p.periodo_id == 2:
-            resultados[alumno_id]["nota2"] = p.nota
-        elif p.periodo_id == 3:
-            resultados[alumno_id]["nota3"] = p.nota
-        elif p.periodo_id == 4:
-            resultados[alumno_id]["nota4"] = p.nota
+        # Detectar qué bimestre es
+        bimestre_map = {
+            "1erP": "nota1",
+            "2doP": "nota2",
+            "3erP": "nota3",
+            "4toP": "nota4"
+        }
 
-    # Calcular el promedio general por alumno
-    for alumno_id in resultados:
-        notas = [resultados[alumno_id][f"nota{i}"] for i in range(1, 5)]
-        notas_validas = [n for n in notas if n is not None]
-        resultados[alumno_id]["promedio"] = round(sum(notas_validas) / len(notas_validas), 2) if notas_validas else None
+        campo = bimestre_map.get(nota.tipo_parcial)
+        if campo:
+            agrupado_por_alumno[alumno_id][campo] = nota.nota
 
-    return jsonify(list(resultados.values()))
+    # Calcular promedio si hay al menos una nota
+    for alumno_data in agrupado_por_alumno.values():
+        notas_validas = [n for n in [alumno_data["nota1"], alumno_data["nota2"], alumno_data["nota3"], alumno_data["nota4"]] if n is not None]
+        if notas_validas:
+            alumno_data["promedio"] = round(sum(notas_validas) / len(notas_validas), 2)
+
+    # Devolver como lista
+    return jsonify(list(agrupado_por_alumno.values()))
 
 #este memtodo esta mal arrenglar 
 def registrar_notas_por_materia(materia_id):
@@ -372,27 +373,41 @@ def registrar_participaciones(materia_id):
         return jsonify({"error": f"Error al registrar participaciones: {str(e)}"}), 500
 
 
-#todos los estudiantes de una materia
-def obtener_estudiantes_por_materia(materia_id):
-    materia = Materia.query.get_or_404(materia_id)
-    estudiantes = Alumno.query.filter_by(grado_id=materia.grado_id).all()
 
-    datos = [
-        {
-            "id": alumno.id,
-            "codigo": alumno.codigo,
-            "nombre_completo": alumno.nombre_completo,
-            "email": alumno.email,
-            "telefono": alumno.telefono,
-            "estado": alumno.estado
-        } for alumno in estudiantes
-    ]
+#todos los estudiantes de una materia
+# En tu controlador, cambia la estructura de la respuesta de la siguiente manera:
+def obtener_estudiantes_por_materia(materia_id):
+    # Obtener la materia
+    materia = Materia.query.get_or_404(materia_id)
+
+    # Obtener el grado al que pertenece la materia
+    grado = materia.grado
+
+    # Obtener todos los alumnos asignados a ese grado
+    alumnos_grado = AlumnoGrado.query.filter_by(grado_id=grado.id).all()
+
+    estudiantes = []
+    for ag in alumnos_grado:
+        alumno = ag.alumno
+        estudiantes.append({
+            'alumno_id': alumno.id,
+            'codigo': alumno.codigo,
+            'nombre_completo': alumno.nombre_completo,
+            'email': alumno.email,
+            'telefono': alumno.telefono,
+            'estado': alumno.estado,
+            'grado_id': grado.id,
+            'grado_nombre': grado.nombre,
+            'nivel': grado.nivel,
+            'paralelo': grado.paralelo,
+            'seccion': grado.seccion,
+            'turno': grado.turno,
+            'gestion': ag.gestion
+        })
 
     return jsonify({
-        "total": len(estudiantes),
-        "estudiantes": datos
+        'total': len(estudiantes),
+        'estudiantes': estudiantes
     })
-
-
 
 

@@ -10,3 +10,4 @@ class Grado(db.Model):
     turno = db.Column(db.String(50), nullable=False)            # Mañana / Tarde
     gestion = db.Column(db.Integer, nullable=False)             # Año escolar
     ubicacion = db.Column(db.String(100), nullable=True)        # Sede o sucursal   
+    codigoGrado = db.Column(db.String(20), unique=True)         # Ej: "1A22"

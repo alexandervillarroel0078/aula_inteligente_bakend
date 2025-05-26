@@ -6,6 +6,7 @@ from models.rol import Rol
 from models.grado import Grado
 from models.materia import Materia
 from models.alumno import Alumno
+from models.alumno_grado import AlumnoGrado
 from models.materia_profesor import MateriaProfesor
 from models.usuario import Usuario
 from models.periodo import Periodo
@@ -19,6 +20,8 @@ from models.observacion import Observacion
 from models.prediccion import Prediccion
 from models.parcial import Parcial
 from models.ponderaciones import Ponderacion
+ 
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234@localhost:5432/aulainteligente'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -68,6 +71,7 @@ with app.app_context():
     cargar_csv(Grado, 'scripts/grado_utf8.csv')
     cargar_csv(Materia, 'scripts/materia_utf8.csv')
     cargar_csv(Alumno, 'scripts/alumno_utf8.csv')
+    cargar_csv(AlumnoGrado, 'scripts/alumno_grado_utf8.csv')
     cargar_csv(Usuario, 'scripts/usuario_utf8.csv')
     cargar_csv(MateriaProfesor, 'scripts/materia_profesor_utf8.csv')
     cargar_csv(Periodo, 'scripts/periodo_utf8.csv')
@@ -80,3 +84,4 @@ with app.app_context():
     cargar_csv(Observacion, 'scripts/observacion_utf8.csv')
     cargar_csv(Prediccion, 'scripts/prediccion_utf8.csv')
     cargar_csv(Ponderacion, 'scripts/ponderaciones_utf8.csv')
+     

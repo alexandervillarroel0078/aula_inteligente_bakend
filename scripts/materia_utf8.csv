@@ -1,21 +1,4 @@
 codigo,nombre,descripcion,grado_id,turno,aula,estado
-MAT-1A-MA,Matemáticas,Aritmética y álgebra básica,1,Mañana,Aula 1,activo
-LEN-1A-MA,Lenguaje,Comprensión lectora y redacción,1,Mañana,Aula 2,activo
-CNA-1A-MA,Ciencias Naturales,Introducción a la biología,1,Mañana,Laboratorio,activo
-HIS-1A-MA,Historia,Historia de Bolivia y del mundo,1,Mañana,Aula 3,activo
-EDF-1A-MA,Educación Física,Actividades deportivas y recreativas,1,Mañana,Cancha,activo
-ART-1A-MA,Arte,Expresión artística y plástica,1,Mañana,Aula de Arte,activo
-
-MAT-2A-MA,Matemáticas,Aritmética y álgebra básica,2,Mañana,Aula 1,activo
-LEN-2A-MA,Lenguaje,Comprensión lectora y redacción,2,Mañana,Aula 2,activo
-CNA-2A-MA,Ciencias Naturales,Introducción a la biología,2,Mañana,Laboratorio,activo
-HIS-2A-MA,Historia,Historia de Bolivia y del mundo,2,Mañana,Aula 3,activo
-EDF-2A-MA,Educación Física,Actividades deportivas y recreativas,2,Mañana,Cancha,activo
-ART-2A-MA,Arte,Expresión artística y plástica,2,Mañana,Aula de Arte,activo
-
-MAT-3A-MA,Matemáticas,Aritmética y álgebra básica,3,Mañana,Aula 1,activo
-LEN-3A-MA,Lenguaje,Comprensión lectora y redacción,3,Mañana,Aula 2,activo
-CNA-3A-MA,Ciencias Naturales,Introducción a la biología,3,Mañana,Laboratorio,activo
-HIS-3A-MA,Historia,Historia de Bolivia y del mundo,3,Mañana,Aula 3,activo
-EDF-3A-MA,Educación Física,Actividades deportivas y recreativas,3,Mañana,Cancha,activo
-ART-3A-MA,Arte,Expresión artística y plástica,3,Mañana,Aula de Arte,activo
+MAT-1A-MA,Matemáticas 2022,Aritmética y álgebra básica,1,Mañana,Aula 1,activo
+MAT-2A-MA,leguaje 2023,Aritmética y álgebra básica,2,Mañana,Aula 1,activo
+MAT-3A-MA,quimica 2024,Aritmética y álgebra básica,3,Mañana,Aula 1,activo

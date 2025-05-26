@@ -8,6 +8,6 @@ class MateriaProfesor(db.Model):
     profesor_id = db.Column(db.Integer, db.ForeignKey('profesor.id'))
     
     fecha_asignacion = db.Column(db.Date)
-
+    gestion = db.Column(db.Integer, nullable=False)
     materia = db.relationship('Materia', backref='materia_profesores')
     profesor = db.relationship('Profesor', backref='materia_profesores')

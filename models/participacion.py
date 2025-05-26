@@ -10,6 +10,7 @@ class Participacion(db.Model):
     
     fecha = db.Column(db.Date)
     puntaje = db.Column(db.Float)
+    observaciones = db.Column(db.Text, nullable=True)
 
     # Relaciones necesarias
     alumno = db.relationship('Alumno', backref='participaciones')

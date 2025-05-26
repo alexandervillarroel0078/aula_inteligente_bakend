@@ -7,11 +7,15 @@ from models import Alumno, Nota, Asistencia, Participacion, Prediccion, Materia,
 from models.materia import Materia
 from models.nota import Nota
 from models.periodo import Periodo
+from models.alumno_grado import AlumnoGrado
+from models.grado import Grado
 from flask import jsonify, abort
 
 # CRUD básico
 def listar_alumnos():
+    # Obtener todos los alumnos
     alumnos = Alumno.query.all()
+    
     resultado = [
         {
             'id': a.id,
@@ -24,18 +28,41 @@ def listar_alumnos():
             'direccion': a.direccion,
             'fecha_registro': a.fecha_registro,
             'estado': a.estado,
-            'grado_id': a.grado_id,
-            'grado': {
-                'id': a.grado.id if a.grado else None,
-                'nombre': a.grado.nombre if a.grado else '-'
-            }
+            'grados': [
+                {
+                    'id': ag.grado.id,
+                    'nombre': ag.grado.nombre,
+                    'nivel': ag.grado.nivel,
+                    'seccion': ag.grado.seccion,
+                    'paralelo': ag.grado.paralelo,
+                    'turno': ag.grado.turno,
+                    'gestion': ag.gestion
+                }
+                for ag in a.alumno_grados  # 'alumno_grados' es la relación con la tabla 'alumno_grado'
+            ]
         }
         for a in alumnos
     ]
+    
     return jsonify(resultado)
 
 def ver_alumno(id):
     alumno = Alumno.query.get_or_404(id)
+    
+    # Obtener los grados asociados al alumno desde la tabla 'alumno_grado'
+    grados = [
+        {
+            'id': ag.grado.id,
+            'nombre': ag.grado.nombre,
+            'nivel': ag.grado.nivel,
+            'seccion': ag.grado.seccion,
+            'paralelo': ag.grado.paralelo,
+            'turno': ag.grado.turno,
+            'gestion': ag.gestion
+        }
+        for ag in alumno.alumno_grados  # 'alumno_grados' es la relación con la tabla 'alumno_grado'
+    ]
+    
     return jsonify({
         'id': alumno.id,
         'codigo': alumno.codigo,
@@ -47,15 +74,14 @@ def ver_alumno(id):
         'direccion': alumno.direccion,
         'fecha_registro': alumno.fecha_registro,
         'estado': alumno.estado,
-        'grado_id': alumno.grado_id,
-        'grado': {
-            'id': alumno.grado.id if alumno.grado else None,
-            'nombre': alumno.grado.nombre if alumno.grado else '-'
-        }
+        'grados': grados  # Los grados asociados al alumno
     })
 
+# Crear un nuevo alumno
 def crear_alumno():
     data = request.json
+    
+    # Crear el nuevo alumno
     nuevo = Alumno(
         codigo=data['codigo'],
         nombre_completo=data['nombre_completo'],
@@ -64,18 +90,35 @@ def crear_alumno():
         email=data['email'],
         telefono=data['telefono'],
         direccion=data['direccion'],
-        grado_id=data['grado_id'],
         fecha_registro=datetime.now(),
         estado=data.get('estado', 'activo')
     )
+    
+    # Añadir el nuevo alumno a la sesión
     db.session.add(nuevo)
     db.session.commit()
+    
+    # Crear la relación en la tabla 'alumno_grado'
+    if 'grado_id' in data:
+        alumno_grado = AlumnoGrado(
+            alumno_id=nuevo.id,
+            grado_id=data['grado_id'],
+            gestion=data.get('gestion', 2024),
+        )
+        db.session.add(alumno_grado)
+        db.session.commit()
+    
+    # Registrar en la bitácora
     registrar_bitacora('alumno', 'CREAR')
+    
     return jsonify({'message': 'Alumno creado exitosamente'})
 
+# Editar un alumno existente
 def editar_alumno(id):
     alumno = Alumno.query.get_or_404(id)
     data = request.json
+    
+    # Actualizar los campos del alumno
     alumno.codigo = data['codigo']
     alumno.nombre_completo = data['nombre_completo']
     alumno.fecha_nacimiento = data['fecha_nacimiento']
@@ -84,21 +127,63 @@ def editar_alumno(id):
     alumno.telefono = data['telefono']
     alumno.direccion = data['direccion']
     alumno.estado = data['estado']
-    alumno.grado_id = data['grado_id']
+    
+    # Actualizar la relación con 'alumno_grado' (si es necesario)
+    if 'grado_id' in data:
+        # Eliminar la relación existente en caso de que el grado haya cambiado
+        AlumnoGrado.query.filter_by(alumno_id=alumno.id).delete()
+        db.session.commit()
+        
+        # Crear la nueva relación en 'alumno_grado'
+        alumno_grado = AlumnoGrado(
+            alumno_id=alumno.id,
+            grado_id=data['grado_id'],
+            gestion=data.get('gestion', 2024),
+        )
+        db.session.add(alumno_grado)
+        db.session.commit()
+    
     db.session.commit()
+    
+    # Registrar en la bitácora
     registrar_bitacora('alumno', 'EDITAR')
-    return jsonify({'message': 'Alumno actualizado'})
+    
+    return jsonify({'message': 'Alumno actualizado exitosamente'})
 
+# Eliminar un alumno
 def eliminar_alumno(id):
     alumno = Alumno.query.get_or_404(id)
+    
+    # Eliminar las relaciones en la tabla 'alumno_grado'
+    AlumnoGrado.query.filter_by(alumno_id=alumno.id).delete()
+    
+    # Eliminar el alumno
     db.session.delete(alumno)
     db.session.commit()
+    
+    # Registrar en la bitácora
     registrar_bitacora('alumno', 'ELIMINAR')
-    return jsonify({'message': 'Alumno eliminado'})
+    
+    return jsonify({'message': 'Alumno eliminado exitosamente'})
 
 # Funcionalidades para el estudiante
 def obtener_perfil_alumno(alumno_id):
     alumno = Alumno.query.get_or_404(alumno_id)
+    
+    # Obtener los grados asociados al alumno desde la tabla 'alumno_grado'
+    grados = [
+        {
+            'id': ag.grado.id,
+            'nombre': ag.grado.nombre,
+            'nivel': ag.grado.nivel,
+            'seccion': ag.grado.seccion,
+            'paralelo': ag.grado.paralelo,
+            'turno': ag.grado.turno,
+            'gestion': ag.gestion
+        }
+        for ag in alumno.alumno_grados  # 'alumno_grados' es la relación con la tabla 'alumno_grado'
+    ]
+    
     return jsonify({
         "id": alumno.id,
         "codigo": alumno.codigo,
@@ -110,24 +195,33 @@ def obtener_perfil_alumno(alumno_id):
         "direccion": alumno.direccion,
         "fecha_registro": alumno.fecha_registro,
         "estado": alumno.estado,
-        "grado_id": alumno.grado_id,
-        "grado_nombre": alumno.grado.nombre if alumno.grado else None
+        "grados": grados  # Los grados asociados al alumno
     })
 
 def obtener_notas_alumno(alumno_id):
+    # Obtener el alumno o lanzar un error 404 si no existe
     alumno = Alumno.query.get_or_404(alumno_id)
-    return jsonify([
-        {
-            "id": n.id,
-            "materia_id": n.materia_id,
-            "materia_nombre": n.materia.nombre if n.materia else None,
-            "periodo_id": n.periodo_id,
-            "periodo_nombre": n.periodo.nombre if n.periodo else None,
-            "nota_final": n.nota_final,
-            "observaciones": n.observaciones
-        }
-        for n in alumno.notas
-    ])
+
+    # Obtener todas las notas del alumno
+    notas = Nota.query.filter_by(alumno_id=alumno.id).all()
+
+    # Construir la respuesta en formato JSON
+    resultado = []
+    for nota in notas:
+        resultado.append({
+            'id': nota.id,
+            'materia_id': nota.materia_id,
+            'materia_nombre': nota.materia.nombre if nota.materia else None,
+            'periodo_id': nota.periodo_id,
+            'periodo_nombre': nota.periodo.nombre if nota.periodo else None,
+            'nota_final': nota.nota,
+            'observaciones': nota.observaciones,
+            'tipo_parcial': nota.tipo_parcial  # Agregado para el tipo de parcial
+        })
+
+    # Devolver los resultados como JSON
+    return jsonify(resultado)
+
 
 def obtener_asistencias_alumno(alumno_id):
     alumno = Alumno.query.get_or_404(alumno_id)
@@ -176,63 +270,124 @@ def obtener_predicciones_alumno(alumno_id):
     ])
 
 def obtener_historial_alumno(alumno_id):
+    # Obtener el alumno o lanzar un error 404 si no existe
     alumno = Alumno.query.get_or_404(alumno_id)
-    return jsonify([
-        {
-            "materia_id": n.materia_id,
-            "materia_nombre": n.materia.nombre if n.materia else None,
-            "periodo_id": n.periodo_id,
-            "periodo_nombre": n.periodo.nombre if n.periodo else None,
-            "nota_final": n.nota_final
-        }
-        for n in alumno.notas
-    ])
+
+    # Obtener todas las notas del alumno
+    notas = Nota.query.filter_by(alumno_id=alumno.id).all()
+
+    # Lista para almacenar el historial del alumno
+    historial = []
+
+    # Iterar sobre las notas y obtener la información de cada materia, periodo y nota
+    for nota in notas:
+        # Obtener la materia relacionada con la nota
+        materia = Materia.query.get(nota.materia_id)
+        # Obtener el periodo relacionado con la nota
+        periodo = Periodo.query.get(nota.periodo_id)
+
+        # Obtener el grado asociado con la materia
+        grado = Grado.query.get(materia.grado_id)
+
+        # Agregar la información al historial
+        historial.append({
+            'materia_id': materia.id,
+            'materia_nombre': materia.nombre,
+            'periodo_id': periodo.id,
+            'periodo_nombre': periodo.nombre,
+            'nota': nota.nota,
+            'observaciones': nota.observaciones,
+            'grado_id': grado.id,
+            'grado_nombre': grado.nombre,
+            'semestre': periodo.semestre,  # Asumiendo que el semestre está en el periodo
+            'anio': periodo.anio,          # Asumiendo que el año está en el periodo
+        })
+
+    # Devolver el historial del alumno como respuesta en formato JSON
+    return jsonify(historial)
+
 
 def obtener_materias_alumno(alumno_id):
+    # Obtener el alumno o lanzar un error 404 si no existe
     alumno = Alumno.query.get_or_404(alumno_id)
-    return jsonify([
-        {
-            "id": m.id,
-            "nombre": m.nombre,
-            "turno": m.turno,
-            "aula": m.aula,
-            "estado": m.estado
-        }
-        for m in alumno.grado.materias
-    ])
 
+    # Obtener los grados a los que está asignado el alumno
+    grados = AlumnoGrado.query.filter_by(alumno_id=alumno.id).all()
 
+    # Lista para almacenar las materias de cada grado
+    materias = []
 
+    # Iterar sobre los grados y obtener las materias relacionadas
+    for grado in grados:
+        # Obtener el grado
+        grado_obj = Grado.query.get(grado.grado_id)
+
+        # Obtener las materias asociadas con ese grado
+        for materia in grado_obj.materias:
+            materias.append({
+                'materia_id': materia.id,
+                'materia_nombre': materia.nombre,
+                'grado_id': grado.grado_id,
+                'grado_nombre': grado_obj.nombre,
+                'turno': grado_obj.turno,  # Obtener el turno de la materia
+            })
+    
+    # Devolver las materias del alumno como respuesta en formato JSON
+    return jsonify(materias)
 
 # NO BORRAR
 # ✅ Obtener notas por alumno y materia
 def obtener_notas_por_materia(alumno_id, materia_id):
+    # Consultar todas las notas del alumno en la materia especificada
     notas = Nota.query.filter_by(alumno_id=alumno_id, materia_id=materia_id).all()
+    
     resultado = []
+    
     for n in notas:
+        # Se obtiene la información de cada nota relacionada con el parcial y el periodo
         resultado.append({
             'id': n.id,
-            'nota_final': n.nota_final,
+            'tipo_parcial': n.tipo_parcial,
+            'nota': n.nota,
             'observaciones': n.observaciones,
             'periodo_id': n.periodo_id,
             'periodo_nombre': n.periodo.nombre if n.periodo else None
         })
     
-    # Verificar si falta algún periodo (bimestre) en los resultados
-    periodos_existentes = [n.periodo_id for n in notas]
-    todos_los_periodos = [1, 2, 3, 4]  # Los IDs de los bimestres
-
-    # Verificar si algún periodo falta
-    for periodo in todos_los_periodos:
-        if periodo not in periodos_existentes:
-            # Agregar el bimestre que falta
-            resultado.append({
-                'id': None,
-                'nota_final': None,
-                'observaciones': None,
-                'periodo_id': periodo,
-                'periodo_nombre': f'{periodo}er Bimestre' if periodo == 1 else f'{periodo}do Bimestre' if periodo == 2 else f'{periodo}er Bimestre' if periodo == 3 else f'{periodo}to Bimestre'
-            })
+    # Si no se encuentran notas, se puede añadir una respuesta para cada parcial que falta
+    if not notas:
+        resultado.append({
+            'id': None,
+            'tipo_parcial': 'Primer Parcial',
+            'nota': None,
+            'observaciones': None,
+            'periodo_id': 1,
+            'periodo_nombre': '1er Bimestre'
+        })
+        resultado.append({
+            'id': None,
+            'tipo_parcial': 'Segundo Parcial',
+            'nota': None,
+            'observaciones': None,
+            'periodo_id': 2,
+            'periodo_nombre': '2do Bimestre'
+        })
+        resultado.append({
+            'id': None,
+            'tipo_parcial': 'Tercer Parcial',
+            'nota': None,
+            'observaciones': None,
+            'periodo_id': 3,
+            'periodo_nombre': '3er Bimestre'
+        })
+        resultado.append({
+            'id': None,
+            'tipo_parcial': 'Cuarto Parcial',
+            'nota': None,
+            'observaciones': None,
+            'periodo_id': 4,
+            'periodo_nombre': '4to Bimestre'
+        })
 
     return jsonify(resultado)
 
@@ -321,3 +476,5 @@ def obtener_detalle_asistencia(alumno_id, materia_id, periodo_id):
 
     except Exception as e:
         return jsonify({"mensaje": "Ocurrió un error", "error": str(e)}), 500
+
+

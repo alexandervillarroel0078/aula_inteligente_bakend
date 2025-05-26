@@ -12,3 +12,5 @@ class Materia(db.Model):
 
     grado_id = db.Column(db.Integer, db.ForeignKey('grado.id'))  # Relación
     grado = db.relationship('Grado', backref='materias')
+
+     

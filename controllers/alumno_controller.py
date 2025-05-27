@@ -9,6 +9,7 @@ from models.nota import Nota
 from models.periodo import Periodo
 from models.alumno_grado import AlumnoGrado
 from models.grado import Grado
+from models.historial_asistencia_participacion import db, HistorialAsistenciaParticipacion
 from flask import jsonify, abort
 
 # CRUD básico
@@ -45,7 +46,7 @@ def listar_alumnos():
     ]
     
     return jsonify(resultado)
-
+# ✅
 def ver_alumno(id):
     alumno = Alumno.query.get_or_404(id)
     
@@ -76,101 +77,10 @@ def ver_alumno(id):
         'estado': alumno.estado,
         'grados': grados  # Los grados asociados al alumno
     })
-
-# Crear un nuevo alumno
-def crear_alumno():
-    data = request.json
-    
-    # Crear el nuevo alumno
-    nuevo = Alumno(
-        codigo=data['codigo'],
-        nombre_completo=data['nombre_completo'],
-        fecha_nacimiento=data['fecha_nacimiento'],
-        genero=data['genero'],
-        email=data['email'],
-        telefono=data['telefono'],
-        direccion=data['direccion'],
-        fecha_registro=datetime.now(),
-        estado=data.get('estado', 'activo')
-    )
-    
-    # Añadir el nuevo alumno a la sesión
-    db.session.add(nuevo)
-    db.session.commit()
-    
-    # Crear la relación en la tabla 'alumno_grado'
-    if 'grado_id' in data:
-        alumno_grado = AlumnoGrado(
-            alumno_id=nuevo.id,
-            grado_id=data['grado_id'],
-            gestion=data.get('gestion', 2024),
-        )
-        db.session.add(alumno_grado)
-        db.session.commit()
-    
-    # Registrar en la bitácora
-    registrar_bitacora('alumno', 'CREAR')
-    
-    return jsonify({'message': 'Alumno creado exitosamente'})
-
-# Editar un alumno existente
-def editar_alumno(id):
-    alumno = Alumno.query.get_or_404(id)
-    data = request.json
-    
-    # Actualizar los campos del alumno
-    alumno.codigo = data['codigo']
-    alumno.nombre_completo = data['nombre_completo']
-    alumno.fecha_nacimiento = data['fecha_nacimiento']
-    alumno.genero = data['genero']
-    alumno.email = data['email']
-    alumno.telefono = data['telefono']
-    alumno.direccion = data['direccion']
-    alumno.estado = data['estado']
-    
-    # Actualizar la relación con 'alumno_grado' (si es necesario)
-    if 'grado_id' in data:
-        # Eliminar la relación existente en caso de que el grado haya cambiado
-        AlumnoGrado.query.filter_by(alumno_id=alumno.id).delete()
-        db.session.commit()
-        
-        # Crear la nueva relación en 'alumno_grado'
-        alumno_grado = AlumnoGrado(
-            alumno_id=alumno.id,
-            grado_id=data['grado_id'],
-            gestion=data.get('gestion', 2024),
-        )
-        db.session.add(alumno_grado)
-        db.session.commit()
-    
-    db.session.commit()
-    
-    # Registrar en la bitácora
-    registrar_bitacora('alumno', 'EDITAR')
-    
-    return jsonify({'message': 'Alumno actualizado exitosamente'})
-
-# Eliminar un alumno
-def eliminar_alumno(id):
-    alumno = Alumno.query.get_or_404(id)
-    
-    # Eliminar las relaciones en la tabla 'alumno_grado'
-    AlumnoGrado.query.filter_by(alumno_id=alumno.id).delete()
-    
-    # Eliminar el alumno
-    db.session.delete(alumno)
-    db.session.commit()
-    
-    # Registrar en la bitácora
-    registrar_bitacora('alumno', 'ELIMINAR')
-    
-    return jsonify({'message': 'Alumno eliminado exitosamente'})
-
-# Funcionalidades para el estudiante
+# ✅
 def obtener_perfil_alumno(alumno_id):
     alumno = Alumno.query.get_or_404(alumno_id)
     
-    # Obtener los grados asociados al alumno desde la tabla 'alumno_grado'
     grados = [
         {
             'id': ag.grado.id,
@@ -181,7 +91,7 @@ def obtener_perfil_alumno(alumno_id):
             'turno': ag.grado.turno,
             'gestion': ag.gestion
         }
-        for ag in alumno.alumno_grados  # 'alumno_grados' es la relación con la tabla 'alumno_grado'
+        for ag in alumno.alumno_grados
     ]
     
     return jsonify({
@@ -195,49 +105,272 @@ def obtener_perfil_alumno(alumno_id):
         "direccion": alumno.direccion,
         "fecha_registro": alumno.fecha_registro,
         "estado": alumno.estado,
-        "grados": grados  # Los grados asociados al alumno
+        "grados": grados
     })
-
+# ✅
 def obtener_notas_alumno(alumno_id):
-    # Obtener el alumno o lanzar un error 404 si no existe
     alumno = Alumno.query.get_or_404(alumno_id)
-
-    # Obtener todas las notas del alumno
     notas = Nota.query.filter_by(alumno_id=alumno.id).all()
 
-    # Construir la respuesta en formato JSON
     resultado = []
     for nota in notas:
+        anio = nota.periodo.anio if nota.periodo else None
+        gestion = nota.periodo.grado.gestion if nota.periodo and nota.periodo.grado else None
+        grado = {
+            'id': nota.periodo.grado.id if nota.periodo and nota.periodo.grado else None,
+            'nombre': nota.periodo.grado.nombre if nota.periodo and nota.periodo.grado else None,
+            'nivel': nota.periodo.grado.nivel if nota.periodo and nota.periodo.grado else None,
+            'seccion': nota.periodo.grado.seccion if nota.periodo and nota.periodo.grado else None,
+            'paralelo': nota.periodo.grado.paralelo if nota.periodo and nota.periodo.grado else None,
+            'turno': nota.periodo.grado.turno if nota.periodo and nota.periodo.grado else None,
+            'gestion': gestion
+        }
+
         resultado.append({
             'id': nota.id,
             'materia_id': nota.materia_id,
             'materia_nombre': nota.materia.nombre if nota.materia else None,
             'periodo_id': nota.periodo_id,
             'periodo_nombre': nota.periodo.nombre if nota.periodo else None,
-            'nota_final': nota.nota,
+            'anio': anio,
+            'gestion': gestion,
+            'nota_periodo': nota.nota,
             'observaciones': nota.observaciones,
-            'tipo_parcial': nota.tipo_parcial  # Agregado para el tipo de parcial
+            'tipo_parcial': nota.tipo_parcial,
+            'grado': grado,
+            'grado_nombre': grado['nombre']
         })
 
-    # Devolver los resultados como JSON
     return jsonify(resultado)
 
 
-def obtener_asistencias_alumno(alumno_id):
-    alumno = Alumno.query.get_or_404(alumno_id)
-    return jsonify([
-        {
-            "id": a.id,
-            "materia_id": a.materia_id,
-            "materia_nombre": a.materia.nombre if a.materia else None,
-            "periodo_id": a.periodo_id,
-            "periodo_nombre": a.periodo.nombre if a.periodo else None,
-            "fecha": a.fecha,
-            "presente": a.presente
-        }
-        for a in alumno.asistencias
-    ])
+########################################
+# def obtener_asistencias_alumno():
+#     return obtener_asistencias_historial()  # Llama al método que obtiene las asistencias del historial
+# def obtener_asistencias_alumno():
+#     # Obtener parámetros de la solicitud de los query params
+#     alumno_id = request.args.get('alumno_id', type=int)
+#     grado_id = request.args.get('grado_id', type=int)
+    
+#     if not alumno_id or not grado_id:
+#         return jsonify({"message": "alumno_id y grado_id son requeridos"}), 400
+    
+#     # Filtrar historial por alumno_id, grado_id y tipo 'asistencia'
+#     historial = HistorialAsistenciaParticipacion.query.filter_by(
+#         alumno_id=alumno_id,
+#         grado_id=grado_id,
+#         tipo='asistencia'  # Solo registros de asistencia
+#     ).all()
 
+#     if not historial:
+#         return jsonify({"message": "No se encontraron registros de asistencia para este alumno y grado"}), 404
+    
+#     # Calcular el total de asistencias y faltas por periodo
+#     asistencia_por_periodo = {}
+#     for h in historial:
+#         # Si el periodo ya está en el diccionario, sumar el puntaje
+#         if h.periodo_id not in asistencia_por_periodo:
+#             asistencia_por_periodo[h.periodo_id] = {
+#                 'total_asistencias': 0,
+#                 'total_faltas': 0,
+#                 'total_clases': 0,
+#             }
+        
+#         # Sumamos la asistencia si el puntaje es 100
+#         if h.puntaje == 100:
+#             asistencia_por_periodo[h.periodo_id]['total_asistencias'] += 1
+#         else:
+#             asistencia_por_periodo[h.periodo_id]['total_faltas'] += 1
+        
+#         asistencia_por_periodo[h.periodo_id]['total_clases'] += 1
+    
+#     # Responder con la asistencia total por periodo
+#     return jsonify({
+#         "alumno_id": alumno_id,
+#         "grado_id": grado_id,
+#         "asistencia_por_periodo": asistencia_por_periodo
+#     }), 200
+# ✅
+def obtener_asistencias_alumno():
+    # Obtener solo el parámetro alumno_id de los query params
+    alumno_id = request.args.get('alumno_id', type=int)
+    
+    if not alumno_id:
+        return jsonify({"message": "alumno_id es requerido"}), 400
+    
+    # Obtener el nombre del alumno usando el alumno_id
+    alumno = Alumno.query.get(alumno_id)
+    if not alumno:
+        return jsonify({"message": "Alumno no encontrado"}), 404
+
+    # Filtrar historial por alumno_id y tipo 'asistencia' (sin grado_id)
+    historial = HistorialAsistenciaParticipacion.query.filter_by(
+        alumno_id=alumno_id,
+        tipo='asistencia'  # Solo registros de asistencia
+    ).all()
+
+    if not historial:
+        return jsonify({"message": "No se encontraron registros de asistencia para este alumno"}), 404
+    
+    # Calcular el total de asistencias y faltas por periodo
+    asistencia_por_periodo = {}
+    for h in historial:
+        # Obtener el nombre del grado y periodo usando los IDs
+        grado = Grado.query.get(h.grado_id)  # Obtener grado por grado_id
+        periodo = Periodo.query.get(h.periodo_id)  # Obtener periodo por periodo_id
+        
+        # Si el grado o el periodo no existen, lo omitimos
+        if not grado or not periodo:
+            continue
+        
+        # Si el periodo ya está en el diccionario, sumar el puntaje
+        if h.periodo_id not in asistencia_por_periodo:
+            asistencia_por_periodo[h.periodo_id] = {
+                'nombre_periodo': periodo.nombre,  # Nombre del periodo
+                'nombre_grado': grado.nombre,  # Nombre del grado
+                'total_asistencias': 0,
+                'total_faltas': 0,
+                'total_clases': 0,
+                'puntaje': 0  # Inicializamos el puntaje
+            }
+        
+        # Sumamos la asistencia si el puntaje es 100
+        if h.puntaje == 100:
+            asistencia_por_periodo[h.periodo_id]['total_asistencias'] += 1
+        else:
+            asistencia_por_periodo[h.periodo_id]['total_faltas'] += 1
+        
+        asistencia_por_periodo[h.periodo_id]['total_clases'] += 1
+    
+    # Calculamos el puntaje para cada periodo
+    for periodo_id, datos in asistencia_por_periodo.items():
+        # Suponiendo que cada periodo tiene 40 clases
+        total_clases = 40
+        
+        # Calculamos el puntaje como el porcentaje de clases a las que asistió
+        puntaje = (datos['total_asistencias'] / total_clases) * 100
+        asistencia_por_periodo[periodo_id]['puntaje'] = round(puntaje, 2)
+    
+    # Responder con la asistencia total por periodo y el puntaje
+    return jsonify({
+        "alumno_id": alumno_id,
+        "alumno_nombre": alumno.nombre_completo,  # Incluyendo el nombre del alumno
+        "asistencia_por_periodo": asistencia_por_periodo
+    }), 200
+# ✅
+def obtener_participacion_alumno():
+    # Obtener solo el parámetro alumno_id de los query params
+    alumno_id = request.args.get('alumno_id', type=int)
+    
+    if not alumno_id:
+        return jsonify({"message": "alumno_id es requerido"}), 400
+    
+    # Obtener el nombre del alumno usando el alumno_id
+    alumno = Alumno.query.get(alumno_id)
+    if not alumno:
+        return jsonify({"message": "Alumno no encontrado"}), 404
+
+    # Filtrar historial por alumno_id y tipo 'participacion'
+    historial = HistorialAsistenciaParticipacion.query.filter_by(
+        alumno_id=alumno_id,
+        tipo='participación'  # Solo registros de participación
+    ).all()
+
+    if not historial:
+        return jsonify({"message": "No se encontraron registros de participación para este alumno"}), 404
+    
+    # Calcular el total de participaciones por periodo
+    participacion_por_periodo = {}
+    for h in historial:
+        # Obtener el nombre del grado y periodo usando los IDs
+        grado = Grado.query.get(h.grado_id)  # Obtener grado por grado_id
+        periodo = Periodo.query.get(h.periodo_id)  # Obtener periodo por periodo_id
+        
+        # Si el grado o el periodo no existen, lo omitimos
+        if not grado or not periodo:
+            continue
+        
+        # Si el periodo ya está en el diccionario, sumar el puntaje
+        if h.periodo_id not in participacion_por_periodo:
+            participacion_por_periodo[h.periodo_id] = {
+                'nombre_periodo': periodo.nombre,  # Nombre del periodo
+                'nombre_grado': grado.nombre,  # Nombre del grado
+                'total_participaciones': 0,  # Inicializamos el contador de participaciones válidas
+                'total_faltas': 0,  # Inicializamos el contador de faltas
+                'total_clases': 8,  # Suponemos que hay 8 participaciones posibles por periodo
+                'puntaje': 0  # Inicializamos el puntaje total
+            }
+        
+        # Si la nota es mayor a 0, lo consideramos una participación válida
+        if h.puntaje > 0:
+            participacion_por_periodo[h.periodo_id]['total_participaciones'] += 1
+            participacion_por_periodo[h.periodo_id]['puntaje'] += h.puntaje  # Sumar el puntaje de la participación
+        else:
+            participacion_por_periodo[h.periodo_id]['total_faltas'] += 1
+    
+    # Calculamos el porcentaje de participación para cada periodo
+    for periodo_id, datos in participacion_por_periodo.items():
+        # Calculamos el puntaje de participación como el porcentaje de participaciones sobre las 8 posibles
+        porcentaje_participacion = (datos['total_participaciones'] / 8) * 100
+        participacion_por_periodo[periodo_id]['porcentaje_participacion'] = round(porcentaje_participacion, 2)
+    
+    # Responder con la participación total por periodo y el puntaje
+    return jsonify({
+        "alumno_id": alumno_id,
+        "alumno_nombre": alumno.nombre_completo,  # Incluyendo el nombre del alumno
+        "participacion_por_periodo": participacion_por_periodo
+    }), 200
+# ✅
+def obtener_materias_alumno():
+    # Obtener el parámetro alumno_id de los query params
+    alumno_id = request.args.get('alumno_id', type=int)
+
+    if not alumno_id:
+        return jsonify({"message": "alumno_id es requerido"}), 400
+
+    # Obtener el nombre del alumno usando el alumno_id
+    alumno = Alumno.query.get(alumno_id)
+    if not alumno:
+        return jsonify({"message": "Alumno no encontrado"}), 404
+
+    # Filtrar las materias del alumno por grado y periodo
+    materias_por_grado = {}
+
+    alumno_grados = AlumnoGrado.query.filter_by(alumno_id=alumno_id).all()
+
+    if not alumno_grados:
+        return jsonify({"message": "No se encontraron grados para este alumno"}), 404
+
+    for ag in alumno_grados:
+        # Obtener el grado asociado
+        grado = Grado.query.get(ag.grado_id)
+        if not grado:
+            continue
+
+        # Obtener las materias del grado
+        materias = Materia.query.filter_by(grado_id=ag.grado_id).all()
+
+        # Crear una estructura de datos para guardar las materias por grado
+        materias_por_grado[grado.nombre] = {
+            'grado_nombre': grado.nombre,
+            'materias': [] if materias else ['No hay materias asignadas para este grado.']  # Manejo de error
+        }
+
+        for materia in materias:
+            materias_por_grado[grado.nombre]['materias'].append({
+                'materia_nombre': materia.nombre,
+                'materia_codigo': materia.codigo
+            })
+
+    return jsonify({
+        "alumno_id": alumno_id,
+        "alumno_nombre": alumno.nombre_completo,
+        "materias_por_grado": materias_por_grado
+    }), 200
+
+
+
+#######################################
 def obtener_participaciones_alumno(alumno_id):
     alumno = Alumno.query.get_or_404(alumno_id)
     return jsonify([
@@ -307,33 +440,33 @@ def obtener_historial_alumno(alumno_id):
     return jsonify(historial)
 
 
-def obtener_materias_alumno(alumno_id):
-    # Obtener el alumno o lanzar un error 404 si no existe
-    alumno = Alumno.query.get_or_404(alumno_id)
+# def obtener_materias_alumno(alumno_id):
+#     # Obtener el alumno o lanzar un error 404 si no existe
+#     alumno = Alumno.query.get_or_404(alumno_id)
 
-    # Obtener los grados a los que está asignado el alumno
-    grados = AlumnoGrado.query.filter_by(alumno_id=alumno.id).all()
+#     # Obtener los grados a los que está asignado el alumno
+#     grados = AlumnoGrado.query.filter_by(alumno_id=alumno.id).all()
 
-    # Lista para almacenar las materias de cada grado
-    materias = []
+#     # Lista para almacenar las materias de cada grado
+#     materias = []
 
-    # Iterar sobre los grados y obtener las materias relacionadas
-    for grado in grados:
-        # Obtener el grado
-        grado_obj = Grado.query.get(grado.grado_id)
+#     # Iterar sobre los grados y obtener las materias relacionadas
+#     for grado in grados:
+#         # Obtener el grado
+#         grado_obj = Grado.query.get(grado.grado_id)
 
-        # Obtener las materias asociadas con ese grado
-        for materia in grado_obj.materias:
-            materias.append({
-                'materia_id': materia.id,
-                'materia_nombre': materia.nombre,
-                'grado_id': grado.grado_id,
-                'grado_nombre': grado_obj.nombre,
-                'turno': grado_obj.turno,  # Obtener el turno de la materia
-            })
+#         # Obtener las materias asociadas con ese grado
+#         for materia in grado_obj.materias:
+#             materias.append({
+#                 'materia_id': materia.id,
+#                 'materia_nombre': materia.nombre,
+#                 'grado_id': grado.grado_id,
+#                 'grado_nombre': grado_obj.nombre,
+#                 'turno': grado_obj.turno,  # Obtener el turno de la materia
+#             })
     
-    # Devolver las materias del alumno como respuesta en formato JSON
-    return jsonify(materias)
+#     # Devolver las materias del alumno como respuesta en formato JSON
+#     return jsonify(materias)
 
 # NO BORRAR
 # ✅ Obtener notas por alumno y materia

@@ -14,7 +14,7 @@ class AlumnoGrado(db.Model):
     alumno = db.relationship('Alumno', backref=db.backref('alumno_grados', lazy=True))
     grado = db.relationship('Grado', backref=db.backref('grado_alumnos', lazy=True))
     
-    
+    estado = db.Column(db.String(20), nullable=False, default='pendiente')  # 'pendiente', 'aprobado', 'no aprobado'
 
     def __repr__(self):
         return f'<AlumnoGrado alumno_id={self.alumno_id} grado_id={self.grado_id}>'

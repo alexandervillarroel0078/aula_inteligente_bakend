@@ -7,12 +7,15 @@ class Participacion(db.Model):
     alumno_id = db.Column(db.Integer, db.ForeignKey('alumno.id'))
     materia_id = db.Column(db.Integer, db.ForeignKey('materia.id'))
     periodo_id = db.Column(db.Integer, db.ForeignKey('periodo.id'))
-    
-    fecha = db.Column(db.Date)
-    puntaje = db.Column(db.Float)
-    observaciones = db.Column(db.Text, nullable=True)
+    grado_id = db.Column(db.Integer, db.ForeignKey('grado.id'), nullable=False)
 
     # Relaciones necesarias
     alumno = db.relationship('Alumno', backref='participaciones')
     materia = db.relationship('Materia', backref='participaciones')
     periodo = db.relationship('Periodo', backref='participaciones')
+    grado = db.relationship('Grado', backref='participaciones')
+    
+    gestion = db.Column(db.Integer, nullable=False)
+    cantidad_participacion = db.Column(db.Integer, nullable=False)  # Contador de participaciones
+    nota_participacion = db.Column(db.Float, nullable=True)  
+    observaciones = db.Column(db.Text, nullable=True)

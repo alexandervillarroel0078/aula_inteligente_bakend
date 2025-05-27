@@ -20,7 +20,7 @@ from models.observacion import Observacion
 from models.prediccion import Prediccion
 from models.parcial import Parcial
 from models.ponderaciones import Ponderacion
- 
+from models.historial_asistencia_participacion import HistorialAsistenciaParticipacion
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234@localhost:5432/aulainteligente'
@@ -84,4 +84,4 @@ with app.app_context():
     cargar_csv(Observacion, 'scripts/observacion_utf8.csv')
     cargar_csv(Prediccion, 'scripts/prediccion_utf8.csv')
     cargar_csv(Ponderacion, 'scripts/ponderaciones_utf8.csv')
-     
+    cargar_csv(HistorialAsistenciaParticipacion, 'scripts/historial_asistencia_participacion_utf8.csv')

@@ -13,31 +13,35 @@ def listar_alumnos():
 def ver_alumno(id):
     return alumno_controller.ver_alumno(id)
 
-@alumno_bp.route('/', methods=['POST'])
-def crear_alumno():
-    return alumno_controller.crear_alumno()
-
-@alumno_bp.route('/<int:id>', methods=['PUT'])
-def editar_alumno(id):
-    return alumno_controller.editar_alumno(id)
-
-@alumno_bp.route('/<int:id>', methods=['DELETE'])
-def eliminar_alumno(id):
-    return alumno_controller.eliminar_alumno(id)
-
 # Funcionalidades del alumno
+#http://localhost:5000/api/alumnos//1/perfil
 @alumno_bp.route('/<int:alumno_id>/perfil', methods=['GET'])
 def obtener_perfil_alumno(alumno_id):
     return alumno_controller.obtener_perfil_alumno(alumno_id)
 
-#notas 
+#http://localhost:5000/api/alumnos//1/notas
 @alumno_bp.route('/<int:alumno_id>/notas', methods=['GET'])
 def obtener_notas_alumno(alumno_id):
     return alumno_controller.obtener_notas_alumno(alumno_id)
 
-@alumno_bp.route('/<int:alumno_id>/asistencias', methods=['GET'])
-def obtener_asistencias_alumno(alumno_id):
-    return alumno_controller.obtener_asistencias_alumno(alumno_id)
+
+#http://localhost:5000/api/alumnos/asistencias?alumno_id=1
+@alumno_bp.route('/asistencias', methods=['GET'])
+def obtener_asistencias_alumno():
+    return alumno_controller.obtener_asistencias_alumno()
+
+#http://localhost:5000/api/alumnos/participacion?alumno_id=1
+@alumno_bp.route('/participacion', methods=['GET'])
+def obtener_participacion_alumno():
+    return alumno_controller.obtener_participacion_alumno()
+
+#http://localhost:5000/api/alumnos/materias?alumno_id=1
+@alumno_bp.route('/materias', methods=['GET'])
+def obtener_materias_alumno():
+    return alumno_controller.obtener_materias_alumno()
+
+
+
 
 @alumno_bp.route('/<int:alumno_id>/participaciones', methods=['GET'])
 def obtener_participaciones_alumno(alumno_id):
@@ -51,9 +55,6 @@ def obtener_predicciones_alumno(alumno_id):
 def obtener_historial_alumno(alumno_id):
     return alumno_controller.obtener_historial_alumno(alumno_id)
 
-@alumno_bp.route('/<int:alumno_id>/materias', methods=['GET'])
-def obtener_materias_alumno(alumno_id):
-    return alumno_controller.obtener_materias_alumno(alumno_id)
 
 #http://127.0.0.1:5000/api/alumnos/1/materias/3/notas
 @alumno_bp.route('/<int:alumno_id>/materias/<int:materia_id>/notas', methods=['GET'])

@@ -1,39 +1,37 @@
-alumno_id,materia_id,periodo_id,tipo_parcial,nota,observaciones
-1,1,1,1erP,91,1eroA 2022
-1,1,2,2doP,17,1eroA 2022
-1,1,3,3erP,37,1eroA 2022
-1,1,4,4toP,1,1eroA 2022
-1,2,1,1erP,43,1eroA 2022
-1,2,2,2doP,99,1eroA 2022
-1,2,3,3erP,34,1eroA 2022
-1,2,4,4toP,68,1eroA 2022
-1,3,1,1erP,15,1eroA 2022
-1,3,2,2doP,58,1eroA 2022
-1,3,3,3erP,37,1eroA 2022
-1,3,4,4toP,90,1eroA 2022
-
-2,1,1,1erP,59,2doA 2023
-2,1,2,2doP,74,2doA 2023
-2,1,3,3erP,67,2doA 2023
-2,1,4,4toP,43,2doA 2023
-2,2,1,1erP,84,2doA 2023
-2,2,2,2doP,23,2doA 2023
-2,2,3,3erP,88,2doA 2023
-2,2,4,4toP,14,2doA 2023
-2,3,1,1erP,32,2doA 2023
-2,3,2,2doP,45,2doA 2023
-2,3,3,3erP,60,2doA 2023
-2,3,4,4toP,40,2doA 2023
-
-3,1,1,1erP,92,3eroA 2024
-3,1,2,2doP,22,3eroA 2024
-3,1,3,3erP,75,3eroA 2024
-3,1,4,4toP,72,3eroA 2024
-3,2,1,1erP,73,3eroA 2024
-3,2,2,2doP,95,3eroA 2024
-3,2,3,3erP,81,3eroA 2024
-3,2,4,4toP,16,3eroA 2024
-3,3,1,1erP,70,3eroA 2024
-3,3,2,2doP,12,3eroA 2024
-3,3,3,3erP,25,3eroA 2024
-3,3,4,4toP,96,3eroA 2024
+alumno_id,materia_id,periodo_id,grado_id,tipo_parcial,nota,nota_participacion,nota_asistencia,observaciones,grado_nombre,gestion
+1,1,1,1,1er parcial,28,6,19,año 2022,1ero ,2022
+1,1,2,1,2do parcial,8,11,3,año 2022,1ero,2022
+1,1,3,1,3er parcial,20,13,17,año 2022,1ero,2022
+1,1,4,1,4to parcial,6,9,5,año 2022,1ero,2023
+1,2,5,2,1er parcial,38,5,13,año 2023,2do,2023
+1,2,6,2,2do parcial,24,6,19,año 2023,2do,2023
+1,2,7,2,3er parcial,28,16,7,año 2023,2do,2023
+1,2,8,2,4to parcial,44,0,3,año 2023,2do,2023
+1,3,9,3,1er parcial,24,12,5,año 2023,3er,2024
+1,3,10,3,2do parcial,38,6,4,año 2023,3er,2024
+1,3,11,3,3er parcial,58,17,4,año 2023,3er,2024
+1,3,12,3,4to parcial,51,0,18,año 2023,3er,2024
+2,1,1,1,1er parcial,51,1,13,año 2022,1ero ,2022
+2,1,2,1,2do parcial,48,8,20,año 2022,1ero,2022
+2,1,3,1,3er parcial,56,17,15,año 2022,1ero,2022
+2,1,4,1,4to parcial,21,8,18,año 2022,1ero,2023
+2,2,5,2,1er parcial,9,10,6,año 2023,2do,2023
+2,2,6,2,2do parcial,40,17,14,año 2023,2do,2023
+2,2,7,2,3er parcial,3,6,20,año 2023,2do,2023
+2,2,8,2,4to parcial,29,17,20,año 2023,2do,2023
+2,3,9,3,1er parcial,28,1,8,año 2023,3er,2024
+2,3,10,3,2do parcial,42,13,6,año 2023,3er,2024
+2,3,11,3,3er parcial,39,20,5,año 2023,3er,2024
+2,3,12,3,4to parcial,31,18,5,año 2023,3er,2024
+3,1,1,1,1er parcial,53,7,4,año 2022,1ero ,2022
+3,1,2,1,2do parcial,26,1,9,año 2022,1ero,2022
+3,1,3,1,3er parcial,51,5,16,año 2022,1ero,2022
+3,1,4,1,4to parcial,2,3,11,año 2022,1ero,2023
+3,2,5,2,1er parcial,41,3,8,año 2023,2do,2023
+3,2,6,2,2do parcial,2,6,13,año 2023,2do,2023
+3,2,7,2,3er parcial,0,13,17,año 2023,2do,2023
+3,2,8,2,4to parcial,6,2,16,año 2023,2do,2023
+3,3,9,3,1er parcial,17,3,16,año 2023,3er,2024
+3,3,10,3,2do parcial,49,12,4,año 2023,3er,2024
+3,3,11,3,3er parcial,30,15,13,año 2023,3er,2024
+3,3,12,3,4to parcial,0,16,1,año 2023,3er,2024

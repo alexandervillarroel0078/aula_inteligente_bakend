@@ -1,4 +1,8 @@
-codigo,nombre,descripcion,grado_id,turno,aula,estado
-MAT-1A-MA,Matemáticas 2022,Aritmética y álgebra básica,1,Mañana,Aula 1,activo
-MAT-2A-MA,leguaje 2023,Aritmética y álgebra básica,2,Mañana,Aula 1,activo
-MAT-3A-MA,quimica 2024,Aritmética y álgebra básica,3,Mañana,Aula 1,activo
+grado_id,codigo,nombre,descripcion,turno,aula,estado
+1,MAT-1A-MA,Matemáticas 1ro A 2022,Materia de Matemáticas para 1ro A 2022,Mañana,A1,Activo
+2,MAT-2A-MA,Matemáticas 2do A 2023,Materia de Matemáticas para 2do A 2023,Mañana,B1,Activo
+3,MAT-3A-MA,Matemáticas 3ro A 2024,Materia de Matemáticas para 3ro A 2024,Mañana,C1,Activo
+
+1,LAN-1A-MA,Lengua 1ro A 2022,Materia de Lengua para 1ro A 2022,Mañana,A2,Activo
+2,LAN-2A-MA,Lengua 2do A 2023,Materia de Lengua para 2do A 2023,Mañana,B2,Activo
+3,LAN-3A-MA,Lengua 3ro A 2024,Materia de Lengua para 3ro A 2024,Mañana,C2,Activo

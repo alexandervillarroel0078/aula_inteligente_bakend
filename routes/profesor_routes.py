@@ -31,6 +31,13 @@ def obtener_participacion():
 
 
 
+#http://localhost:5000/api/asistencias/profesor/alumno?profesor_id=1&materia_id=1&grado_id=1&periodo_id=1
+@profesor_bp.route('/api/asistencias/profesor/alumno', methods=['GET'])
+def obtener_asistencias():
+    return profesor_controller.obtener_asistencia_por_materia_profesor_grado()
+
+
+
 
 
 

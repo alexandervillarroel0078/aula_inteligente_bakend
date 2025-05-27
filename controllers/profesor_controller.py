@@ -250,8 +250,110 @@ def obtener_participacion_por_materia_profesor_grado():
         "participaciones": participaciones_totales
     }), 200
 
+# ✅ profesor-->materia-->asistencia
+def obtener_asistencia_por_materia_profesor_grado():
+    # Obtener los parámetros de la consulta (query params)
+    profesor_id = request.args.get('profesor_id', type=int)
+    materia_id = request.args.get('materia_id', type=int)
+    grado_id = request.args.get('grado_id', type=int)
+    periodo_id = request.args.get('periodo_id', type=int)
 
+    # Verificar si los parámetros están presentes
+    if not profesor_id or not materia_id or not grado_id:
+        return jsonify({"message": "profesor_id, materia_id y grado_id son requeridos"}), 400
 
+    # Obtener el profesor por su ID
+    profesor = Profesor.query.get(profesor_id)
+    if not profesor:
+        return jsonify({"message": "Profesor no encontrado"}), 404
+
+    # Obtener la materia por su ID
+    materia = Materia.query.get(materia_id)
+    if not materia:
+        return jsonify({"message": "Materia no encontrada"}), 404
+
+    # Verificar si la materia está asignada al profesor en el grado específico
+    materia_profesor = MateriaProfesor.query.filter_by(
+        materia_id=materia_id,
+        profesor_id=profesor_id
+    ).first()
+
+    if not materia_profesor:
+        return jsonify({"message": "La materia no está asignada a este profesor"}), 404
+
+    # Obtener todos los alumnos del grado especificado
+    alumnos_grado = AlumnoGrado.query.filter_by(grado_id=grado_id).all()
+
+    if not alumnos_grado:
+        return jsonify({"message": "No se encontraron alumnos para este grado"}), 404
+
+    # Crear una lista de asistencias para todos los alumnos
+    asistencias_totales = []
+
+    for alumno_grado in alumnos_grado:
+        alumno = alumno_grado.alumno  # Obtener el alumno asociado
+        
+        # Filtrar las asistencias de cada alumno en la materia y grado especificados
+        historial = HistorialAsistenciaParticipacion.query.filter_by(
+            alumno_id=alumno.id,
+            materia_id=materia_id,
+            grado_id=grado_id,
+            tipo='asistencia'  # Solo registros de asistencia
+        ).all()
+
+        if not historial:
+            continue  # Si no tiene asistencias, pasar al siguiente alumno
+        
+        # Calcular la asistencia por periodo
+        for h in historial:
+            grado = Grado.query.get(h.grado_id)  # Obtener grado por grado_id
+            periodo = Periodo.query.get(h.periodo_id)  # Obtener periodo por periodo_id
+            
+            if not grado or not periodo:
+                continue
+
+            # Usamos un valor fijo para el total de clases por periodo, ya que no existe el campo 'total_clases'
+            total_clases = 40  # Asumimos que siempre hay 40 clases por periodo (puedes ajustar esto si es necesario)
+
+            # Creamos la estructura por periodo, directamente
+            asistencia_por_periodo = {
+                'alumno_id': alumno.id,
+                'alumno_nombre': alumno.nombre_completo,
+                'nombre_grado': grado.nombre,
+                'grado_id': grado.id,  # Incluyendo el ID del grado
+                'nombre_periodo': periodo.nombre,
+                'periodo_id': periodo.id,  # Incluyendo el ID del periodo
+                'total_asistencias': 0,
+                'total_faltas': 0,
+                'total_clases': total_clases,  # Usando un valor fijo de 40 clases
+                'puntaje': 0
+            }
+
+            # Si la asistencia tiene puntaje igual a 100, se cuenta como asistencia válida
+            if h.puntaje == 100:
+                asistencia_por_periodo['total_asistencias'] += 1
+            else:
+                asistencia_por_periodo['total_faltas'] += 1
+
+            # Calcular el porcentaje de asistencia por cada periodo
+            porcentaje_asistencia = (asistencia_por_periodo['total_asistencias'] / total_clases) * 100
+            asistencia_por_periodo['porcentaje_asistencia'] = round(porcentaje_asistencia, 2)
+
+            # Agregar el puntaje final de asistencia al registro
+            asistencia_por_periodo['puntaje'] = asistencia_por_periodo['porcentaje_asistencia']
+
+            # Agregar los datos de asistencia del alumno al periodo
+            asistencias_totales.append(asistencia_por_periodo)
+
+    return jsonify({
+        "profesor_id": profesor.id,
+        "profesor_nombre": profesor.nombre_completo,
+        "materia_id": materia.id,
+        "materia_nombre": materia.nombre,
+        "grado_id": grado_id,
+        "periodo_id": periodo_id if periodo_id else "Todos los periodos",
+        "asistencias": asistencias_totales
+    }), 200
 
 
 

@@ -24,7 +24,6 @@ def obtener_perfil_alumno(alumno_id):
 def obtener_notas_alumno(alumno_id):
     return alumno_controller.obtener_notas_alumno(alumno_id)
 
-
 #http://localhost:5000/api/alumnos/asistencias?alumno_id=1
 @alumno_bp.route('/asistencias', methods=['GET'])
 def obtener_asistencias_alumno():
@@ -39,6 +38,17 @@ def obtener_participacion_alumno():
 @alumno_bp.route('/materias', methods=['GET'])
 def obtener_materias_alumno():
     return alumno_controller.obtener_materias_alumno()
+
+
+
+
+
+
+
+
+
+
+
 
 
 

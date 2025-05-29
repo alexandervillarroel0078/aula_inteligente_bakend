@@ -1,4 +1,13 @@
 nombre,nivel,seccion,paralelo,turno,gestion,ubicacion,codigoGrado
-1ro A,Primaria,Primero,A,Mañana,2022,Sede Central,1A22
-2do A,Primaria,Segundo,A,Mañana,2023,Sede Central,2A23
-3ro A,Primaria,Tercero,A,Mañana,2024,Sede Central,3A24
+1ro A,Primaria,Primero,A,Mañana,2022,Sede Central,1A22M
+2do A,Primaria,Segundo,A,Mañana,2023,Sede Central,2A23M
+3ro A,Primaria,Tercero,A,Mañana,2024,Sede Central,3A24M
+4to A,Primaria,Cuarto,A,Mañana,2025,Sede Central,4A25M
+5to A,Primaria,Quinto,A,Mañana,2026,Sede Central,5A26M
+6to A,Primaria,Sexto,A,Mañana,2027,Sede Central,6A27M
+1ro A,Primaria,Primero,A,Tarde,2022,Sede Central,1A22T
+2do A,Primaria,Segundo,A,Tarde,2023,Sede Central,2A23T
+3ro A,Primaria,Tercero,A,Tarde,2024,Sede Central,3A24T
+4to A,Primaria,Cuarto,A,Tarde,2025,Sede Central,4A25T
+5to A,Primaria,Quinto,A,Tarde,2026,Sede Central,5A26T
+6to A,Primaria,Sexto,A,Tarde,2027,Sede Central,6A27T

@@ -14,8 +14,7 @@ def login():
 
     password = data.get('password')
 
-    # Validación básica
-    #if not nombre_usuario or not password:
+
     if not correo or not password:
         return jsonify({"mensaje": "Usuario y contraseña requeridos"}), 400
 

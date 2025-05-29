@@ -13,5 +13,3 @@ class Alumno(db.Model):
     telefono = db.Column(db.String(20))
     direccion = db.Column(db.String(255))
   
-    #grado_id = db.Column(db.Integer, db.ForeignKey('grado.id'))  # Relación
-    #grado = db.relationship('Grado', backref='alumnos')

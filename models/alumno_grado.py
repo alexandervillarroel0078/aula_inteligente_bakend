@@ -24,15 +24,3 @@ class AlumnoGrado(db.Model):
         ),
         db.Index('ix_grado_gestion', 'grado_id', 'gestion'),  # 🚀 Acelera consultas por grado + gestión
     )
-
-    # def __repr__(self):
-    #     return f'<AlumnoGrado alumno_id={self.alumno_id} grado_id={self.grado_id}>'  # 🧾 Para debug/print
-
-    # def to_dict(self):
-    #     return {  # 📤 Facilita conversión a JSON
-    #         "alumno_id": self.alumno_id,
-    #         "grado_id": self.grado_id,
-    #         "gestion": self.gestion,
-    #         "estado": self.estado,
-    #         "fecha_registro": self.fecha_registro.strftime('%Y-%m-%d %H:%M:%S'),
-    #     }

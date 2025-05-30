@@ -3,10 +3,14 @@ alumno_id,materia_id,periodo_id,grado_id,tipo_parcial,nota,nota_participacion,no
 1,1,2,1,2do parcial,8,11,3,año 2022,1ero,2022
 1,1,3,1,3er parcial,20,13,17,año 2022,1ero,2022
 1,1,4,1,4to parcial,6,9,5,año 2022,1ero,2023
+
 1,2,5,2,1er parcial,38,5,13,año 2023,2do,2023
 1,2,6,2,2do parcial,24,6,19,año 2023,2do,2023
 1,2,7,2,3er parcial,28,16,7,año 2023,2do,2023
 1,2,8,2,4to parcial,44,0,3,año 2023,2do,2023
+
+
+
 1,3,9,3,1er parcial,24,12,5,año 2023,3er,2024
 1,3,10,3,2do parcial,38,6,4,año 2023,3er,2024
 1,3,11,3,3er parcial,58,17,4,año 2023,3er,2024

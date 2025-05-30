@@ -1,72 +1,41 @@
 from flask import jsonify, request
 from models import db
-from models.grado import Grado
+from models import db, Grado, Materia
+from sqlalchemy.orm import joinedload
+from models.grado_materia import GradoMateria
 from traits.bitacora_trait import registrar_bitacora
 
 # Listar grados
 def listar_grados():
     grados = Grado.query.all()
-    return jsonify([{
+    resultado = [{
         "id": g.id,
         "nombre": g.nombre,
         "nivel": g.nivel,
         "seccion": g.seccion,
         "paralelo": g.paralelo,
         "turno": g.turno,
-        "gestion": g.gestion,
-        "ubicacion": g.ubicacion
-    } for g in grados])
+        "ubicacion": g.ubicacion,
+        "codigoGrado": g.codigoGrado,
+        "gestion_id": g.gestion_id,
+        "gestion_anio": g.gestion.anio,       
+    } for g in grados]
+    return jsonify(resultado), 200
 
-# Ver grado
-def ver_grado(id):
-    g = Grado.query.get_or_404(id)
-    return jsonify({
-        "id": g.id,
-        "nombre": g.nombre,
-        "nivel": g.nivel,
-        "seccion": g.seccion,
-        "paralelo": g.paralelo,
-        "turno": g.turno,
-        "gestion": g.gestion,
-        "ubicacion": g.ubicacion
-    })
+def obtener_materias_por_grado():
+    grados = Grado.query.options(
+        joinedload(Grado.gestion),
+        joinedload(Grado.grado_materias).joinedload(GradoMateria.materia_base)
+    ).all()
 
-# Crear grado
-def crear_grado(request):
-    data = request.get_json()
-    nuevo = Grado(
-        nombre=data["nombre"],
-        nivel=data["nivel"],
-        seccion=data.get("seccion"),
-        paralelo=data.get("paralelo"),
-        turno=data["turno"],
-        gestion=data["gestion"],
-        ubicacion=data.get("ubicacion")
-    )
-    db.session.add(nuevo)
-    db.session.commit()
-    registrar_bitacora("grado", f"creó grado ID {nuevo.id}")
-    return jsonify({"mensaje": "Grado creado correctamente", "id": nuevo.id})
+    resultado = []
 
-# Editar grado
-def editar_grado(id, request):
-    g = Grado.query.get_or_404(id)
-    data = request.get_json()
-    g.nombre = data["nombre"]
-    g.nivel = data["nivel"]
-    g.seccion = data.get("seccion")
-    g.paralelo = data.get("paralelo")
-    g.turno = data["turno"]
-    g.gestion = data["gestion"]
-    g.ubicacion = data.get("ubicacion")
-    db.session.commit()
-    registrar_bitacora("grado", f"editó grado ID {id}")
-    return jsonify({"mensaje": "Grado actualizado correctamente"})
-
-# Eliminar grado
-def eliminar_grado(id):
-    g = Grado.query.get_or_404(id)
-    db.session.delete(g)
-    db.session.commit()
-    registrar_bitacora("grado", f"eliminó grado ID {id}")
-    return jsonify({"mensaje": "Grado eliminado correctamente"})
+    for grado in grados:
+        materias = [gm.materia_base.nombre for gm in grado.grado_materias]
+        resultado.append({
+            'grado_id': grado.id,
+            'nombre': grado.nombre,
+            'gestion': grado.gestion.anio,
+            'codigoGrado': grado.codigoGrado,
+            'materias': materias
+        })

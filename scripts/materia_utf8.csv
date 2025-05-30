@@ -2,7 +2,41 @@ grado_id,codigo,nombre,descripcion,turno,aula,estado
 1,MAT-1A-MA,Matemáticas 1ro A 2022,Materia de Matemáticas para 1ro A 2022,Mañana,A1,Activo
 2,MAT-2A-MA,Matemáticas 2do A 2023,Materia de Matemáticas para 2do A 2023,Mañana,B1,Activo
 3,MAT-3A-MA,Matemáticas 3ro A 2024,Materia de Matemáticas para 3ro A 2024,Mañana,C1,Activo
+4,MAT-4A-MA,Matemáticas 4to A 2024,Materia de Matemáticas para 4to A 2025,Mañana,C1,Activo
 
 1,LAN-1A-MA,Lengua 1ro A 2022,Materia de Lengua para 1ro A 2022,Mañana,A2,Activo
 2,LAN-2A-MA,Lengua 2do A 2023,Materia de Lengua para 2do A 2023,Mañana,B2,Activo
 3,LAN-3A-MA,Lengua 3ro A 2024,Materia de Lengua para 3ro A 2024,Mañana,C2,Activo
+4,LAN-4A-MA,Lengua 4to A 2025,Materia de Lengua para 4to A 2025,Mañana,C2,Activo
+
+1,QUI-1A-MA,Química 1ro A 2022,Materia de Química para 1ro A 2022,Mañana,A5,Activo
+2,QUI-2A-MA,Química 2do A 2023,Materia de Química para 2do A 2023,Mañana,B5,Activo
+3,QUI-3A-MA,Química 3ro A 2024,Materia de Química para 3ro A 2024,Mañana,C5,Activo
+4,QUI-4A-MA,Química 4to A 2025,Materia de Química para 4to A 2025,Mañana,D5,Activo
+
+1,SOC-1A-MA,Ciencias Sociales 1ro A 2022,Materia de Ciencias Sociales para 1ro A 2022,Mañana,A4,Activo
+2,SOC-2A-MA,Ciencias Sociales 2do A 2023,Materia de Ciencias Sociales para 2do A 2023,Mañana,B4,Activo
+3,SOC-3A-MA,Ciencias Sociales 3ro A 2024,Materia de Ciencias Sociales para 3ro A 2024,Mañana,C4,Activo
+4,SOC-4A-MA,Ciencias Sociales 4to A 2025,Materia de Ciencias Sociales para 4to A 2025,Mañana,D4,Activo
+
+
+
+1,MAT-1A-22,Matemáticas 1ro A 2022,Materia de Matemáticas para 1ro A 2022,Mañana,A1,Activo
+1,LAN-1A-22,Lenguaje 1ro A 2022,Materia de Lenguaje para 1ro A 2022,Mañana,A2,Activo
+1,CIEN-1A-22,Ciencias Naturales 1ro A 2022,Materia de Ciencias Naturales para 1ro A 2022,Mañana,A3,Activo
+1,SOC-1A-22,Ciencias Sociales 1ro A 2022,Materia de Sociales para 1ro A 2022,Mañana,A4,Activo
+
+2,MAT-2A-22,Matemáticas 2do A 2022,Materia de Matemáticas para 2do A 2022,Mañana,B1,Activo
+2,LAN-2A-22,Lenguaje 2do A 2022,Materia de Lenguaje para 2do A 2022,Mañana,B2,Activo
+2,CIEN-2A-22,Ciencias Naturales 2do A 2022,Materia de Ciencias Naturales para 2do A 2022,Mañana,B3,Activo
+2,SOC-2A-22,Ciencias Sociales 2do A 2022,Materia de Sociales para 2do A 2022,Mañana,B4,Activo
+
+3,MAT-3A-22,Matemáticas 3ro A 2022,Materia de Matemáticas para 3ro A 2022,Mañana,C1,Activo
+3,LAN-3A-22,Lenguaje 3ro A 2022,Materia de Lenguaje para 3ro A 2022,Mañana,C2,Activo
+3,CIEN-3A-22,Ciencias Naturales 3ro A 2022,Materia de Ciencias Naturales para 3ro A 2022,Mañana,C3,Activo
+3,SOC-3A-22,Ciencias Sociales 3ro A 2022,Materia de Sociales para 3ro A 2022,Mañana,C4,Activo
+
+4,MAT-4A-22,Matemáticas 4to A 2022,Materia de Matemáticas para 4to A 2022,Mañana,D1,Activo
+4,LAN-4A-22,Lenguaje 4to A 2022,Materia de Lenguaje para 4to A 2022,Mañana,D2,Activo
+4,CIEN-4A-22,Ciencias Naturales 4to A 2022,Materia de Ciencias Naturales para 4to A 2022,Mañana,D3,Activo
+4,SOC-4A-22,Ciencias Sociales 4to A 2022,Materia de Sociales para 4to A 2022,Mañana,D4,Activo

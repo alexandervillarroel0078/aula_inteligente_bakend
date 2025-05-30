@@ -1,24 +1,51 @@
 from flask import jsonify, request
 from models import db
 from models.materia import Materia
+from models.materia import Materia
+from models.alumno_grado import AlumnoGrado
+from models.alumno import Alumno
+from models.gestion import Gestion  
+from models.grado import Grado
+from models.historial_asistencia_participacion import HistorialAsistenciaParticipacion
 from traits.bitacora_trait import registrar_bitacora
 
 def listar_materias():
-    materias = Materia.query.all()
-    return jsonify([{
-        "id": m.id,
-        "codigo": m.codigo,
-        "nombre": m.nombre,
-        "descripcion": m.descripcion,
-        "turno": m.turno,
-        "aula": m.aula,
-        "estado": m.estado,
-        'grado': {
-    'id': m.grado.id if m.grado else None,
-    'nombre': m.grado.nombre if m.grado else '-'
-}
+    gestiones = Gestion.query.order_by(Gestion.anio).all()
+    resultado = []
 
-    } for m in materias])
+    for gestion in gestiones:
+        grados = Grado.query.filter_by(gestion_id=gestion.id).order_by(Grado.nombre).all()
+        grados_data = []
+
+        for grado in grados:
+            materias = Materia.query.filter_by(grado_id=grado.id).all()
+            materias_data = [{
+                "id": m.id,
+                "nombre": m.nombre,
+                "codigo": m.codigo,
+                "aula": m.aula,
+                "turno": m.turno,
+                "estado": m.estado
+            } for m in materias]
+
+            grados_data.append({
+                "id": grado.id,
+                "nombre": grado.nombre,
+                "materias": materias_data
+            })
+
+        resultado.append({
+            "gestion": gestion.anio,
+            "estado": gestion.estado,
+            "grados": grados_data
+        })
+
+    return jsonify(resultado), 200
+
+
+
+
+
 
 def ver_materia(id):
     m = Materia.query.get_or_404(id)
@@ -70,3 +97,59 @@ def eliminar_materia(id):
     db.session.commit()
     registrar_bitacora("materia", f"eliminó materia ID {id}")
     return jsonify({"mensaje": "Materia eliminada correctamente"})
+
+def listar_alumnos_por_materia(materia_id):
+    materia = Materia.query.get_or_404(materia_id)
+
+    alumnos = (
+        db.session.query(Alumno)
+        .join(AlumnoGrado, Alumno.id == AlumnoGrado.alumno_id)
+        .filter(AlumnoGrado.grado_id == materia.grado_id)
+        .all()
+    )
+
+    resultado = [{
+        "id": alumno.id,
+        "codigo": alumno.codigo,
+        "nombre_completo": alumno.nombre_completo,
+        "estado": alumno.estado
+    } for alumno in alumnos]
+
+    return jsonify({
+        "total": len(resultado),
+        "estudiantes": resultado
+    }), 200
+
+
+
+ 
+def obtener_asistencias_de_alumno():
+    alumno_id = request.args.get('alumno_id', type=int)
+    gestion = request.args.get('gestion', type=int)
+    materia_id = request.args.get('materia_id', type=int)
+    periodo_id = request.args.get('periodo_id', type=int)
+
+    if not alumno_id or not gestion or not materia_id or not periodo_id:
+        return jsonify({"message": "Faltan parámetros requeridos"}), 400
+
+    asistencias = HistorialAsistenciaParticipacion.query.filter_by(
+        alumno_id=alumno_id,
+        gestion=gestion,
+        materia_id=materia_id,
+        periodo_id=periodo_id,
+        tipo='asistencia'
+    ).order_by(HistorialAsistenciaParticipacion.fecha.asc()).all()
+
+    resultados = [
+        {
+            "fecha": a.fecha,
+            "puntaje": a.puntaje,
+            "observaciones": a.observaciones
+        }
+        for a in asistencias
+    ]
+
+    return jsonify({
+        "alumno_id": alumno_id,
+        "asistencias": resultados
+    }), 200

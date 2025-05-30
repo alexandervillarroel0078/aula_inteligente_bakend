@@ -21,8 +21,7 @@ def create_app():
 
     with app.app_context():
         inicializar_db()
-
-    # Rutas
+    # Importa los blueprints
     from routes.auth import auth_bp
     from routes.perfil import perfil_bp
     from routes.grado_routes import grado_bp  # si lo tienes
@@ -31,20 +30,14 @@ def create_app():
     from routes.materia_routes import materia_bp
     from routes.materia_profesor_routes import materia_profesor_bp
     from routes.periodo_routes import periodo_bp
-    from routes.nota_routes import nota_bp
-    from routes.asistencia_routes import asistencia_bp
-    from routes.participacion_routes import participacion_bp
-    from routes.tarea_routes import tarea_bp
- 
-    from routes.prediccion_routes import prediccion_bp
     from routes.bitacora_routes import bitacora_bp
     from routes.rol_routes import rol_bp
     from routes.usuario_routes import usuario_bp
-    from routes.observacion_routes import observacion_bp
-    from routes.tarea_entregada_routes import tarea_entregada_bp
-    from routes.observacion_routes import observacion_bp
     from routes.global_routes import historial_bp
+    from routes.gestion_routes import gestion_bp
 
+
+    # Registra los blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(perfil_bp)
     app.register_blueprint(grado_bp)
@@ -53,22 +46,13 @@ def create_app():
     app.register_blueprint(materia_bp)
     app.register_blueprint(materia_profesor_bp)
     app.register_blueprint(periodo_bp)
-    app.register_blueprint(nota_bp)
-    app.register_blueprint(asistencia_bp)
-    app.register_blueprint(participacion_bp)
-    app.register_blueprint(tarea_bp)
-    
-    app.register_blueprint(prediccion_bp)
     app.register_blueprint(bitacora_bp)
     app.register_blueprint(rol_bp)
     app.register_blueprint(usuario_bp)
-    app.register_blueprint(tarea_entregada_bp)
-    app.register_blueprint(observacion_bp)
     app.register_blueprint(historial_bp)
+    app.register_blueprint(gestion_bp)
     
-
     @app.route('/')
     def inicio():
         return '🎓 Aula Inteligente backend funcionando'
-
     return app

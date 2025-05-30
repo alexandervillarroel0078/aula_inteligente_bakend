@@ -12,9 +12,7 @@ from .usuario import Usuario
 from .rol import Rol
 from .configuracion import Configuracion
 from .periodo import Periodo
-from .nota import Nota
-from .asistencia import Asistencia
-from .participacion import Participacion
+from .nota_bim import Nota
 from .tarea import Tarea
 from .tarea_entregada import TareaEntregada
 

@@ -1,20 +1,20 @@
-gestion_id,nombre,nivel,seccion,paralelo,turno,ubicacion,codigoGrado
-1,1ro A,Primaria,Primero,A,Mañana,Sede Central,1A22M
-1,2do A,Primaria,Segundo,A,Mañana,Sede Central,2A22M
-1,3ro A,Primaria,Tercero,A,Mañana,Sede Central,3A22M
-1,4to A,Primaria,Cuarto,A,Mañana,Sede Central,4A22M
+gestion_id,descripcion,nombre
+1,Año 2022,Primero A
+1,Año 2022,Segundo A
+1,Año 2022,Tercero A
+1,Año 2022,Cuarto A
 
-2,1ro A,Primaria,Primero,A,Mañana,Sede Central,1A23M
-2,2do A,Primaria,Segundo,A,Mañana,Sede Central,2A23M
-2,3ro A,Primaria,Tercero,A,Mañana,Sede Central,3A23M
-2,4to A,Primaria,Cuarto,A,Mañana,Sede Central,4A23M
+2,Año 2023,Primero A
+2,Año 2023,Segundo A
+2,Año 2023,Tercero A
+2,Año 2023,Cuarto A
 
-3,1ro A,Primaria,Primero,A,Mañana,Sede Central,1A24M
-3,2do A,Primaria,Segundo,A,Mañana,Sede Central,2A24M
-3,3ro A,Primaria,Tercero,A,Mañana,Sede Central,3A24M
-3,4to A,Primaria,Cuarto,A,Mañana,Sede Central,4A24M
+3,Año 2024,Primero A
+3,Año 2024,Segundo A
+3,Año 2024,Tercero A
+3,Año 2024,Cuarto A
 
-4,1ro A,Primaria,Primero,A,Mañana,Sede Central,1A25M
-4,2do A,Primaria,Segundo,A,Mañana,Sede Central,2A25M
-4,3ro A,Primaria,Tercero,A,Mañana,Sede Central,3A25M
-4,4to A,Primaria,Cuarto,A,Mañana,Sede Central,4A25M
+4,Año 2025,Primero A
+4,Año 2025,Segundo A
+4,Año 2025,Tercero A
+4,Año 2025,Cuarto A

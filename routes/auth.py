@@ -28,16 +28,13 @@ def login():
 
         # Consulta: busca datos del usuario incluyendo el correo real desde profesor o alumno
         cursor.execute("""
-            SELECT u.id, u.nombre_usuario, u.password_hash, r.nombre, 
-       COALESCE(u.correo, p.email, a.email, '') AS correo_real
+    SELECT u.id, u.nombre_usuario, u.password_hash, r.nombre, u.correo
+    FROM usuario u
+    JOIN rol r ON u.rol_id = r.id
+    WHERE u.correo = %s
+""", (correo,))
 
-            FROM usuario u
-            JOIN rol r ON u.rol_id = r.id
-            LEFT JOIN profesor p ON u.profesor_id = p.id
-            LEFT JOIN alumno a ON u.alumno_id = a.id
-            WHERE COALESCE(u.correo, p.email, a.email) = %s
 
-        """, (correo,))
         usuario = cursor.fetchone()
 
         if usuario and check_password_hash(usuario[2], password):

@@ -2,7 +2,6 @@ from flask import Blueprint, request
 from controllers import materia_controller
 
 materia_bp = Blueprint('materia_bp', __name__)
-
 # http://localhost:5000/api/materias
 @materia_bp.route('/api/materias', methods=['GET'])
 def listar_materias():
@@ -33,7 +32,7 @@ def eliminar_materia(id):
 def listar_alumnos_por_materia(materia_id):
     return materia_controller.listar_alumnos_por_materia(materia_id)
 
-#http://127.0.0.1:5000/api/asistencias/alumno?alumno_id=1&gestion=1&materia_id=1&periodo_id=1
+#http://127.0.0.1:5000/api/asistencias/alumno?alumno_id=5&gestion=2&materia_id=1&periodo_id=2
 @materia_bp.route('/api/asistencias/alumno', methods=['GET'])
 def obtener_asistencias_de_alumno():
     return materia_controller.obtener_asistencias_de_alumno()

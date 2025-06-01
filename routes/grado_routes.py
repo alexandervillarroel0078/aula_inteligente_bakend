@@ -1,14 +1,14 @@
-from flask import Blueprint, request
+from flask import Blueprint
 from controllers import grado_controller
 
-grado_bp = Blueprint('grado_bp', __name__)
+grado_bp = Blueprint('grado_bp', __name__, url_prefix='/api/grados')
 
-#http://127.0.0.1:5000/api/grados
-@grado_bp.route('/api/grados', methods=['GET'])
-def listar_grados():
-    return grado_controller.listar_grados()
+#http://localhost:5000/api/grados/agrupados
+@grado_bp.route('/agrupados', methods=['GET'])
+def grados_agrupados():
+    return grado_controller.listar_grados_agrupados_por_gestion()
 
-#http://127.0.0.1:5000/api/grado/materias?grado_id=3
-@grado_bp.route('/api/grado/materias', methods=['GET'])
-def obtener_materias_por_grado():
-    return grado_controller.obtener_materias_por_grado()
+# http://localhost:5000/api/grados/gestion/1/grado/1/materias
+@grado_bp.route('/gestion/<int:gestion_id>/grado/<int:grado_id>/materias', methods=['GET'])
+def ver_materias_por_grado(gestion_id, grado_id):
+    return grado_controller.obtener_materias_por_grado(gestion_id, grado_id)

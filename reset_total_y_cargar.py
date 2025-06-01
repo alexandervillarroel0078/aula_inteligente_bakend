@@ -1,29 +1,37 @@
 import csv
 from flask import Flask
 from models import db
-from models.profesor import Profesor
+
+# SISTEMA GENERAL
 from models.rol import Rol
+from models.usuario import Usuario
+
+# SISTEMA DE ALUMNOS
+
+# SISTEMA ACADÉMICO
 from models.gestion import Gestion
 from models.grado import Grado
-from models.materia import Materia
+from models.periodo import Periodo
+
+from models.nivel   import Nivel
+from models.materia import Materia  
+from models.profesor import Profesor
 from models.alumno import Alumno
+
+from models.materia_grado import MateriaGrado 
 from models.alumno_grado import AlumnoGrado
 from models.materia_profesor import MateriaProfesor
-from models.usuario import Usuario
-from models.periodo import Periodo
-from models.nota_bim import Nota
 
-from models.tarea import Tarea
-from models.tarea_entregada import TareaEntregada
-
-from models.observacion import Observacion
-from models.prediccion import Prediccion
-from models.parcial import Parcial
-from models.ponderaciones import Ponderacion
-from models.gestion import Gestion
-from models.materia_base import MateriaBase
-from models.grado_materia import GradoMateria
 from models.historial_asistencia_participacion import HistorialAsistenciaParticipacion
+
+from models.nota_trimestre import NotaTrimestre
+from models.prediccion import Prediccion
+
+from models.bitacora import Bitacora
+
+
+
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:1234@localhost:5432/aulainteligente'
@@ -70,24 +78,40 @@ with app.app_context():
 
     # 📝 3. Insertar datos desde CSVs
     cargar_csv(Gestion, 'scripts/gestion_utf8.csv')
-    cargar_csv(Profesor, 'scripts/profesor_utf8.csv')
     cargar_csv(Rol, 'scripts/rol_utf8.csv')
-    cargar_csv(Grado, 'scripts/grado_utf8.csv')
-    cargar_csv(Materia, 'scripts/materia_utf8.csv')
-    cargar_csv(MateriaBase, 'scripts/materia_base_utf8.csv')
-    cargar_csv(GradoMateria, 'scripts/grado_materia_utf8.csv')
 
+    cargar_csv(Grado, 'scripts/grado_utf8.csv')
+    cargar_csv(Nivel, 'scripts/nivel_utfo.csv')
+    cargar_csv(Materia, 'scripts/materia_utf8.csv')
+    cargar_csv(Profesor, 'scripts/profesor_utf8.csv')
     cargar_csv(Alumno, 'scripts/alumno_utf8.csv')
     cargar_csv(AlumnoGrado, 'scripts/alumno_grado_utf8.csv')
-    cargar_csv(Usuario, 'scripts/usuario_utf8.csv')
-    cargar_csv(MateriaProfesor, 'scripts/materia_profesor_utf8.csv')
-    cargar_csv(Periodo, 'scripts/periodo_utf8.csv')
-    cargar_csv(Nota, 'scripts/nota_utf8.csv')
-
-    cargar_csv(Tarea, 'scripts/tarea_utf8.csv')
-    cargar_csv(TareaEntregada, 'scripts/tarea_entregada_utf8.csv')
-    cargar_csv(Parcial,'scripts/parcial_utf8.csv')
-    cargar_csv(Observacion, 'scripts/observacion_utf8.csv')
-    cargar_csv(Prediccion, 'scripts/prediccion_utf8.csv')
-    cargar_csv(Ponderacion, 'scripts/ponderaciones_utf8.csv')
+    
     cargar_csv(HistorialAsistenciaParticipacion, 'scripts/historial_asistencia_participacion_utf8.csv')
+    cargar_csv(Periodo, 'scripts/periodo_utf8.csv')
+    cargar_csv(NotaTrimestre, 'scripts/nota_trimestre_utf8.csv')
+    cargar_csv(MateriaProfesor, 'scripts/materia_profesor_utf8.csv')
+    cargar_csv(MateriaGrado, 'scripts/materia_grado_utf8.csv')
+
+    cargar_csv(Prediccion, 'scripts/prediccion_utf8.csv')
+    cargar_csv(Bitacora, 'scripts/bitacora_utf8.csv')
+    cargar_csv(Usuario, 'scripts/usuario_utf8.csv')
+
+
+
+
+
+# DO $$ DECLARE
+#     r RECORD;
+# BEGIN
+#     -- Desactivar temporalmente restricciones
+#     EXECUTE 'SET session_replication_role = replica';
+
+#     -- Eliminar todas las tablas del esquema público
+#     FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+#         EXECUTE 'DROP TABLE IF EXISTS public.' || quote_ident(r.tablename) || ' CASCADE';
+#     END LOOP;
+
+#     -- Restaurar las restricciones
+#     EXECUTE 'SET session_replication_role = origin';
+# END $$;

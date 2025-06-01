@@ -1,56 +1,27 @@
-🔵 Nivel 1 – Sin llaves foráneas (pueden crearse primero)
- 
-- configuracion
+gestion.csv
 
-- grado            (⇨ libre, sin FK directa)
-- periodo   22 23 24
-- rol
+grado.csv
 
-- profesor         (⇨ ninguno, pero es padre de otros)
- 
- 
+periodo.csv
 
-🟢 Nivel 2 – Con 1 llave foránea
+alumno.csv
 
-- materia          (⇨ grado_id)
-- alumno           (⇨ grado_id)
+materia.csv
 
-🟡 Nivel 3 – Con 2 llaves foráneas
+profesor.csv
 
-- tarea            (⇨ libre) 
-- tarea_entrega    (⇨ libre) 
+alumno_grado.csv
 
-- usuario          (⇨ rol_id, profesor_id / alumno_id)
-- nota             (⇨ alumno_id, materia_id, periodo_id)
+materia_grado.csv
 
-- asistencia       (⇨ alumno_id, periodo_id)
-- participacion    (⇨ alumno_id, periodo_id)
-- observacion      (⇨ alumno_id, periodo_id)
-🟠 Nivel 4 – Con 3 o más llaves foráneas
- 
-- entrega_tarea    (⇨ tarea_id, alumno_id, periodo_id)
-- materia_profesor (⇨ materia_id, profesor_id)
-- bitacora         (⇨ usuario_id, acción referencial)
-🔴 Nivel 5 – Predicción basada en todo lo anterior
- 
-- prediccion       (⇨ alumno_id, nota_id, asistencia_id, participacion_id, periodo_id)
+materia_profesor.csv
 
-Entidad	Datos recomendados
-Configuración	1-5 registros
-Grado	10-20 registros
-Periodo	5-10 registros
-Rol	3-5 registros
-Profesor	5-20 registros
-Materia	3-30 registros
-Alumno	100-500 registros
-Tarea	50-200 registros
-Tarea_entrega	100-500 registros
-Usuario	200-500 registros
-Nota	500-1000 registros
-Asistencia	1000-5000 registros
-Participación	500-2000 registros
-Observación	500-2000 registros
-Entrega_tarea	500-2000 registros
-Materia_profesor	10-50 registros
-Bitácora	1000-5000 registros
-Predicción	500-1000 registros
+nota_bimestre.csv (con asistencia y participación ya calculadas)
+
+prediccion.csv
+
+Cuando estés listo, dime con cuál deseas empezar y si quieres que te dé:
+
+solo los datos simulados (listos para Excel),
+
+o un CSV completo con encabezados y contenido.

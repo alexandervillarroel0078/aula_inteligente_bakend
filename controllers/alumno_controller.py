@@ -6,7 +6,8 @@ from models.gestion import Gestion
 from models.materia_grado import MateriaGrado
 from models.materia import Materia
 from models.nota_trimestre import NotaTrimestre
-
+from models.ponderaciones_evaluacion import PonderacionEvaluacion
+from models.periodo import Periodo
 from models.historial_asistencia_participacion import HistorialAsistenciaParticipacion
 
 #funciona
@@ -23,6 +24,7 @@ def listar_alumnos():
     ]
 
     return jsonify(lista_alumnos), 200
+
 #funciona
 def ver_alumno(id):
     alumno = Alumno.query.get(id)
@@ -35,6 +37,7 @@ def ver_alumno(id):
         'nombre': alumno.nombre,
         'apellido': alumno.apellido
     }), 200
+
 #funciona
 def obtener_perfil_alumno(id):
     alumno = Alumno.query.get(id)
@@ -50,6 +53,7 @@ def obtener_perfil_alumno(id):
     }
 
     return jsonify(perfil), 200
+
 #funciona
 def obtener_materias_por_alumno():
     alumno_id = request.args.get('alumno_id', type=int)
@@ -91,67 +95,8 @@ def obtener_materias_por_alumno():
         'alumno_nombre': f"{alumno.nombre} {alumno.apellido}",
         'materias_por_gestion': resultado
     }), 200
+
 #funciona
-# def obtener_asistencias_por_alumno():
-#     alumno_id = request.args.get('alumno_id', type=int)
-#     if not alumno_id:
-#         return jsonify({'error': 'Falta el parámetro alumno_id'}), 400
-
-#     alumno = Alumno.query.get(alumno_id)
-#     if not alumno:
-#         return jsonify({'error': 'Alumno no encontrado'}), 404
-
-#     resultado = {
-#         "alumno_nombre": f"{alumno.nombre} {alumno.apellido}",
-#         "asistencias": {}
-#     }
-
-#     # Obtener TODAS las gestiones
-#     gestiones = Gestion.query.all()
-
-#     for gestion in gestiones:
-#         gestion_anio = str(gestion.anio)
-#         resultado["asistencias"][gestion_anio] = {
-#             "estado": gestion.estado,
-#             "grados": {}
-#         }
-
-#         for grado in gestion.grados:
-#             grado_nombre = grado.nombre
-#             resultado["asistencias"][gestion_anio]["grados"][grado_nombre] = {}
-
-#             # Acceder a todos los periodos de esa gestión
-#             for periodo in gestion.periodos:
-#                 periodo_nombre = periodo.nombre
-
-#                 if periodo_nombre not in resultado["asistencias"][gestion_anio]["grados"][grado_nombre]:
-#                     resultado["asistencias"][gestion_anio]["grados"][grado_nombre][periodo_nombre] = {}
-
-#                 # Acceder a todas las materias del grado
-#                 for materia_grado in grado.materias_asignadas:
-#                     materia = materia_grado.materia
-#                     materia_nombre = materia.nombre
-
-#                     # Inicializar lista vacía para la materia
-#                     resultado["asistencias"][gestion_anio]["grados"][grado_nombre][periodo_nombre][materia_nombre] = []
-
-#                     # Buscar asistencia si existe
-#                     notas = NotaTrimestre.query.filter_by(
-#                         alumno_id=alumno.id,
-#                         grado_id=grado.id,
-#                         materia_id=materia.id,
-#                         periodo_id=periodo.id
-#                     ).all()
-
-#                     for nota in notas:
-#                         if nota.asistencia_trimestre is not None:
-#                             resultado["asistencias"][gestion_anio]["grados"][grado_nombre][periodo_nombre][materia_nombre].append({
-#                                 "observaciones": "Extraído de nota trimestral",
-#                                 "valor": nota.asistencia_trimestre
-#                             })
-
-#     return jsonify(resultado), 200
-
 def obtener_asistencias_por_alumno():
     alumno_id = request.args.get('alumno_id', type=int)
     if not alumno_id:
@@ -188,23 +133,32 @@ def obtener_asistencias_por_alumno():
         grados = resultado["asistencias"][gestion_anio]["grados"]
 
         if grado_nombre not in grados:
-            grados[grado_nombre] = {}
+            # Obtener el estado de aprobación del grado desde AlumnoGrado
+            alumno_grado = AlumnoGrado.query.filter_by(
+                alumno_id=alumno.id,
+                grado_id=nota.grado.id
+            ).first()
+            estado_aprobacion = alumno_grado.estado if alumno_grado else "desconocido"
 
-        if periodo_nombre not in grados[grado_nombre]:
-            grados[grado_nombre][periodo_nombre] = {}
+            grados[grado_nombre] = {
+                "estado_aprobacion": estado_aprobacion,
+                "periodos": {}
+            }
 
-        if materia_nombre not in grados[grado_nombre][periodo_nombre]:
-            grados[grado_nombre][periodo_nombre][materia_nombre] = []
+        periodos = grados[grado_nombre]["periodos"]
 
-        grados[grado_nombre][periodo_nombre][materia_nombre].append({
+        if periodo_nombre not in periodos:
+            periodos[periodo_nombre] = {}
+
+        if materia_nombre not in periodos[periodo_nombre]:
+            periodos[periodo_nombre][materia_nombre] = []
+
+        periodos[periodo_nombre][materia_nombre].append({
             "observaciones": "Extraído de nota trimestral",
             "valor": nota.asistencia_trimestre
         })
 
     return jsonify(resultado), 200
-
-
-
 
 #funciona
 def obtener_participacion_por_alumno():
@@ -242,23 +196,35 @@ def obtener_participacion_por_alumno():
 
         grados = resultado["participaciones"][gestion_anio]["grados"]
 
+        # Si es la primera vez que se encuentra este grado
         if grado_nombre not in grados:
-            grados[grado_nombre] = {}
+            # Obtener el estado de aprobación del alumno en ese grado
+            relacion = AlumnoGrado.query.filter_by(
+                alumno_id=alumno.id,
+                grado_id=nota.grado.id
+            ).first()
+            estado_aprobacion = relacion.estado if relacion else "desconocido"
 
-        if periodo_nombre not in grados[grado_nombre]:
-            grados[grado_nombre][periodo_nombre] = {}
+            # Inicializar estructura del grado
+            grados[grado_nombre] = {
+                "estado_aprobacion": estado_aprobacion,
+                "periodos": {}
+            }
 
-        if materia_nombre not in grados[grado_nombre][periodo_nombre]:
-            grados[grado_nombre][periodo_nombre][materia_nombre] = []
+        periodos = grados[grado_nombre]["periodos"]
 
-        grados[grado_nombre][periodo_nombre][materia_nombre].append({
+        if periodo_nombre not in periodos:
+            periodos[periodo_nombre] = {}
+
+        if materia_nombre not in periodos[periodo_nombre]:
+            periodos[periodo_nombre][materia_nombre] = []
+
+        periodos[periodo_nombre][materia_nombre].append({
             "observaciones": "Extraído de nota trimestral",
             "valor": nota.participacion_trimestre
         })
 
     return jsonify(resultado), 200
-
-
 
 #funiona
 def obtener_notas_alumno():
@@ -286,7 +252,7 @@ def obtener_notas_alumno():
         materia_nombre = nota.materia.nombre
         valor = nota.nota_parcial
 
-        # Inicializar gestión si no existe
+        # Inicializar gestión
         if gestion_anio not in resultado['notas']:
             resultado['notas'][gestion_anio] = {
                 'estado': estado,
@@ -295,20 +261,32 @@ def obtener_notas_alumno():
 
         grados = resultado['notas'][gestion_anio]['grados']
 
-        # Inicializar grado si no existe
+        # Inicializar grado con estado_aprobacion
         if grado_nombre not in grados:
-            grados[grado_nombre] = {}
+            # Buscar el estado_aprobacion desde AlumnoGrado
+            relacion = AlumnoGrado.query.filter_by(
+                alumno_id=alumno.id,
+                grado_id=nota.grado_id
+            ).first()
+            estado_aprobacion = relacion.estado if relacion else "desconocido"
 
-        # Inicializar periodo si no existe
-        if periodo_nombre not in grados[grado_nombre]:
-            grados[grado_nombre][periodo_nombre] = {}
+            grados[grado_nombre] = {
+                'estado_aprobacion': estado_aprobacion,
+                'periodos': {}
+            }
 
-        # Inicializar materia como lista si no existe
-        if materia_nombre not in grados[grado_nombre][periodo_nombre]:
-            grados[grado_nombre][periodo_nombre][materia_nombre] = []
+        periodos = grados[grado_nombre]['periodos']
+
+        # Inicializar periodo
+        if periodo_nombre not in periodos:
+            periodos[periodo_nombre] = {}
+
+        # Inicializar materia
+        if materia_nombre not in periodos[periodo_nombre]:
+            periodos[periodo_nombre][materia_nombre] = []
 
         # Agregar nota
-        grados[grado_nombre][periodo_nombre][materia_nombre].append({
+        periodos[periodo_nombre][materia_nombre].append({
             'observaciones': 'Nota parcial',
             'valor': valor
         })
@@ -316,9 +294,155 @@ def obtener_notas_alumno():
     return jsonify(resultado), 200
 
 
+def obtener_historial_academico():
+    alumno_id = request.args.get('alumno_id', type=int)
+    if not alumno_id:
+        return jsonify({'error': 'Falta el parámetro alumno_id'}), 400
+
+    alumno = Alumno.query.get(alumno_id)
+    if not alumno:
+        return jsonify({'error': 'Alumno no encontrado'}), 404
+
+    historial = []
+
+    notas = NotaTrimestre.query.filter_by(alumno_id=alumno_id).all()
+
+    # Agrupar por (gestion_id, grado_id, materia_id)
+    agrupado = {}
+    for nota in notas:
+        key = (nota.grado.gestion.id, nota.grado.id, nota.materia.id)
+        if key not in agrupado:
+            agrupado[key] = {
+                'notas': [],
+                'grado': nota.grado,
+                'materia': nota.materia,
+                'gestion': nota.grado.gestion
+            }
+        agrupado[key]['notas'].append(nota)
+
+    for (gestion_id, grado_id, materia_id), grupo in agrupado.items():
+        notas_trimestre = grupo['notas']
+        gestion = grupo['gestion']
+        grado = grupo['grado']
+        materia = grupo['materia']
+
+        # Saltar gestiones que no están finalizadas
+        if gestion.estado != 'finalizada':
+            continue
+
+        # Verificar que el alumno tenga estado aprobado en ese grado
+        alumno_grado = AlumnoGrado.query.filter_by(
+            alumno_id=alumno_id,
+            grado_id=grado.id
+        ).first()
+
+        if not alumno_grado or alumno_grado.estado != 'aprobado':
+            continue
+
+        # Obtener ponderación para esa gestión
+        ponderacion = PonderacionEvaluacion.query.filter_by(
+            gestion_id=gestion_id,
+            tipo='trimestre'
+        ).first()
+
+        if not ponderacion:
+            continue  # Podrías registrar un log aquí si es necesario
+
+        # Calcular promedio ponderado del año
+        total = 0
+        for nota in notas_trimestre:
+            parcial = nota.nota_parcial or 0
+            asistencia = nota.asistencia_trimestre or 0
+            participacion = nota.participacion_trimestre or 0
+
+            final_trimestre = (
+                parcial * ponderacion.peso_nota_parcial +
+                asistencia * ponderacion.peso_asistencia +
+                participacion * ponderacion.peso_participacion
+            )
+            total += final_trimestre
+
+        nota_final = round(total / len(notas_trimestre), 2) if notas_trimestre else 0
+        estado = "Aprobado" if nota_final >= 51 else "Reprobado"
+
+        historial.append({
+            'gestion': gestion.anio,
+            'grado': grado.nombre,
+            'materia': materia.nombre,
+            'nota_final': nota_final,
+            'estado': estado
+        })
+
+    return jsonify({
+        'alumno_nombre': f"{alumno.nombre} {alumno.apellido}",
+        'historial': sorted(historial, key=lambda x: (x['gestion'], x['grado']))
+    }), 200
 
 
 
 
+def obtener_promedios_por_grado():
+    alumno_id = request.args.get('alumno_id', type=int)
+    if not alumno_id:
+        return jsonify({'error': 'Falta el parámetro alumno_id'}), 400
 
+    alumno = Alumno.query.get(alumno_id)
+    if not alumno:
+        return jsonify({'error': 'Alumno no encontrado'}), 404
 
+    notas = NotaTrimestre.query.filter_by(alumno_id=alumno_id).all()
+
+    agrupado = {}
+    for nota in notas:
+        gestion = nota.grado.gestion
+        if gestion.estado != 'finalizada':
+            continue
+
+        alumno_grado = AlumnoGrado.query.filter_by(
+            alumno_id=alumno_id,
+            grado_id=nota.grado.id
+        ).first()
+
+        if not alumno_grado or alumno_grado.estado != 'aprobado':
+            continue
+
+        key = (gestion.id, nota.grado.id)
+        if key not in agrupado:
+            agrupado[key] = {
+                'gestion': gestion.anio,
+                'grado': nota.grado.nombre,
+                'notas_finales': [],
+                'ponderacion': PonderacionEvaluacion.query.filter_by(
+                    gestion_id=gestion.id, tipo='trimestre'
+                ).first()
+            }
+
+        parcial = nota.nota_parcial or 0
+        asistencia = nota.asistencia_trimestre or 0
+        participacion = nota.participacion_trimestre or 0
+        pond = agrupado[key]['ponderacion']
+
+        if pond:
+            final_trimestre = (
+                parcial * pond.peso_nota_parcial +
+                asistencia * pond.peso_asistencia +
+                participacion * pond.peso_participacion
+            )
+            agrupado[key]['notas_finales'].append(final_trimestre)
+
+    promedios = []
+    for (gestion_id, grado_id), data in agrupado.items():
+        notas = data['notas_finales']
+        promedio = round(sum(notas) / len(notas), 2) if notas else 0
+        estado = "Aprobado" if promedio >= 51 else "Reprobado"
+        promedios.append({
+            'gestion': data['gestion'],
+            'grado': data['grado'],
+            'promedio': promedio,
+            'estado': estado
+        })
+
+    return jsonify({
+        'alumno_nombre': f"{alumno.nombre} {alumno.apellido}",
+        'promedios_por_grado': sorted(promedios, key=lambda x: (x['gestion'], x['grado']))
+    }), 200

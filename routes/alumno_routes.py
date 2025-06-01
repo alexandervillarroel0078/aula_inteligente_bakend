@@ -40,6 +40,16 @@ def obtener_participacion_alumno():
 def obtener_notas_alumno():
      return alumno_controller.obtener_notas_alumno()
 
+# http://localhost:5000/api/alumnos/historial-academico?alumno_id=1
+@alumno_bp.route('/historial-academico', methods=['GET'])
+def obtener_historial_academico():
+     return alumno_controller.obtener_historial_academico()
+
+# http://localhost:5000/api/alumnos/promedios-por-grado?alumno_id=1
+@alumno_bp.route('/promedios-por-grado', methods=['GET'])
+def promedios_por_grado():
+    return alumno_controller.obtener_promedios_por_grado()
+
 
 
 

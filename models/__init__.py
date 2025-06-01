@@ -13,7 +13,7 @@ from .periodo import Periodo
 from .alumno import Alumno
 from .materia import Materia
 from .profesor import Profesor
-
+from .ponderaciones_evaluacion import PonderacionEvaluacion
 from .alumno_grado import AlumnoGrado
 from .materia_grado import MateriaGrado
 

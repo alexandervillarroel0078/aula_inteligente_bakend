@@ -18,6 +18,8 @@ from models.materia import Materia
 from models.profesor import Profesor
 from models.alumno import Alumno
 
+
+from models.ponderaciones_evaluacion import PonderacionEvaluacion
 from models.materia_grado import MateriaGrado 
 from models.alumno_grado import AlumnoGrado
 from models.materia_profesor import MateriaProfesor
@@ -86,6 +88,7 @@ with app.app_context():
     cargar_csv(Profesor, 'scripts/profesor_utf8.csv')
     cargar_csv(Alumno, 'scripts/alumno_utf8.csv')
     cargar_csv(AlumnoGrado, 'scripts/alumno_grado_utf8.csv')
+    cargar_csv(PonderacionEvaluacion, 'scripts/ponderaciones_evaluacion_uft8.csv')
     
     cargar_csv(HistorialAsistenciaParticipacion, 'scripts/historial_asistencia_participacion_utf8.csv')
     cargar_csv(Periodo, 'scripts/periodo_utf8.csv')

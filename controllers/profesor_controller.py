@@ -1,358 +1,425 @@
-# from datetime import datetime
-# from flask import request, jsonify
-# from sqlalchemy import func, cast, Numeric
-# from models import db
-# from models.profesor import Profesor
-# from models.materia import Materia
+# /controllers/profesor_controller.py
+from flask import Blueprint, jsonify, request
+from models import db
+from models.profesor import Profesor
+from models.materia_profesor import MateriaProfesor
+from models.gestion import Gestion
+from models.alumno_grado import AlumnoGrado
+from models.alumno import Alumno
+from models.grado import Grado
+from models.periodo import Periodo
+from models.nivel import Nivel
+from models.nota_trimestre import NotaTrimestre
+from models.materia import Materia
+from sqlalchemy.orm import joinedload
+from models.historial_asistencia_participacion import HistorialAsistenciaParticipacion
+from sqlalchemy import func, case
 
-# from models.nota_bimestre import Nota
+profesor_bp = Blueprint('profesor_bp', __name__)
 
-# from models.alumno import Alumno
-# from models.grado import Grado
-# from models.alumno_grado import AlumnoGrado
+#funciona
+def listar_profesores():
+    profesores = Profesor.query.filter_by(estado='activo').order_by(Profesor.id.asc()).all()
+    resultado = [
+        {
+            'id': p.id,
+            'nombre': p.nombre,
+            'apellido': p.apellido,
+            'estado': p.estado
+        } for p in profesores
+    ]
+    return jsonify(resultado), 200
 
-# from models.periodo import Periodo
-# from models.historial_asistencia_participacion import HistorialAsistenciaParticipacion
+#funciona
+def ver_profesor(id):
+    profesor = Profesor.query.get(id)
+    if not profesor:
+        return jsonify({'error': 'Profesor no encontrado'}), 404
 
-# from traits.bitacora_trait import registrar_bitacora
+    resultado = {
+        'id': profesor.id,
+        'nombre': profesor.nombre,
+        'apellido': profesor.apellido,
+        'estado': profesor.estado
+    }
+    return jsonify(resultado), 200
 
-# # ✅ principal profesores
-# def listar_profesores():
-#     profesores = Profesor.query.all()
-#     return jsonify([
-#         {
-#             "id": p.id,
-#             "codigo": p.codigo,
-#             "nombre_completo": p.nombre_completo,
-#             "ci": p.ci,
-#             "email": p.email,
-#             "telefono": p.telefono,
-#             "direccion": p.direccion,
-#             "estado": p.estado
-#         } for p in profesores
-#     ])
+#funciona
+def materias_asignadas_profesor(profesor_id):
+    profesor = Profesor.query.get(profesor_id)
+    if not profesor:
+        return jsonify({'error': 'Profesor no encontrado'}), 404
 
-# # ✅ profesor-->materia
-# def materias_asignadas_profesor(profesor_id):
-#     # Obtener todas las asignaciones de materia para el profesor
-#     relaciones = MateriaProfesor.query.filter_by(profesor_id=profesor_id).all()
-    
-#     # Crear una lista para almacenar las materias con los detalles
-#     materias = []
-#     for r in relaciones:
-#         # Obtener la materia asociada a la asignación
-#         m = r.materia
-        
-#         # Acceder al grado de la materia
-#         grado_nombre = m.grado.nombre if m.grado else 'No asignado'
-        
-#         materias.append({
-#             "id": m.id,
-#             "codigo": m.codigo,
-#             "nombre": m.nombre,
-#             "descripcion": m.descripcion,
-#             "turno": m.turno,
-#             "aula": m.aula,
-#             "grado_id": m.grado.id,
-#             "grado_nombre": grado_nombre,  # Aquí añadimos el nombre del grado de la materia
-#             "estado_asignacion": r.estado,  # Obtener el estado de la asignación de materia al profesor
-#             "fecha_asignacion": r.gestion
-#         })
-    
-#     # Retornar las materias asignadas en formato JSON
-#     return jsonify(materias)
- 
-# # ✅ profesor-->perfil
-# def ver_profesor(id):
-#     p = Profesor.query.get_or_404(id)
-#     return jsonify({
-#         "id": p.id,
-#         "codigo": p.codigo,
-#         "nombre_completo": p.nombre_completo,
-#         "ci": p.ci,
-#         "email": p.email,
-#         "telefono": p.telefono,
-#         "direccion": p.direccion,
-#         "estado": p.estado
-#     })
+    gestion_activa = Gestion.query.filter_by(estado='activa').first()
+    if not gestion_activa:
+        return jsonify({'error': 'No hay gestión activa'}), 404
 
-# # ✅ profesor-->materia-->notas
-# def obtener_notas_por_materia_profesor_grado():
-#     # Obtener los parámetros de la solicitud
-#     profesor_id = request.args.get('profesor_id', type=int)
-#     materia_id = request.args.get('materia_id', type=int)
-#     grado_id = request.args.get('grado_id', type=int)
-#     periodo_id = request.args.get('periodo_id', type=int)  # Nuevo parámetro para periodo
+    asignaciones = MateriaProfesor.query \
+        .filter_by(profesor_id=profesor_id) \
+        .join(MateriaProfesor.grado) \
+        .filter(Grado.gestion_id == gestion_activa.id) \
+        .join(MateriaProfesor.materia) \
+        .join(Grado.nivel) \
+        .all()
 
-#     # Verificar si los parámetros están presentes
-#     if not profesor_id or not materia_id or not grado_id:
-#         return jsonify({"message": "profesor_id, materia_id y grado_id son requeridos"}), 400
+    materias = []
+    for asignacion in asignaciones:
+        materias.append({
+            'materia_id': asignacion.materia.id,
+            'materia': asignacion.materia.nombre,
+            'grado_id': asignacion.grado.id, 
+            'grado': asignacion.grado.nombre,
+            'nivel_id': asignacion.grado.nivel.id,
+            'nivel': asignacion.grado.nivel.nombre,
+            'gestion': gestion_activa.anio
+        })
 
-#     # Obtener el profesor por su ID
-#     profesor = Profesor.query.get(profesor_id)
-#     if not profesor:
-#         return jsonify({"message": "Profesor no encontrado"}), 404
+    resultado = {
+        'profesor': {
+            'id': profesor.id,
+            'nombre': profesor.nombre,
+            'apellido': profesor.apellido,
+            'estado': profesor.estado
+        },
+        'materias_asignadas': materias
+    }
 
-#     # Obtener la materia por su ID
-#     materia = Materia.query.get(materia_id)
-#     if not materia:
-#         return jsonify({"message": "Materia no encontrada"}), 404
+    return jsonify(resultado), 200
 
-#     # Verificar si la materia está asignada al profesor en el grado específico
-#     materia_profesor = MateriaProfesor.query.filter_by(
-#         materia_id=materia_id,
-#         profesor_id=profesor_id
-#     ).first()
-    
-#     if not materia_profesor:
-#         return jsonify({"message": "La materia no está asignada a este profesor"}), 404
-    
-#     # Si no se pasa un periodo_id, obtenemos las notas de todos los periodos
-#     if periodo_id:
-#         # Filtrar las notas de los alumnos en la materia para el grado y el periodo específico
-#         notas = Nota.query.filter_by(materia_id=materia_id, grado_id=grado_id, periodo_id=periodo_id).all()
-#     else:
-#         # Si no se pasa periodo_id, obtenemos las notas de todos los periodos para ese grado y materia
-#         notas = Nota.query.filter_by(materia_id=materia_id, grado_id=grado_id).all()
-    
-#     if not notas:
-#         return jsonify({"message": "No se encontraron notas para esta materia en el grado seleccionado"}), 404
-    
-#     # Crear la lista de notas para devolverlas en la respuesta
-#     notas_alumnos = []
-#     for nota in notas:
-#         alumno = nota.alumno
-#         notas_alumnos.append({
-#             "id": alumno.id,
-#             "alumno_nombre": alumno.nombre_completo,
-#             "nota_parcial": nota.nota,
-#             "nota_participacion": nota.nota_participacion,
-#             "nota_asistencia": nota.nota_asistencia,
-#             "observaciones": nota.observaciones,
-#             "periodo": nota.periodo.nombre if nota.periodo else "N/A",
-#             "grado": nota.grado.nombre if nota.grado else "N/A"
-#         })
+#funciona
+def obtener_estudiantes_por_materia(profesor_id, materia_id):
+    # Buscar gestión activa
+    gestion_activa = Gestion.query.filter_by(estado='activa').first()
+    if not gestion_activa:
+        return jsonify({'error': 'No hay gestión activa'}), 404
 
-#     return jsonify({
-#         "profesor_id": profesor.id,
-#         "profesor_nombre": profesor.nombre_completo,
-#         "materia_id": materia.id,
-#         "materia_nombre": materia.nombre,
-#         "grado_id": grado_id,
-#         "periodo_id": periodo_id if periodo_id else "Todos los periodos",
-#         "notas": notas_alumnos
-#     }), 200
+    # Buscar asignaciones de esa materia en la gestión activa Y del profesor indicado
+    asignaciones = MateriaProfesor.query \
+        .join(Grado) \
+        .filter(MateriaProfesor.materia_id == materia_id) \
+        .filter(MateriaProfesor.profesor_id == profesor_id) \
+        .filter(Grado.gestion_id == gestion_activa.id) \
+        .all()
 
-# # ✅ profesor-->materia-->participacion
-# def obtener_participacion_por_materia_profesor_grado():
-#     # Obtener los parámetros de la solicitud
-#     profesor_id = request.args.get('profesor_id', type=int)
-#     materia_id = request.args.get('materia_id', type=int)
-#     grado_id = request.args.get('grado_id', type=int)
-#     periodo_id = request.args.get('periodo_id', type=int)
+    if not asignaciones:
+        return jsonify({'error': 'No se encontró la materia asignada al profesor en esta gestión'}), 404
 
-#     # Verificar si los parámetros están presentes
-#     if not profesor_id or not materia_id or not grado_id:
-#         return jsonify({"message": "profesor_id, materia_id y grado_id son requeridos"}), 400
+    estudiantes = []
+    total = 0
 
-#     # Obtener el profesor por su ID
-#     profesor = Profesor.query.get(profesor_id)
-#     if not profesor:
-#         return jsonify({"message": "Profesor no encontrado"}), 404
+    profesor = asignaciones[0].profesor
+    materia = asignaciones[0].materia
 
-#     # Obtener la materia por su ID
-#     materia = Materia.query.get(materia_id)
-#     if not materia:
-#         return jsonify({"message": "Materia no encontrada"}), 404
+    for asignacion in asignaciones:
+        alumnos_grado = AlumnoGrado.query \
+            .filter_by(grado_id=asignacion.grado_id, estado='en curso') \
+            .join(Alumno) \
+            .all()
 
-#     # Verificar si la materia está asignada al profesor en el grado específico
-#     materia_profesor = MateriaProfesor.query.filter_by(
-#         materia_id=materia_id,
-#         profesor_id=profesor_id
-#     ).first()
+        for ag in alumnos_grado:
+            estudiantes.append({
+                'id': ag.alumno.id,
+                'nombre': ag.alumno.nombre,
+                'apellido': ag.alumno.apellido,
+                'estado': ag.estado,
+                'grado': asignacion.grado.nombre
+            })
+            total += 1
 
-#     if not materia_profesor:
-#         return jsonify({"message": "La materia no está asignada a este profesor"}), 404
+    return jsonify({
+        'materia_id': materia.id,
+        'materia': materia.nombre,
+        'gestion': gestion_activa.anio,
+        'profesor_id': profesor.id,
+        'profesor': f'{profesor.nombre} {profesor.apellido}',
+        'total_alumnos': total,
+        'estudiantes': estudiantes
+    }), 200
 
-#     # Obtener todos los alumnos del grado especificado
-#     alumnos_grado = AlumnoGrado.query.filter_by(grado_id=grado_id).all()
+#funciona
+def obtener_asistencias_por_grado():
+    grado_id = request.args.get('grado_id', type=int)
+    profesor_id = request.args.get('profesor_id', type=int)
+    nivel_id = request.args.get('nivel', type=int)
 
-#     if not alumnos_grado:
-#         return jsonify({"message": "No se encontraron alumnos para este grado"}), 404
+    if not grado_id or not profesor_id or not nivel_id:
+        return jsonify({'error': 'Faltan parámetros obligatorios'}), 400
 
-#     # Crear una lista de participaciones para todos los alumnos
-#     participaciones_totales = []
+    profesor = Profesor.query.get(profesor_id)
+    grado = Grado.query.get(grado_id)
 
-#     for alumno_grado in alumnos_grado:
-#         alumno = alumno_grado.alumno  # Obtener el alumno asociado
-        
-#         # Filtrar las participaciones de cada alumno en la materia y grado especificados
-#         historial = HistorialAsistenciaParticipacion.query.filter_by(
-#             alumno_id=alumno.id,
-#             materia_id=materia_id,
-#             grado_id=grado_id,
-#             tipo='participación'  # Solo registros de participación
-#         ).all()
+    if not profesor or not grado:
+        return jsonify({'error': 'Datos no encontrados'}), 404
 
-#         if not historial:
-#             continue  # Si no tiene participaciones, pasar al siguiente alumno
-        
-#         # Calcular la participación por periodo
-#         participacion_por_periodo = {}
-#         for h in historial:
-#             grado = Grado.query.get(h.grado_id)  # Obtener grado por grado_id
-#             periodo = Periodo.query.get(h.periodo_id)  # Obtener periodo por periodo_id
-            
-#             if not grado or not periodo:
-#                 continue
+    gestion = grado.gestion
+    nivel = grado.nivel
 
-#             # Usamos un valor fijo para el total de clases por periodo, ya que no existe el campo 'total_clases'
-#             total_clases = 8  # Asumimos que siempre hay 8 clases por periodo (puedes ajustar esto si es necesario)
+    periodos = Periodo.query.filter_by(gestion_id=gestion.id).all()
+    periodos_data = []
 
-#             if h.periodo_id not in participacion_por_periodo:
-#                 participacion_por_periodo[h.periodo_id] = {
-#                     'nombre_periodo': periodo.nombre,
-#                     'nombre_grado': grado.nombre,
-#                     'total_participaciones': 0,
-#                     'total_faltas': 0,
-#                     'total_clases': total_clases,  # Usando un valor fijo
-#                     'puntaje': 0
-#                 }
+    for periodo in periodos:
+        query = HistorialAsistenciaParticipacion.query.filter_by(
+            grado_id=grado_id,
+            periodo_id=periodo.id,
+            tipo='asistencia'
+        )
 
-#             # Si la participación tiene puntaje mayor que 0, se cuenta como participación válida
-#             if h.puntaje > 0:
-#                 participacion_por_periodo[h.periodo_id]['total_participaciones'] += 1
-#                 participacion_por_periodo[h.periodo_id]['puntaje'] += h.puntaje
-#             else:
-#                 participacion_por_periodo[h.periodo_id]['total_faltas'] += 1
-        
-#         # Calcular el porcentaje de participación por cada periodo
-#         for periodo_id, datos in participacion_por_periodo.items():
-#             porcentaje_participacion = (datos['total_participaciones'] / datos['total_clases']) * 100
-#             participacion_por_periodo[periodo_id]['porcentaje_participacion'] = round(porcentaje_participacion, 2)
-        
-#         # Agregar los datos de participación del alumno a la lista
-#         participaciones_totales.append({
-#             "alumno_id": alumno.id,
-#             "alumno_nombre": alumno.nombre_completo,
-#             "participacion_por_periodo": participacion_por_periodo
-#         })
+        if nivel_id == 1:  # Primaria
+            resultados = query.join(Alumno, Alumno.id == HistorialAsistenciaParticipacion.alumno_id).with_entities(
+                HistorialAsistenciaParticipacion.alumno_id,
+                Alumno.nombre,
+                Alumno.apellido,
+                func.count().label('total_registros'),
+                func.sum(case((HistorialAsistenciaParticipacion.valor == 100, 1), else_=0)).label('asistencias_completas'),
+                func.sum(case((HistorialAsistenciaParticipacion.valor == 80, 1), else_=0)).label('llegadas_tarde'),
+                func.sum(case((HistorialAsistenciaParticipacion.valor == 50, 1), else_=0)).label('muy_tarde'),
+                func.sum(case((HistorialAsistenciaParticipacion.valor == 1, 1), else_=0)).label('ausencias'),
+                func.avg(HistorialAsistenciaParticipacion.valor).label('promedio_asistencia')
+            ).group_by(
+                HistorialAsistenciaParticipacion.alumno_id,
+                Alumno.nombre,
+                Alumno.apellido
+            ).all()
 
-#     return jsonify({
-#         "profesor_id": profesor.id,
-#         "profesor_nombre": profesor.nombre_completo,
-#         "materia_id": materia.id,
-#         "materia_nombre": materia.nombre,
-#         "grado_id": grado_id,
-#         "periodo_id": periodo_id if periodo_id else "Todos los periodos",
-#         "participaciones": participaciones_totales
-#     }), 200
+            data = [
+                {
+                    'alumno_id': r.alumno_id,
+                    'nombre': r.nombre,
+                    'apellido': r.apellido,
+                    'nombre_completo': f"{r.nombre} {r.apellido}",
+                    'asistencias_completas': r.asistencias_completas,
+                    'llegadas_tarde': r.llegadas_tarde,
+                    'muy_tarde': r.muy_tarde,
+                    'ausencias': r.ausencias,
+                    'promedio_asistencia': round(r.promedio_asistencia, 2),
+                    'total_clases': r.total_registros
+                }
+                for r in resultados
+            ]
 
-# # ✅ profesor-->materia-->asistencia
-# def obtener_asistencia_por_materia_profesor_grado():
-#     # Obtener los parámetros de la consulta (query params)
-#     profesor_id = request.args.get('profesor_id', type=int)
-#     materia_id = request.args.get('materia_id', type=int)
-#     grado_id = request.args.get('grado_id', type=int)
-#     periodo_id = request.args.get('periodo_id', type=int)
+        else:  # Secundaria
+            materias_docente = MateriaProfesor.query.filter_by(
+                profesor_id=profesor_id,
+                grado_id=grado_id
+            ).with_entities(MateriaProfesor.materia_id).all()
 
-#     # Verificar si los parámetros están presentes
-#     if not profesor_id or not materia_id or not grado_id:
-#         return jsonify({"message": "profesor_id, materia_id y grado_id son requeridos"}), 400
+            materias_ids = [m.materia_id for m in materias_docente]
 
-#     # Obtener el profesor por su ID
-#     profesor = Profesor.query.get(profesor_id)
-#     if not profesor:
-#         return jsonify({"message": "Profesor no encontrado"}), 404
+            if not materias_ids:
+                data = []
+            else:
+                resultados = query.join(Alumno, Alumno.id == HistorialAsistenciaParticipacion.alumno_id).filter(
+                    HistorialAsistenciaParticipacion.materia_id.in_(materias_ids)
+                ).with_entities(
+                    HistorialAsistenciaParticipacion.alumno_id,
+                    Alumno.nombre,
+                    Alumno.apellido,
+                    HistorialAsistenciaParticipacion.materia_id,
+                    func.count().label('total_registros'),
+                    func.sum(case((HistorialAsistenciaParticipacion.valor == 100, 1), else_=0)).label('asistencias_completas'),
+                    func.sum(case((HistorialAsistenciaParticipacion.valor == 80, 1), else_=0)).label('llegadas_tarde'),
+                    func.sum(case((HistorialAsistenciaParticipacion.valor == 50, 1), else_=0)).label('muy_tarde'),
+                    func.sum(case((HistorialAsistenciaParticipacion.valor == 1, 1), else_=0)).label('ausencias'),
+                    func.avg(HistorialAsistenciaParticipacion.valor).label('promedio_asistencia')
+                ).group_by(
+                    HistorialAsistenciaParticipacion.alumno_id,
+                    HistorialAsistenciaParticipacion.materia_id,
+                    Alumno.nombre,
+                    Alumno.apellido
+                ).all()
 
-#     # Obtener la materia por su ID
-#     materia = Materia.query.get(materia_id)
-#     if not materia:
-#         return jsonify({"message": "Materia no encontrada"}), 404
+                data = [
+                    {
+                        'alumno_id': r.alumno_id,
+                        'nombre': r.nombre,
+                        'apellido': r.apellido,
+                        'nombre_completo': f"{r.nombre} {r.apellido}",
+                        'materia_id': r.materia_id,
+                        'asistencias_completas': r.asistencias_completas,
+                        'llegadas_tarde': r.llegadas_tarde,
+                        'muy_tarde': r.muy_tarde,
+                        'ausencias': r.ausencias,
+                        'promedio_asistencia': round(r.promedio_asistencia, 2),
+                        'total_clases': r.total_registros
+                    }
+                    for r in resultados
+                ]
 
-#     # Verificar si la materia está asignada al profesor en el grado específico
-#     materia_profesor = MateriaProfesor.query.filter_by(
-#         materia_id=materia_id,
-#         profesor_id=profesor_id
-#     ).first()
+        periodos_data.append({
+            'periodo_id': periodo.id,
+            'nombre': periodo.nombre,
+            'asistencias': data
+        })
 
-#     if not materia_profesor:
-#         return jsonify({"message": "La materia no está asignada a este profesor"}), 404
+    return jsonify({
+        'docente': {
+            'id': profesor.id,
+            'nombre': f'{profesor.nombre} {profesor.apellido}'
+        },
+        'grado': {
+            'id': grado.id,
+            'nombre': grado.nombre
+        },
+        'nivel': nivel.nombre,
+        'gestion': gestion.anio,
+        'periodos': periodos_data
+    }), 200
 
-#     # Obtener todos los alumnos del grado especificado
-#     alumnos_grado = AlumnoGrado.query.filter_by(grado_id=grado_id).all()
+#funciona
+def obtener_participaciones_por_materia_por_grado():
+    profesor_id = request.args.get('profesor_id', type=int)
+    grado_id = request.args.get('grado_id', type=int)
+    nivel_id = request.args.get('nivel_id', type=int)
+    materia_id = request.args.get('materia_id', type=int)
 
-#     if not alumnos_grado:
-#         return jsonify({"message": "No se encontraron alumnos para este grado"}), 404
+    if not (profesor_id and grado_id and nivel_id and materia_id):
+        return jsonify({'error': 'Faltan parámetros: profesor_id, grado_id, nivel_id o materia_id'}), 400
 
-#     # Crear una lista de asistencias para todos los alumnos
-#     asistencias_totales = []
+    gestion_activa = Gestion.query.filter_by(estado='activa').first()
+    if not gestion_activa:
+        return jsonify({'error': 'No hay gestión activa'}), 404
 
-#     for alumno_grado in alumnos_grado:
-#         alumno = alumno_grado.alumno  # Obtener el alumno asociado
-        
-#         # Filtrar las asistencias de cada alumno en la materia y grado especificados
-#         historial = HistorialAsistenciaParticipacion.query.filter_by(
-#             alumno_id=alumno.id,
-#             materia_id=materia_id,
-#             grado_id=grado_id,
-#             tipo='asistencia'  # Solo registros de asistencia
-#         ).all()
+    periodos = Periodo.query.filter_by(gestion_id=gestion_activa.id).order_by(Periodo.id).all()
+    if not periodos:
+        return jsonify({'error': 'No hay periodos registrados en esta gestión'}), 404
 
-#         if not historial:
-#             continue  # Si no tiene asistencias, pasar al siguiente alumno
-        
-#         # Calcular la asistencia por periodo
-#         for h in historial:
-#             grado = Grado.query.get(h.grado_id)  # Obtener grado por grado_id
-#             periodo = Periodo.query.get(h.periodo_id)  # Obtener periodo por periodo_id
-            
-#             if not grado or not periodo:
-#                 continue
+    grado = Grado.query.get(grado_id)
+    nivel = Nivel.query.get(nivel_id)
+    materia = Materia.query.get(materia_id)
 
-#             # Usamos un valor fijo para el total de clases por periodo, ya que no existe el campo 'total_clases'
-#             total_clases = 40  # Asumimos que siempre hay 40 clases por periodo (puedes ajustar esto si es necesario)
+    if not grado or not nivel or not materia:
+        return jsonify({'error': 'Grado, nivel o materia no encontrados'}), 404
 
-#             # Creamos la estructura por periodo, directamente
-#             asistencia_por_periodo = {
-#                 'alumno_id': alumno.id,
-#                 'alumno_nombre': alumno.nombre_completo,
-#                 'nombre_grado': grado.nombre,
-#                 'grado_id': grado.id,  # Incluyendo el ID del grado
-#                 'nombre_periodo': periodo.nombre,
-#                 'periodo_id': periodo.id,  # Incluyendo el ID del periodo
-#                 'total_asistencias': 0,
-#                 'total_faltas': 0,
-#                 'total_clases': total_clases,  # Usando un valor fijo de 40 clases
-#                 'puntaje': 0
-#             }
+    resultados = []
+    TOTAL_ESPERADAS = 10
 
-#             # Si la asistencia tiene puntaje igual a 100, se cuenta como asistencia válida
-#             if h.puntaje == 100:
-#                 asistencia_por_periodo['total_asistencias'] += 1
-#             else:
-#                 asistencia_por_periodo['total_faltas'] += 1
+    alumnos = db.session.query(Alumno).join(AlumnoGrado).filter(
+        AlumnoGrado.grado_id == grado_id
+    ).all()
 
-#             # Calcular el porcentaje de asistencia por cada periodo
-#             porcentaje_asistencia = (asistencia_por_periodo['total_asistencias'] / total_clases) * 100
-#             asistencia_por_periodo['porcentaje_asistencia'] = round(porcentaje_asistencia, 2)
+    for periodo in periodos:
+        participaciones_alumnos = []
 
-#             # Agregar el puntaje final de asistencia al registro
-#             asistencia_por_periodo['puntaje'] = asistencia_por_periodo['porcentaje_asistencia']
+        for alumno in alumnos:
+            cantidad = HistorialAsistenciaParticipacion.query.filter_by(
+                tipo='participacion',
+                grado_id=grado_id,
+                periodo_id=periodo.id,
+                alumno_id=alumno.id,
+                materia_id=materia_id
+            ).count()
 
-#             # Agregar los datos de asistencia del alumno al periodo
-#             asistencias_totales.append(asistencia_por_periodo)
+            if cantidad == 0:
+                continue
 
-#     return jsonify({
-#         "profesor_id": profesor.id,
-#         "profesor_nombre": profesor.nombre_completo,
-#         "materia_id": materia.id,
-#         "materia_nombre": materia.nombre,
-#         "grado_id": grado_id,
-#         "periodo_id": periodo_id if periodo_id else "Todos los periodos",
-#         "asistencias": asistencias_totales
-#     }), 200
+            no_participo = TOTAL_ESPERADAS - cantidad
+            nota = round((cantidad / TOTAL_ESPERADAS) * 100, 2)
 
+            participaciones_alumnos.append({
+                'alumno_id': alumno.id,
+                'nombre': alumno.nombre,
+                'apellido': alumno.apellido,
+                'participaciones_registradas': cantidad,
+                'total_esperadas': TOTAL_ESPERADAS,
+                'no_participo': no_participo,
+                'nota_participacion': nota
+            })
 
+        # Siempre agregar el periodo, incluso si está vacío
+        resultados.append({
+            'periodo_id': periodo.id,
+            'periodo': periodo.nombre,
+            'participaciones': participaciones_alumnos
+        })
 
+    return jsonify({
+        'profesor_id': profesor_id,
+        'grado_id': grado_id,
+        'materia_id': materia_id,
+        'nombre_grado': grado.nombre,
+        'nivel_id': nivel_id,
+        'nombre_nivel': nivel.nombre,
+        'materia': {
+            'id': materia.id,
+            'nombre': materia.nombre
+        },
+        'gestion': gestion_activa.anio,
+        'participaciones_por_periodo': resultados
+    })
+
+#funciona
+def obtener_notas_por_materia_por_grado():
+    grado_id = request.args.get('grado_id', type=int)
+    profesor_id = request.args.get('profesor_id', type=int)
+    nivel_id = request.args.get('nivel_id', type=int)
+    materia_id = request.args.get('materia_id', type=int)
+
+    if not grado_id or not profesor_id or not nivel_id or not materia_id:
+        return jsonify({'error': 'Faltan parámetros obligatorios'}), 400
+
+    gestion = Gestion.query.filter_by(estado='activa').first()
+    if not gestion:
+        return jsonify({'error': 'No hay gestión activa'}), 404
+
+    # Verifica que el profesor tiene asignada esa materia en ese grado y nivel
+    materia_asignada = MateriaProfesor.query \
+        .join(MateriaProfesor.materia) \
+        .filter(
+            MateriaProfesor.profesor_id == profesor_id,
+            MateriaProfesor.grado_id == grado_id,
+            MateriaProfesor.materia_id == materia_id,
+            Materia.nivel_id == nivel_id
+        ).first()
+
+    if not materia_asignada:
+        return jsonify({'error': 'Materia no asignada al profesor en este grado y nivel'}), 404
+
+    materia = materia_asignada.materia
+    profesor = materia_asignada.profesor
+    grado = materia_asignada.grado
+
+    periodos = Periodo.query.filter_by(gestion_id=gestion.id).all()
+
+    data = {
+        "docente": {
+            "id": profesor.id,
+            "nombre": f"{profesor.nombre} {profesor.apellido}"
+        },
+        "materia": {
+            "id": materia.id,
+            "nombre": materia.nombre
+        },
+        "grado": {
+            "id": grado.id,
+            "nombre": grado.nombre
+        },
+        "nivel": grado.nivel.nombre,
+        "gestion": gestion.anio,
+        "periodos": []
+    }
+
+    for periodo in periodos:
+        notas = NotaTrimestre.query.options(joinedload(NotaTrimestre.alumno)) \
+            .filter_by(
+                grado_id=grado_id,
+                materia_id=materia_id,
+                periodo_id=periodo.id
+            ).all()
+
+        data["periodos"].append({
+            "periodo_id": periodo.id,
+            "nombre": periodo.nombre,
+            "notas": [
+                {
+                    "alumno_id": n.alumno.id,
+                    "nombre": n.alumno.nombre,
+                    "apellido": n.alumno.apellido,
+                    "nota_parcial": n.nota_parcial,
+                    "asistencia_trimestre": n.asistencia_trimestre,
+                    "participacion_trimestre": n.participacion_trimestre
+                } for n in notas
+            ]
+        })
+
+    return jsonify(data), 200
 

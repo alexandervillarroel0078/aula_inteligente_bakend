@@ -10,7 +10,9 @@ class Grado(db.Model):
 
     gestion_id = db.Column(db.Integer, db.ForeignKey('gestion.id'), nullable=False)
     gestion = db.relationship('Gestion', backref='grados')
+    nivel_id = db.Column(db.Integer, db.ForeignKey('niveles.id'), nullable=False)
 
+    nivel = db.relationship('Nivel', backref='grados')
     @validates('nombre')
     def validate_nombre(self, key, value):
         if not value or not value.strip():

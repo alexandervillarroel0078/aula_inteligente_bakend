@@ -7,7 +7,7 @@ class HistorialAsistenciaParticipacion(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     alumno_id = db.Column(db.Integer, db.ForeignKey('alumnos.id'), nullable=False)
-    materia_id = db.Column(db.Integer, db.ForeignKey('materias.id'), nullable=False)
+    materia_id = db.Column(db.Integer, db.ForeignKey('materias.id'), nullable=True)
     grado_id = db.Column(db.Integer, db.ForeignKey('grados.id'), nullable=False)
     periodo_id = db.Column(db.Integer, db.ForeignKey('periodos.id'), nullable=False)
 

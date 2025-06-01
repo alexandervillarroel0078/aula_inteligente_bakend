@@ -18,7 +18,7 @@ from models.materia import Materia
 from models.profesor import Profesor
 from models.alumno import Alumno
 
-
+from models.periodo import Periodo
 from models.ponderaciones_evaluacion import PonderacionEvaluacion
 from models.materia_grado import MateriaGrado 
 from models.alumno_grado import AlumnoGrado
@@ -70,28 +70,28 @@ def cargar_csv(Modelo, archivo):
 
 
 with app.app_context():
-    # 🔥 1. Eliminar todas las tablas
+    #  1. Eliminar todas las tablas
     db.drop_all()
     print("🧹 Todas las tablas eliminadas")
 
-    # 🧱 2. Crear tablas nuevamente
+    #  2. Crear tablas nuevamente
     db.create_all()
     print("✅ Tablas creadas")
 
-    # 📝 3. Insertar datos desde CSVs
+    #  3. Insertar datos desde CSVs
     cargar_csv(Gestion, 'scripts/gestion_utf8.csv')
     cargar_csv(Rol, 'scripts/rol_utf8.csv')
-
-    cargar_csv(Grado, 'scripts/grado_utf8.csv')
     cargar_csv(Nivel, 'scripts/nivel_utfo.csv')
+    cargar_csv(Grado, 'scripts/grado_utf8.csv')
     cargar_csv(Materia, 'scripts/materia_utf8.csv')
+    
+    cargar_csv(Periodo, 'scripts/periodo_utf8.csv')
     cargar_csv(Profesor, 'scripts/profesor_utf8.csv')
     cargar_csv(Alumno, 'scripts/alumno_utf8.csv')
     cargar_csv(AlumnoGrado, 'scripts/alumno_grado_utf8.csv')
     cargar_csv(PonderacionEvaluacion, 'scripts/ponderaciones_evaluacion_uft8.csv')
     
     cargar_csv(HistorialAsistenciaParticipacion, 'scripts/historial_asistencia_participacion_utf8.csv')
-    cargar_csv(Periodo, 'scripts/periodo_utf8.csv')
     cargar_csv(NotaTrimestre, 'scripts/nota_trimestre_utf8.csv')
     cargar_csv(MateriaProfesor, 'scripts/materia_profesor_utf8.csv')
     cargar_csv(MateriaGrado, 'scripts/materia_grado_utf8.csv')

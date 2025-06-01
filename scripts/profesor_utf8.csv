@@ -1,5 +1,5 @@
-id,nombre,apellido
-1,María,Rivera
-2,Carlos,Gutiérrez
-3,Ana,Loza
-4,Juan,Flores
+id,nombre,apellido,estado
+1,María,Rivera,activo
+2,Carlos,Gutiérrez,activo
+3,Ana,Loza,activo
+4,Juan,Flores,activo

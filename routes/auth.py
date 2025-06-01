@@ -55,7 +55,7 @@ def login():
                 'usuario': {
                     'id': usuario[0],
                     'nombre_usuario': usuario[1],
-                    'correo': usuario[4],  # ✅ correo real, si existe
+                    'correo': usuario[4],  # correo real, si existe
                     'rol': usuario[3]
                 }
             }), 200

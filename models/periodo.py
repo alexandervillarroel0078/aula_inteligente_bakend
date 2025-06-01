@@ -6,6 +6,9 @@ class Periodo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(50), nullable=False)  # Ej: "1er Bimestre"
     
+    fecha_inicio = db.Column(db.Date, nullable=True)
+    fecha_fin = db.Column(db.Date, nullable=True)
+
     gestion_id = db.Column(db.Integer, db.ForeignKey('gestion.id'), nullable=False)
     gestion = db.relationship('Gestion', backref='periodos')
 

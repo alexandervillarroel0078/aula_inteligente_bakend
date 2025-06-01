@@ -1,34 +1,41 @@
+#route/profesor_routes.py
 from flask import Blueprint, request
 from controllers import profesor_controller
 
-profesor_bp = Blueprint('profesor_bp', __name__)
+profesor_bp = Blueprint('profesor_bp', __name__, url_prefix='/api')
 
 #http://localhost:5000/api/profesores
-@profesor_bp.route('/api/profesores', methods=['GET'])
+@profesor_bp.route('/profesores', methods=['GET'])
 def listar_profesores():
     return profesor_controller.listar_profesores()
 
 #http://localhost:5000/api/profesores/1
-@profesor_bp.route('/api/profesores/<int:id>', methods=['GET'])
+@profesor_bp.route('/profesores/<int:id>', methods=['GET'])
 def obtener_profesor(id):
     return profesor_controller.ver_profesor(id)
 
 #http://localhost:5000/api/profesores/1/materias
-@profesor_bp.route('/api/profesores/<int:id>/materias', methods=['GET'])
+@profesor_bp.route('/profesores/<int:id>/materias', methods=['GET'])
 def materias_asignadas(id):
     return profesor_controller.materias_asignadas_profesor(id)
 
-#http://localhost:5000/api/notas/profesor?profesor_id=1&materia_id=1&grado_id=1
-@profesor_bp.route('/api/notas/profesor', methods=['GET'])
-def obtener_notas():
-    return profesor_controller.obtener_notas_por_materia_profesor_grado()
+#http://localhost:5000/api/profesores/1/materias/1/estudiantes
+@profesor_bp.route('/profesores/<int:profesor_id>/materias/<int:materia_id>/estudiantes', methods=['GET'])
+def listar_estudiantes_por_materia(profesor_id, materia_id):
+    return profesor_controller.obtener_estudiantes_por_materia(profesor_id, materia_id)
 
-#http://localhost:5000/api/participaciones/profesor?profesor_id=1&materia_id=1&grado_id=1&periodo_id=1
-@profesor_bp.route('/api/participaciones/profesor', methods=['GET'])
-def obtener_participacion():
-    return profesor_controller.obtener_participacion_por_materia_profesor_grado()
+# http://localhost:5000/api/asistencias/por-grado?grado_id=16&profesor_id=4&nivel=1
+@profesor_bp.route('/asistencias/por-grado')
+def obtener_asistencias_por_grado():
+    return profesor_controller.obtener_asistencias_por_grado()
 
-#http://localhost:5000/api/asistencias/profesor/alumno?profesor_id=1&materia_id=1&grado_id=1&periodo_id=1
-@profesor_bp.route('/api/asistencias/profesor/alumno', methods=['GET'])
-def obtener_asistencias():
-    return profesor_controller.obtener_asistencia_por_materia_profesor_grado()
+# http://localhost:5000/api/participaciones/por-materia-grado?grado_id=16&profesor_id=4&nivel_id=1&materia_id=1
+@profesor_bp.route('/participaciones/por-materia-grado')
+def obtener_participaciones_por_materia_por_grado():
+    return profesor_controller.obtener_participaciones_por_materia_por_grado()
+
+#http://localhost:5000/api/notas/por-materia-grado?grado_id=16&profesor_id=4&nivel_id=1&materia_id=3
+@profesor_bp.route('/notas/por-materia-grado')
+def obtener_notas_por_materia_por_grado():
+    return profesor_controller.obtener_notas_por_materia_por_grado()
+

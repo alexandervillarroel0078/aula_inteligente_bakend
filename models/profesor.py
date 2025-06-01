@@ -5,7 +5,7 @@ class Profesor(db.Model):
     __tablename__ = 'profesores'
 
     id = db.Column(db.Integer, primary_key=True)
-    
+    estado = db.Column(db.String(20), nullable=False, default='activo')  # Valores: 'activo', 'inactivo'
     nombre = db.Column(db.String(100), nullable=False)
     apellido = db.Column(db.String(100), nullable=False)
 

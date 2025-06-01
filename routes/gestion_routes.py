@@ -1,6 +1,5 @@
 from flask import Blueprint
 from controllers import gestion_controller  # Importamos el controlador
-from controllers import grado_controller
 
 gestion_bp = Blueprint('gestion_bp', __name__, url_prefix='/api/gestiones')
 

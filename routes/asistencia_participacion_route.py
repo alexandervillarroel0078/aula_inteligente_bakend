@@ -21,3 +21,9 @@ def crear_asistencia_masiva():
 @historial_asistencia_bp.route('/api/periodos/activos', methods=['GET'])
 def obtener_periodos():
     return asistencia_participacion_controller.obtener_periodos_gestion_activa()
+
+#http://localhost:3000/panel/profesor/4/materia/1/notas?grado_id=16&nivel_id=1&periodo_id=4
+#http://localhost:5000/api/notas-trimestre/registrar-parcial
+@historial_asistencia_bp.route('/api/notas-trimestre/registrar-parcial', methods=['POST'])
+def registrar_nota_parcial():
+    return asistencia_participacion_controller.registrar_nota_parcial()

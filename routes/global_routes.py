@@ -13,3 +13,4 @@ def listar_historial():
 @historial_bp.route('/api/historial/filtrar', methods=['GET'])
 def filtrar_historial():
     return global_controller.filtrar_historial()
+

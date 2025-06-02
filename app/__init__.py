@@ -35,8 +35,7 @@ def create_app():
     from routes.usuario_routes import usuario_bp
     from routes.global_routes import historial_bp
     from routes.gestion_routes import gestion_bp
-
-
+    from routes.asistencia_participacion_route import historial_asistencia_bp
     # Registra los blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(perfil_bp)
@@ -51,6 +50,8 @@ def create_app():
     app.register_blueprint(usuario_bp)
     app.register_blueprint(historial_bp)
     app.register_blueprint(gestion_bp)
+    app.register_blueprint(historial_asistencia_bp)
+
     
     @app.route('/')
     def inicio():

@@ -1,24 +1,30 @@
 from flask import Blueprint, request
 from controllers import usuario_controller
+from controllers.usuario_controller import cambiar_password
 
 usuario_bp = Blueprint('usuario_bp', __name__)
 
+#http://localhost:5000/api/usuarios
 @usuario_bp.route('/api/usuarios', methods=['GET'])
 def listar_usuarios():
     return usuario_controller.listar_usuarios()
 
-@usuario_bp.route('/api/usuarios/<int:id>', methods=['GET'])
-def ver_usuario(id):
-    return usuario_controller.ver_usuario(id)
+#http://localhost:5000/api/crear-alumnos 
+@usuario_bp.route('/api/crear-alumnos', methods=['POST'])
+def crear_alumno():
+    return usuario_controller.crear_alumno()
 
-@usuario_bp.route('/api/usuarios', methods=['POST'])
-def crear_usuario():
-    return usuario_controller.crear_usuario(request)
+#   "nombre": "Juanita",
+#   "apellido": "Pérez Villarroel"
 
-@usuario_bp.route('/api/usuarios/<int:id>', methods=['PUT'])
-def editar_usuario(id):
-    return usuario_controller.editar_usuario(id, request)
+#http://localhost:5000/api/inscripciones
+@usuario_bp.route('/api/inscripciones', methods=['POST'])
+def inscribir_alumno():
+    return usuario_controller.inscribir_alumno()
 
-@usuario_bp.route('/api/usuarios/<int:id>', methods=['DELETE'])
-def eliminar_usuario(id):
-    return usuario_controller.eliminar_usuario(id)
+#   "alumno_id": 6
+#http://localhost:5000/api/cambiar-password
+@usuario_bp.route('/api/cambiar-password', methods=['PUT'])
+def ruta_cambiar_password():
+    return cambiar_password()
+#"nueva_contraseña": "miNuevaClaveSegura"

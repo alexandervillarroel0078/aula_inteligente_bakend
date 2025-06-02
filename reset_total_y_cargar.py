@@ -30,7 +30,7 @@ from models.nota_trimestre import NotaTrimestre
 from models.prediccion import Prediccion
 
 from models.bitacora import Bitacora
-
+from sqlalchemy import text
 
 
 
@@ -88,6 +88,7 @@ with app.app_context():
     cargar_csv(Periodo, 'scripts/periodo_utf8.csv')
     cargar_csv(Profesor, 'scripts/profesor_utf8.csv')
     cargar_csv(Alumno, 'scripts/alumno_utf8.csv')
+    
     cargar_csv(AlumnoGrado, 'scripts/alumno_grado_utf8.csv')
     cargar_csv(PonderacionEvaluacion, 'scripts/ponderaciones_evaluacion_uft8.csv')
     
@@ -99,8 +100,14 @@ with app.app_context():
     cargar_csv(Prediccion, 'scripts/prediccion_utf8.csv')
     cargar_csv(Bitacora, 'scripts/bitacora_utf8.csv')
     cargar_csv(Usuario, 'scripts/usuario_utf8.csv')
+    
+    # 4. Ajustar las secuencias después de cargar CSVs
+    from sqlalchemy import text
+    db.session.execute(text("SELECT setval('alumnos_id_seq', COALESCE((SELECT MAX(id) FROM alumnos), 1))"))
+    db.session.commit()
+    print("🔄 Secuencia 'alumnos_id_seq' ajustada correctamente")
 
-
+    
 
 
 

@@ -23,3 +23,4 @@ from .historial_asistencia_participacion import HistorialAsistenciaParticipacion
 from .nivel import Nivel
 from .prediccion import Prediccion
 from .bitacora import Bitacora
+from .inscripicon import Inscripcion

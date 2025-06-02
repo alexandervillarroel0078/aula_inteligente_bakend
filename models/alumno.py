@@ -4,7 +4,7 @@ from sqlalchemy.orm import validates
 class Alumno(db.Model):
     __tablename__ = 'alumnos'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nombre = db.Column(db.String(100), nullable=False)     # Requiere validación de texto
     apellido = db.Column(db.String(100), nullable=False)   # Requiere validación de texto
 

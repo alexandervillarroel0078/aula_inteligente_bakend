@@ -293,7 +293,7 @@ def obtener_notas_alumno():
 
     return jsonify(resultado), 200
 
-
+#funiona
 def obtener_historial_academico():
     alumno_id = request.args.get('alumno_id', type=int)
     if not alumno_id:
@@ -378,9 +378,7 @@ def obtener_historial_academico():
         'historial': sorted(historial, key=lambda x: (x['gestion'], x['grado']))
     }), 200
 
-
-
-
+#funiona
 def obtener_promedios_por_grado():
     alumno_id = request.args.get('alumno_id', type=int)
     if not alumno_id:

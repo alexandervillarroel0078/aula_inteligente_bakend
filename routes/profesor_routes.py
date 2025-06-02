@@ -34,8 +34,50 @@ def obtener_asistencias_por_grado():
 def obtener_participaciones_por_materia_por_grado():
     return profesor_controller.obtener_participaciones_por_materia_por_grado()
 
-#http://localhost:5000/api/notas/por-materia-grado?grado_id=16&profesor_id=4&nivel_id=1&materia_id=3
+#http://localhost:5000/api/notas/por-materia-grado?grado_id=16&profesor_id=4&nivel_id=1&materia_id=1
 @profesor_bp.route('/notas/por-materia-grado')
 def obtener_notas_por_materia_por_grado():
     return profesor_controller.obtener_notas_por_materia_por_grado()
+
+
+
+
+
+
+
+
+
+
+
+
+#http://localhost:5000/api/notas-trimestre/asistencia?grado_id=16&nivel=1&profesor_id=4&materia_id=1&periodo_id=10
+@profesor_bp.route('/notas-trimestre/asistencia', methods=['PUT'])
+def registrar_asistencia_trimestre():
+    return profesor_controller.registrar_asistencia_en_nota_trimestre()
+
+#http://localhost:5000/api/notas-trimestre/participaciones?grado_id=16&nivel_id=1&profesor_id=4&materia_id=1&periodo_id=10
+@profesor_bp.route('/notas-trimestre/participaciones', methods=['PUT'])
+def obtener_y_registrar_participaciones_por_materia_por_grado():
+    return profesor_controller.obtener_y_registrar_participaciones_por_materia_por_grado()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

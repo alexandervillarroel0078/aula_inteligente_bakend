@@ -13,6 +13,7 @@ from models.nota_trimestre import NotaTrimestre
 from models.materia import Materia
 from sqlalchemy.orm import joinedload
 from models.historial_asistencia_participacion import HistorialAsistenciaParticipacion
+from models.ponderaciones_evaluacion import PonderacionEvaluacion
 from sqlalchemy import func, case
 
 profesor_bp = Blueprint('profesor_bp', __name__)
@@ -165,37 +166,51 @@ def obtener_asistencias_por_grado():
         )
 
         if nivel_id == 1:  # Primaria
-            resultados = query.join(Alumno, Alumno.id == HistorialAsistenciaParticipacion.alumno_id).with_entities(
-                HistorialAsistenciaParticipacion.alumno_id,
-                Alumno.nombre,
-                Alumno.apellido,
-                func.count().label('total_registros'),
-                func.sum(case((HistorialAsistenciaParticipacion.valor == 100, 1), else_=0)).label('asistencias_completas'),
-                func.sum(case((HistorialAsistenciaParticipacion.valor == 80, 1), else_=0)).label('llegadas_tarde'),
-                func.sum(case((HistorialAsistenciaParticipacion.valor == 50, 1), else_=0)).label('muy_tarde'),
-                func.sum(case((HistorialAsistenciaParticipacion.valor == 1, 1), else_=0)).label('ausencias'),
-                func.avg(HistorialAsistenciaParticipacion.valor).label('promedio_asistencia')
-            ).group_by(
-                HistorialAsistenciaParticipacion.alumno_id,
-                Alumno.nombre,
-                Alumno.apellido
-            ).all()
+            registros = query.join(Alumno, Alumno.id == HistorialAsistenciaParticipacion.alumno_id)\
+                .with_entities(
+                    HistorialAsistenciaParticipacion.alumno_id,
+                    Alumno.nombre,
+                    Alumno.apellido,
+                    HistorialAsistenciaParticipacion.valor
+                ).all()
 
-            data = [
-                {
-                    'alumno_id': r.alumno_id,
-                    'nombre': r.nombre,
-                    'apellido': r.apellido,
-                    'nombre_completo': f"{r.nombre} {r.apellido}",
-                    'asistencias_completas': r.asistencias_completas,
-                    'llegadas_tarde': r.llegadas_tarde,
-                    'muy_tarde': r.muy_tarde,
-                    'ausencias': r.ausencias,
-                    'promedio_asistencia': round(r.promedio_asistencia, 2),
-                    'total_clases': r.total_registros
-                }
-                for r in resultados
-            ]
+            datos = {}
+            for r in registros:
+                if r.alumno_id not in datos:
+                    datos[r.alumno_id] = {
+                        'alumno_id': r.alumno_id,
+                        'nombre': r.nombre,
+                        'apellido': r.apellido,
+                        'nombre_completo': f"{r.nombre} {r.apellido}",
+                        'asistencias_completas': 0,
+                        'llegadas_tarde': 0,
+                        'muy_tarde': 0,
+                        'ausencias': 0,
+                        'licencias': 0,
+                        'valores_validos': []
+                    }
+
+                if r.valor == 100:
+                    datos[r.alumno_id]['asistencias_completas'] += 1
+                    datos[r.alumno_id]['valores_validos'].append(100)
+                elif r.valor == 80:
+                    datos[r.alumno_id]['llegadas_tarde'] += 1
+                    datos[r.alumno_id]['valores_validos'].append(80)
+                elif r.valor == 50:
+                    datos[r.alumno_id]['muy_tarde'] += 1
+                    datos[r.alumno_id]['valores_validos'].append(50)
+                elif r.valor == 1:
+                    datos[r.alumno_id]['ausencias'] += 1
+                    datos[r.alumno_id]['valores_validos'].append(1)
+                elif r.valor == 0:
+                    datos[r.alumno_id]['licencias'] += 1
+
+            data = []
+            for alumno in datos.values():
+                promedio = round(sum(alumno['valores_validos']) / len(alumno['valores_validos']), 2) if alumno['valores_validos'] else 0
+                alumno['promedio_asistencia'] = promedio
+                alumno['total_clases'] = len(alumno['valores_validos']) + alumno['licencias']
+                data.append(alumno)
 
         else:  # Secundaria
             materias_docente = MateriaProfesor.query.filter_by(
@@ -208,42 +223,55 @@ def obtener_asistencias_por_grado():
             if not materias_ids:
                 data = []
             else:
-                resultados = query.join(Alumno, Alumno.id == HistorialAsistenciaParticipacion.alumno_id).filter(
-                    HistorialAsistenciaParticipacion.materia_id.in_(materias_ids)
-                ).with_entities(
-                    HistorialAsistenciaParticipacion.alumno_id,
-                    Alumno.nombre,
-                    Alumno.apellido,
-                    HistorialAsistenciaParticipacion.materia_id,
-                    func.count().label('total_registros'),
-                    func.sum(case((HistorialAsistenciaParticipacion.valor == 100, 1), else_=0)).label('asistencias_completas'),
-                    func.sum(case((HistorialAsistenciaParticipacion.valor == 80, 1), else_=0)).label('llegadas_tarde'),
-                    func.sum(case((HistorialAsistenciaParticipacion.valor == 50, 1), else_=0)).label('muy_tarde'),
-                    func.sum(case((HistorialAsistenciaParticipacion.valor == 1, 1), else_=0)).label('ausencias'),
-                    func.avg(HistorialAsistenciaParticipacion.valor).label('promedio_asistencia')
-                ).group_by(
-                    HistorialAsistenciaParticipacion.alumno_id,
-                    HistorialAsistenciaParticipacion.materia_id,
-                    Alumno.nombre,
-                    Alumno.apellido
-                ).all()
+                registros = query.filter(HistorialAsistenciaParticipacion.materia_id.in_(materias_ids))\
+                    .join(Alumno, Alumno.id == HistorialAsistenciaParticipacion.alumno_id)\
+                    .with_entities(
+                        HistorialAsistenciaParticipacion.alumno_id,
+                        Alumno.nombre,
+                        Alumno.apellido,
+                        HistorialAsistenciaParticipacion.materia_id,
+                        HistorialAsistenciaParticipacion.valor
+                    ).all()
 
-                data = [
-                    {
-                        'alumno_id': r.alumno_id,
-                        'nombre': r.nombre,
-                        'apellido': r.apellido,
-                        'nombre_completo': f"{r.nombre} {r.apellido}",
-                        'materia_id': r.materia_id,
-                        'asistencias_completas': r.asistencias_completas,
-                        'llegadas_tarde': r.llegadas_tarde,
-                        'muy_tarde': r.muy_tarde,
-                        'ausencias': r.ausencias,
-                        'promedio_asistencia': round(r.promedio_asistencia, 2),
-                        'total_clases': r.total_registros
-                    }
-                    for r in resultados
-                ]
+                datos = {}
+                for r in registros:
+                    key = (r.alumno_id, r.materia_id)
+                    if key not in datos:
+                        datos[key] = {
+                            'alumno_id': r.alumno_id,
+                            'materia_id': r.materia_id,
+                            'nombre': r.nombre,
+                            'apellido': r.apellido,
+                            'nombre_completo': f"{r.nombre} {r.apellido}",
+                            'asistencias_completas': 0,
+                            'llegadas_tarde': 0,
+                            'muy_tarde': 0,
+                            'ausencias': 0,
+                            'licencias': 0,
+                            'valores_validos': []
+                        }
+
+                    if r.valor == 100:
+                        datos[key]['asistencias_completas'] += 1
+                        datos[key]['valores_validos'].append(100)
+                    elif r.valor == 80:
+                        datos[key]['llegadas_tarde'] += 1
+                        datos[key]['valores_validos'].append(80)
+                    elif r.valor == 50:
+                        datos[key]['muy_tarde'] += 1
+                        datos[key]['valores_validos'].append(50)
+                    elif r.valor == 1:
+                        datos[key]['ausencias'] += 1
+                        datos[key]['valores_validos'].append(1)
+                    elif r.valor == 0:
+                        datos[key]['licencias'] += 1
+
+                data = []
+                for alumno in datos.values():
+                    promedio = round(sum(alumno['valores_validos']) / len(alumno['valores_validos']), 2) if alumno['valores_validos'] else 0
+                    alumno['promedio_asistencia'] = promedio
+                    alumno['total_clases'] = len(alumno['valores_validos']) + alumno['licencias']
+                    data.append(alumno)
 
         periodos_data.append({
             'periodo_id': periodo.id,
@@ -301,31 +329,34 @@ def obtener_participaciones_por_materia_por_grado():
         participaciones_alumnos = []
 
         for alumno in alumnos:
-            cantidad = HistorialAsistenciaParticipacion.query.filter_by(
+            participaciones = HistorialAsistenciaParticipacion.query.filter_by(
                 tipo='participacion',
                 grado_id=grado_id,
                 periodo_id=periodo.id,
                 alumno_id=alumno.id,
                 materia_id=materia_id
-            ).count()
+            ).all()
 
-            if cantidad == 0:
+            total_esperadas = len(participaciones)
+            suma_valores = sum([p.valor for p in participaciones])
+
+            if total_esperadas == 0:
                 continue
 
-            no_participo = TOTAL_ESPERADAS - cantidad
-            nota = round((cantidad / TOTAL_ESPERADAS) * 100, 2)
+            nota = round((suma_valores / (100 * TOTAL_ESPERADAS)) * 100, 2)
+            no_participo = TOTAL_ESPERADAS - total_esperadas
 
             participaciones_alumnos.append({
                 'alumno_id': alumno.id,
                 'nombre': alumno.nombre,
                 'apellido': alumno.apellido,
-                'participaciones_registradas': cantidad,
+                'participaciones_registradas': total_esperadas,
                 'total_esperadas': TOTAL_ESPERADAS,
                 'no_participo': no_participo,
+                'suma_valores': suma_valores,
                 'nota_participacion': nota
             })
 
-        # Siempre agregar el periodo, incluso si está vacío
         resultados.append({
             'periodo_id': periodo.id,
             'periodo': periodo.nombre,
@@ -347,6 +378,7 @@ def obtener_participaciones_por_materia_por_grado():
         'participaciones_por_periodo': resultados
     })
 
+
 #funciona
 def obtener_notas_por_materia_por_grado():
     grado_id = request.args.get('grado_id', type=int)
@@ -361,7 +393,6 @@ def obtener_notas_por_materia_por_grado():
     if not gestion:
         return jsonify({'error': 'No hay gestión activa'}), 404
 
-    # Verifica que el profesor tiene asignada esa materia en ese grado y nivel
     materia_asignada = MateriaProfesor.query \
         .join(MateriaProfesor.materia) \
         .filter(
@@ -377,6 +408,13 @@ def obtener_notas_por_materia_por_grado():
     materia = materia_asignada.materia
     profesor = materia_asignada.profesor
     grado = materia_asignada.grado
+
+    ponderacion = PonderacionEvaluacion.query.filter_by(
+        gestion_id=gestion.id, tipo='trimestre'
+    ).first()
+
+    if not ponderacion:
+        return jsonify({'error': 'No hay ponderación definida para esta gestión'}), 400
 
     periodos = Periodo.query.filter_by(gestion_id=gestion.id).all()
 
@@ -406,20 +444,196 @@ def obtener_notas_por_materia_por_grado():
                 periodo_id=periodo.id
             ).all()
 
+        notas_data = []
+        for n in notas:
+            nota_parcial = n.nota_parcial or 0
+            asistencia = n.asistencia_trimestre or 0
+            participacion = n.participacion_trimestre or 0
+
+            nota_sin_ponderar = round(nota_parcial + asistencia + participacion, 2)
+
+            aporte_parcial = nota_parcial * ponderacion.peso_nota_parcial
+            aporte_asistencia = asistencia * ponderacion.peso_asistencia
+            aporte_participacion = participacion * ponderacion.peso_participacion
+
+            nota_ponderada = round(aporte_parcial + aporte_asistencia + aporte_participacion, 2)
+
+            notas_data.append({
+                "alumno_id": n.alumno.id,
+                "nombre": n.alumno.nombre,
+                "apellido": n.alumno.apellido,
+                "nota_parcial": n.nota_parcial,
+                "asistencia_trimestre": n.asistencia_trimestre,
+                "participacion_trimestre": n.participacion_trimestre,
+                "nota_final_sin_ponderacion": nota_sin_ponderar,
+                "nota_final_con_ponderacion": nota_ponderada,
+                "aporte_parcial_ponderda": round(aporte_parcial, 2),
+                "aporte_asistencia_ponderda": round(aporte_asistencia, 2),
+                "aporte_participacion_ponderda": round(aporte_participacion, 2)
+            })
+
         data["periodos"].append({
             "periodo_id": periodo.id,
             "nombre": periodo.nombre,
-            "notas": [
-                {
-                    "alumno_id": n.alumno.id,
-                    "nombre": n.alumno.nombre,
-                    "apellido": n.alumno.apellido,
-                    "nota_parcial": n.nota_parcial,
-                    "asistencia_trimestre": n.asistencia_trimestre,
-                    "participacion_trimestre": n.participacion_trimestre
-                } for n in notas
-            ]
+            "notas": notas_data
         })
 
     return jsonify(data), 200
+
+
+
+
+#funciona
+def registrar_asistencia_en_nota_trimestre():
+    grado_id = request.args.get('grado_id', type=int)
+    profesor_id = request.args.get('profesor_id', type=int)
+    nivel_id = request.args.get('nivel', type=int)
+    materia_id = request.args.get('materia_id', type=int)
+    periodo_id = request.args.get('periodo_id', type=int)
+
+    if not grado_id or not profesor_id or not nivel_id or not materia_id or not periodo_id:
+        return jsonify({'error': 'Faltan parámetros obligatorios'}), 400
+
+    # Obtener datos ya calculados desde el mismo método de asistencias
+    from controllers.profesor_controller import obtener_asistencias_por_grado
+
+    response = obtener_asistencias_por_grado()
+    if response[1] != 200:
+        return jsonify({'error': 'No se pudo obtener asistencias'}), 500
+
+    periodos = response[0].json.get('periodos', [])
+
+    # Buscar el periodo específico
+    periodo_data = next((p for p in periodos if p['periodo_id'] == periodo_id), None)
+    if not periodo_data:
+        return jsonify({'error': 'Periodo no encontrado en los datos de asistencia'}), 404
+
+    asistencias = periodo_data.get('asistencias', [])
+    afectados = []
+
+    for alumno in asistencias:
+        alumno_id = alumno['alumno_id']
+        promedio_asistencia = alumno['promedio_asistencia']
+
+        nota = NotaTrimestre.query.filter_by(
+            alumno_id=alumno_id,
+            materia_id=materia_id,
+            grado_id=grado_id,
+            periodo_id=periodo_id
+        ).first()
+
+        if nota:
+            nota.asistencia_trimestre = promedio_asistencia
+        else:
+            nueva = NotaTrimestre(
+                alumno_id=alumno_id,
+                materia_id=materia_id,
+                grado_id=grado_id,
+                periodo_id=periodo_id,
+                asistencia_trimestre=promedio_asistencia
+            )
+            db.session.add(nueva)
+
+        afectados.append({
+            'alumno_id': alumno_id,
+            'asistencia': promedio_asistencia
+        })
+
+    db.session.commit()
+    return jsonify({
+        'mensaje': '✅ Asistencia registrada en nota_trimestre correctamente',
+        'periodo_id': periodo_id,
+        'materia_id': materia_id,
+        'registros': afectados
+    }), 200
+
+#funciona
+def obtener_y_registrar_participaciones_por_materia_por_grado():
+    profesor_id = request.args.get('profesor_id', type=int)
+    grado_id = request.args.get('grado_id', type=int)
+    nivel_id = request.args.get('nivel_id', type=int)
+    materia_id = request.args.get('materia_id', type=int)
+    periodo_id = request.args.get('periodo_id', type=int)
+
+    if not all([profesor_id, grado_id, nivel_id, materia_id, periodo_id]):
+        return jsonify({'error': 'Faltan parámetros: profesor_id, grado_id, nivel_id, materia_id o periodo_id'}), 400
+
+    gestion_activa = Gestion.query.filter_by(estado='activa').first()
+    if not gestion_activa:
+        return jsonify({'error': 'No hay gestión activa'}), 404
+
+    periodo = Periodo.query.filter_by(id=periodo_id, gestion_id=gestion_activa.id).first()
+    if not periodo:
+        return jsonify({'error': 'Periodo no encontrado en la gestión activa'}), 404
+
+    grado = Grado.query.get(grado_id)
+    nivel = Nivel.query.get(nivel_id)
+    materia = Materia.query.get(materia_id)
+
+    if not grado or not nivel or not materia:
+        return jsonify({'error': 'Grado, nivel o materia no encontrados'}), 404
+
+    TOTAL_ESPERADAS = 10
+    alumnos = db.session.query(Alumno).join(AlumnoGrado).filter(
+        AlumnoGrado.grado_id == grado_id
+    ).all()
+
+    participaciones_alumnos = []
+
+    for alumno in alumnos:
+        participaciones = HistorialAsistenciaParticipacion.query.filter_by(
+            tipo='participacion',
+            grado_id=grado_id,
+            periodo_id=periodo_id,
+            alumno_id=alumno.id,
+            materia_id=materia_id
+        ).all()
+
+        total_esperadas = len(participaciones)
+        suma_valores = sum(p.valor for p in participaciones)
+
+        if total_esperadas == 0:
+            continue
+
+        nota = round((suma_valores / (100 * TOTAL_ESPERADAS)) * 100, 2)
+
+        # Actualizar o insertar en nota_trimestre
+        nota_trimestre = NotaTrimestre.query.filter_by(
+            alumno_id=alumno.id,
+            grado_id=grado_id,
+            periodo_id=periodo_id,
+            materia_id=materia_id
+        ).first()
+
+        if nota_trimestre:
+            nota_trimestre.participacion_trimestre = nota
+        else:
+            nueva = NotaTrimestre(
+                alumno_id=alumno.id,
+                grado_id=grado_id,
+                periodo_id=periodo_id,
+                materia_id=materia_id,
+                participacion_trimestre=nota
+            )
+            db.session.add(nueva)
+
+        participaciones_alumnos.append({
+            'alumno_id': alumno.id,
+            'nombre': alumno.nombre,
+            'nota_participacion': nota
+        })
+
+    db.session.commit()
+
+    return jsonify({
+        'participaciones': participaciones_alumnos,
+        'mensaje': '✅ Participaciones registradas correctamente en nota_trimestre'
+    }), 200
+
+
+
+
+
+
+
 

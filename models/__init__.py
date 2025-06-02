@@ -16,7 +16,7 @@ from .profesor import Profesor
 from .ponderaciones_evaluacion import PonderacionEvaluacion
 from .alumno_grado import AlumnoGrado
 from .materia_grado import MateriaGrado
-
+from .ponderaciones_evaluacion import PonderacionEvaluacion
 from .nota_trimestre import NotaTrimestre
 from .historial_asistencia_participacion import HistorialAsistenciaParticipacion
 

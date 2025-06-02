@@ -1,3 +1,4 @@
+import requests
 from flask import request, jsonify,Blueprint
 from datetime import date
 from models import db
@@ -9,6 +10,10 @@ from models.gestion import Gestion
 from models.nivel import Nivel
 from models.materia import Materia
 from models.nota_trimestre import NotaTrimestre
+
+from controllers.profesor_controller import obtener_asistencias_por_grado
+from controllers.profesor_controller import obtener_participaciones_por_materia_por_grado
+
 
 def registrar_asistencia_participacion():
     data = request.get_json()
@@ -170,7 +175,6 @@ def registrar_asistencia_masiva():
     return jsonify({'mensaje': f'Se registraron {len(registros)} asistencias correctamente.'}), 201
 
 
-
 def obtener_periodos_gestion_activa():
     gestion_activa = Gestion.query.filter_by(estado='activa').first()
     if not gestion_activa:
@@ -187,31 +191,6 @@ def obtener_periodos_gestion_activa():
 
     return jsonify(resultado), 200
 
-
-# def registrar_nota_parcial():
-#     data = request.json
-
-#     nota = NotaTrimestre.query.filter_by(
-#         alumno_id=data['alumno_id'],
-#         materia_id=data['materia_id'],
-#         grado_id=data['grado_id'],
-#         periodo_id=data['periodo_id']
-#     ).first()
-
-#     if nota:
-#         nota.nota_parcial = data['nota_parcial']
-#     else:
-#         nota = NotaTrimestre(
-#             alumno_id=data['alumno_id'],
-#             materia_id=data['materia_id'],
-#             grado_id=data['grado_id'],
-#             periodo_id=data['periodo_id'],
-#             nota_parcial=data['nota_parcial']
-#         )
-#         db.session.add(nota)
-
-#     db.session.commit()
-#     return jsonify({"mensaje": "✅ Nota parcial registrada correctamente"})
 
 def registrar_nota_parcial():
     datos = request.json  # lista de dicts
@@ -231,3 +210,8 @@ def registrar_nota_parcial():
 
     db.session.commit()
     return jsonify({"mensaje": "✅ Notas parciales registradas correctamente"})
+
+
+
+
+

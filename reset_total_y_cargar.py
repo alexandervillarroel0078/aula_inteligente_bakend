@@ -107,10 +107,6 @@ with app.app_context():
     db.session.commit()
     print("🔄 Secuencia 'alumnos_id_seq' ajustada correctamente")
 
-    
-
-
-
 # DO $$ DECLARE
 #     r RECORD;
 # BEGIN

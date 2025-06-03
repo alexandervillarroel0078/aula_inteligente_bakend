@@ -13,7 +13,7 @@ class HistorialAsistenciaParticipacion(db.Model):
 
     tipo = db.Column(db.String(20), nullable=False)  # 'asistencia' o 'participacion'
     valor = db.Column(db.Float, nullable=False)      # Ej: nota de 1 a 100
-    fecha = db.Column(db.Date, nullable=False)       # Día de registro
+    fecha = db.Column(db.Date, nullable=True)       # Día de registro
 
     observaciones = db.Column(db.Text, nullable=True)
 

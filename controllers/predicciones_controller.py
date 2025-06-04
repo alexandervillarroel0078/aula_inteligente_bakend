@@ -23,6 +23,7 @@ def clasificar_rendimiento(valor):
         return "Alto"
 
 
+
 def generar_predicciones_por_profesor_grado_periodo(profesor_id, grado_id, periodo_id):
     materias_asignadas = MateriaProfesor.query.filter_by(
         profesor_id=profesor_id,
@@ -34,9 +35,8 @@ def generar_predicciones_por_profesor_grado_periodo(profesor_id, grado_id, perio
         .filter(AlumnoGrado.grado_id == grado_id)\
         .all()
 
-    resumen = {}  # Agrupado por materia
+    resumen = {}
 
-    # Función para obtener el nombre del semestre
     def obtener_semestre(periodo_id):
         if periodo_id == 1:
             return "Primer Trimestre"
@@ -50,50 +50,54 @@ def generar_predicciones_por_profesor_grado_periodo(profesor_id, grado_id, perio
     semestre_actual = obtener_semestre(periodo_id)
     semestre_siguiente = obtener_semestre(periodo_id + 1)
 
-    # Iterar sobre cada materia asignada
     for mp in materias_asignadas:
         materia_id = mp.materia_id
         materia_nombre = mp.materia.nombre
         resumen[materia_nombre] = []
 
-        # Para cada alumno en el grado correspondiente
         for alumno in alumnos:
-            # Obtener la nota del semestre actual
             nota_trimestre = NotaTrimestre.query.filter_by(
                 alumno_id=alumno.id,
                 materia_id=materia_id,
-                periodo_id=periodo_id  # Aquí se usa el periodo actual
+                periodo_id=periodo_id
             ).first()
 
             if not nota_trimestre:
-                continue  # Si no hay nota registrada, se omite
+                continue
 
-            # Datos para la predicción del siguiente semestre
             nota = nota_trimestre.nota_parcial or 0
             asistencia = nota_trimestre.asistencia_trimestre or 0
             participacion = nota_trimestre.participacion_trimestre or 0
 
-            # Generar la entrada para la predicción usando los datos del semestre actual
             entrada = np.array([[nota, asistencia, participacion]])
-
-            # Realizar la predicción para el próximo semestre
             predicho = modelo.predict(entrada)[0]
             clasificacion = clasificar_rendimiento(predicho)
 
-            # Guardar la predicción en la base de datos
-            prediccion = Prediccion(
+            prediccion = Prediccion.query.filter_by(
                 alumno_id=alumno.id,
                 materia_id=materia_id,
-                periodo_id=periodo_id + 1,  # Para el siguiente semestre
-                nota_parcial=nota,
-                asistencia=asistencia,
-                participacion=participacion,
-                rendimiento_predicho=float(predicho),
-                clasificacion=clasificacion
-            )
-            db.session.add(prediccion)
+                periodo_id=periodo_id + 1
+            ).first()
 
-            # Resumen de las predicciones por materia
+            if prediccion:
+                prediccion.nota_parcial = nota
+                prediccion.asistencia = asistencia
+                prediccion.participacion = participacion
+                prediccion.rendimiento_predicho = float(predicho)
+                prediccion.clasificacion = clasificacion
+            else:
+                prediccion = Prediccion(
+                    alumno_id=alumno.id,
+                    materia_id=materia_id,
+                    periodo_id=periodo_id + 1,
+                    nota_parcial=nota,
+                    asistencia=asistencia,
+                    participacion=participacion,
+                    rendimiento_predicho=float(predicho),
+                    clasificacion=clasificacion
+                )
+                db.session.add(prediccion)
+
             resumen[materia_nombre].append({
                 "alumno_id": alumno.id,
                 "alumno": f"{alumno.nombre} {alumno.apellido}",
@@ -116,17 +120,33 @@ def hacer_prediccion_y_guardar(alumno_id, materia_id, periodo_id, nota_parcial, 
     predicho = modelo.predict(entrada)[0]
     clasificacion = clasificar_rendimiento(predicho)
 
-    prediccion = Prediccion(
+    prediccion = Prediccion.query.filter_by(
         alumno_id=alumno_id,
         materia_id=materia_id,
-        periodo_id=periodo_id,
-        nota_parcial=nota_parcial,
-        asistencia=asistencia,
-        participacion=participacion,
-        rendimiento_predicho=float(predicho),
-        clasificacion=clasificacion
-    )
-    db.session.add(prediccion)
+        periodo_id=periodo_id
+    ).first()
+
+    if prediccion:
+        # Actualizar si ya existe
+        prediccion.nota_parcial = nota_parcial
+        prediccion.asistencia = asistencia
+        prediccion.participacion = participacion
+        prediccion.rendimiento_predicho = float(predicho)
+        prediccion.clasificacion = clasificacion
+    else:
+        # Crear si no existe
+        prediccion = Prediccion(
+            alumno_id=alumno_id,
+            materia_id=materia_id,
+            periodo_id=periodo_id,
+            nota_parcial=nota_parcial,
+            asistencia=asistencia,
+            participacion=participacion,
+            rendimiento_predicho=float(predicho),
+            clasificacion=clasificacion
+        )
+        db.session.add(prediccion)
+
     db.session.commit()
 
     return jsonify({
@@ -153,7 +173,7 @@ def generar_predicciones_para_todos(grado_id, materia_id, periodo_id):
         ).first()
 
         if not nota_trimestre:
-            continue  # Si no hay nota registrada, se omite
+            continue
 
         nota = nota_trimestre.nota_parcial or 0
         asistencia = nota_trimestre.asistencia_trimestre or 0
@@ -163,17 +183,31 @@ def generar_predicciones_para_todos(grado_id, materia_id, periodo_id):
         predicho = modelo.predict(entrada)[0]
         clasificacion = clasificar_rendimiento(predicho)
 
-        prediccion = Prediccion(
+        prediccion = Prediccion.query.filter_by(
             alumno_id=alumno.id,
             materia_id=materia_id,
-            periodo_id=periodo_id,
-            nota_parcial=nota,
-            asistencia=asistencia,
-            participacion=participacion,
-            rendimiento_predicho=float(predicho),
-            clasificacion=clasificacion
-        )
-        db.session.add(prediccion)
+            periodo_id=periodo_id
+        ).first()
+
+        if prediccion:
+            prediccion.nota_parcial = nota
+            prediccion.asistencia = asistencia
+            prediccion.participacion = participacion
+            prediccion.rendimiento_predicho = float(predicho)
+            prediccion.clasificacion = clasificacion
+        else:
+            prediccion = Prediccion(
+                alumno_id=alumno.id,
+                materia_id=materia_id,
+                periodo_id=periodo_id,
+                nota_parcial=nota,
+                asistencia=asistencia,
+                participacion=participacion,
+                rendimiento_predicho=float(predicho),
+                clasificacion=clasificacion
+            )
+            db.session.add(prediccion)
+
         predicciones_creadas.append(alumno.id)
 
     db.session.commit()
@@ -182,6 +216,8 @@ def generar_predicciones_para_todos(grado_id, materia_id, periodo_id):
         "mensaje": f"Predicciones generadas para {len(predicciones_creadas)} alumnos.",
         "alumnos": predicciones_creadas
     })
+
+
 
 def listar_todas_las_predicciones():
     predicciones = Prediccion.query.all()

@@ -1,10 +1,12 @@
 # Archivo: routes/predicciones_route.py
+from flask import jsonify
 from flask import Blueprint, request
 from controllers.predicciones_controller import (
     hacer_prediccion_y_guardar,
     generar_predicciones_para_todos,
     listar_todas_las_predicciones,
-    predicciones_por_alumno
+    predicciones_por_alumno,
+    generar_predicciones_por_profesor_grado_periodo
 )
 
 predicciones_bp = Blueprint('predicciones', __name__)
@@ -30,6 +32,17 @@ def generar_para_todos():
         periodo_id=data['periodo_id']
     )
 
+
+@predicciones_bp.route('/api/predicciones/generar-multiples', methods=['POST'])
+def generar_multiples_materias():
+    data = request.get_json()
+    return generar_predicciones_por_profesor_grado_periodo(
+        profesor_id=data['profesor_id'],
+        grado_id=data['grado_id'],
+        periodo_id=data['periodo_id']
+    )
+
+
 @predicciones_bp.route('/api/predicciones', methods=['GET'])
 def listar_predicciones():
     return listar_todas_las_predicciones()
@@ -37,3 +50,19 @@ def listar_predicciones():
 @predicciones_bp.route('/api/predicciones/alumno/<int:alumno_id>', methods=['GET'])
 def predicciones_alumno(alumno_id):
     return predicciones_por_alumno(alumno_id)
+
+
+
+@predicciones_bp.route('/api/predicciones/grados/<int:profesor_id>', methods=['GET'])
+def grados_del_profesor(profesor_id):
+    from models.materia_profesor import MateriaProfesor
+    from models.grado import Grado
+
+    # Obtener todos los grados únicos donde el profesor tiene materias
+    materia_grados = MateriaProfesor.query.filter_by(profesor_id=profesor_id).all()
+    grado_ids = list(set(mg.grado_id for mg in materia_grados))
+    
+    grados = Grado.query.filter(Grado.id.in_(grado_ids)).all()
+
+    resultado = [{'id': g.id, 'nombre': g.nombre} for g in grados]
+    return jsonify(resultado)

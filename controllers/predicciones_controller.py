@@ -4,6 +4,7 @@ from models.prediccion import Prediccion
 from models.nota_trimestre import NotaTrimestre
 from models.alumno import Alumno
 from models.alumno_grado import AlumnoGrado
+from models.materia_profesor import MateriaProfesor
 import numpy as np
 import joblib
 
@@ -20,6 +21,95 @@ def clasificar_rendimiento(valor):
         return "Medio"
     else:
         return "Alto"
+
+
+def generar_predicciones_por_profesor_grado_periodo(profesor_id, grado_id, periodo_id):
+    materias_asignadas = MateriaProfesor.query.filter_by(
+        profesor_id=profesor_id,
+        grado_id=grado_id
+    ).all()
+
+    alumnos = Alumno.query\
+        .join(AlumnoGrado)\
+        .filter(AlumnoGrado.grado_id == grado_id)\
+        .all()
+
+    resumen = {}  # Agrupado por materia
+
+    # Función para obtener el nombre del semestre
+    def obtener_semestre(periodo_id):
+        if periodo_id == 1:
+            return "Primer Trimestre"
+        elif periodo_id == 2:
+            return "Segundo Trimestre"
+        elif periodo_id == 3:
+            return "Tercer Trimestre"
+        else:
+            return f"Periodo {periodo_id}"
+
+    semestre_actual = obtener_semestre(periodo_id)
+    semestre_siguiente = obtener_semestre(periodo_id + 1)
+
+    # Iterar sobre cada materia asignada
+    for mp in materias_asignadas:
+        materia_id = mp.materia_id
+        materia_nombre = mp.materia.nombre
+        resumen[materia_nombre] = []
+
+        # Para cada alumno en el grado correspondiente
+        for alumno in alumnos:
+            # Obtener la nota del semestre actual
+            nota_trimestre = NotaTrimestre.query.filter_by(
+                alumno_id=alumno.id,
+                materia_id=materia_id,
+                periodo_id=periodo_id  # Aquí se usa el periodo actual
+            ).first()
+
+            if not nota_trimestre:
+                continue  # Si no hay nota registrada, se omite
+
+            # Datos para la predicción del siguiente semestre
+            nota = nota_trimestre.nota_parcial or 0
+            asistencia = nota_trimestre.asistencia_trimestre or 0
+            participacion = nota_trimestre.participacion_trimestre or 0
+
+            # Generar la entrada para la predicción usando los datos del semestre actual
+            entrada = np.array([[nota, asistencia, participacion]])
+
+            # Realizar la predicción para el próximo semestre
+            predicho = modelo.predict(entrada)[0]
+            clasificacion = clasificar_rendimiento(predicho)
+
+            # Guardar la predicción en la base de datos
+            prediccion = Prediccion(
+                alumno_id=alumno.id,
+                materia_id=materia_id,
+                periodo_id=periodo_id + 1,  # Para el siguiente semestre
+                nota_parcial=nota,
+                asistencia=asistencia,
+                participacion=participacion,
+                rendimiento_predicho=float(predicho),
+                clasificacion=clasificacion
+            )
+            db.session.add(prediccion)
+
+            # Resumen de las predicciones por materia
+            resumen[materia_nombre].append({
+                "alumno_id": alumno.id,
+                "alumno": f"{alumno.nombre} {alumno.apellido}",
+                "nota": nota,
+                "asistencia": asistencia,
+                "participacion": participacion,
+                "prediccion": round(predicho, 2),
+                "clasificacion": clasificacion
+            })
+
+    db.session.commit()
+
+    return jsonify({
+        "mensaje": f"Predicciones generadas para el {semestre_siguiente} del profesor {profesor_id} en grado {grado_id} y periodo {semestre_actual}.",
+        "resumen": resumen
+    })
 
 def hacer_prediccion_y_guardar(alumno_id, materia_id, periodo_id, nota_parcial, asistencia, participacion):
     entrada = np.array([[nota_parcial, asistencia, participacion]])

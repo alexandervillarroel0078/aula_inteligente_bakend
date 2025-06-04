@@ -9,8 +9,8 @@ usuario_bp = Blueprint('usuario_bp', __name__)
 def listar_usuarios():
     return usuario_controller.listar_usuarios()
 
-#http://localhost:5000/api/crear-alumnos 
-@usuario_bp.route('/api/crear-alumnos', methods=['POST'])
+#http://localhost:5000/api/crear-alumnoss 
+@usuario_bp.route('/api/crear-alumnoss', methods=['POST'])
 def crear_alumno():
     return usuario_controller.crear_alumno()
 

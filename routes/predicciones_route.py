@@ -6,7 +6,10 @@ from controllers.predicciones_controller import (
     generar_predicciones_para_todos,
     listar_todas_las_predicciones,
     predicciones_por_alumno,
-    generar_predicciones_por_profesor_grado_periodo
+    generar_predicciones_por_grado_periodo,
+    obtener_predicciones_por_materia,
+    listar_materias_del_profesor
+ 
 )
 
 predicciones_bp = Blueprint('predicciones', __name__)
@@ -33,15 +36,22 @@ def generar_para_todos():
     )
 
 
+# @predicciones_bp.route('/api/predicciones/generar-multiples', methods=['POST'])
+# def generar_multiples_materias():
+#     data = request.get_json()
+#     return generar_predicciones_por_profesor_grado_periodo(
+#         profesor_id=data['profesor_id'],
+#         grado_id=data['grado_id'],
+#         periodo_id=data['periodo_id']
+#     )
+
 @predicciones_bp.route('/api/predicciones/generar-multiples', methods=['POST'])
 def generar_multiples_materias():
     data = request.get_json()
-    return generar_predicciones_por_profesor_grado_periodo(
-        profesor_id=data['profesor_id'],
+    return generar_predicciones_por_grado_periodo(
         grado_id=data['grado_id'],
         periodo_id=data['periodo_id']
     )
-
 
 @predicciones_bp.route('/api/predicciones', methods=['GET'])
 def listar_predicciones():
@@ -66,3 +76,27 @@ def grados_del_profesor(profesor_id):
 
     resultado = [{'id': g.id, 'nombre': g.nombre} for g in grados]
     return jsonify(resultado)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@predicciones_bp.route('/api/predicciones/listar-por-materia', methods=['GET'])
+def listar_predicciones_por_materia():
+    return obtener_predicciones_por_materia()
+
+
+@predicciones_bp.route('/api/profesor/<int:profesor_id>/materias-prediccion', methods=['GET'])
+def listar_materias_del_profesor_grado(profesor_id):
+    return listar_materias_del_profesor(profesor_id)
